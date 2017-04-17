@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:ns1="http://schemas.android.com/tools">
+    <style name="Animation.Material.Popup" parent="Animation.Asp.Popup.Api23"/>
+    <style name="Base.TextAppearance.AppCompat.Widget.ActionBar.Menu" parent="android:TextAppearance.Material.Widget.ActionBar.Menu"/>
+    <style name="Base.TextAppearance.AppCompat.Widget.Button.Inverse" parent="android:TextAppearance.Material.Widget.Button.Inverse"/>
+    <style name="Base.Theme.AppCompat" parent="Base.V23.Theme.AppCompat"/>
+    <style name="Base.Theme.AppCompat.Light" parent="Base.V23.Theme.AppCompat.Light"/>
+    <style name="Base.V23.Theme.AppCompat" parent="Base.V22.Theme.AppCompat">
+        <!-- We can use the platform styles on API 23+ -->
+        <item name="ratingBarStyleIndicator">?android:attr/ratingBarStyleIndicator</item>
+        <item name="ratingBarStyleSmall">?android:attr/ratingBarStyleSmall</item>
+
+        <!-- We can use the platform drawable on v23+ -->
+        <item name="actionBarItemBackground">?android:attr/actionBarItemBackground</item>
+        <!-- We can use the platform styles on v23+ -->
+        <item name="actionMenuTextColor">?android:attr/actionMenuTextColor</item>
+        <item name="actionMenuTextAppearance">?android:attr/actionMenuTextAppearance</item>
+
+        <item name="controlBackground">@drawable/abc_control_background_material</item>
+    </style>
+    <style name="Base.V23.Theme.AppCompat.Light" parent="Base.V22.Theme.AppCompat.Light">
+        <!-- We can use the platform styles on API 23+ -->
+        <item name="ratingBarStyleIndicator">?android:attr/ratingBarStyleIndicator</item>
+        <item name="ratingBarStyleSmall">?android:attr/ratingBarStyleSmall</item>
+
+        <!-- We can use the platform drawable on v23+ -->
+        <item name="actionBarItemBackground">?android:attr/actionBarItemBackground</item>
+        <!-- We can use the platform styles on v23+ -->
+        <item name="actionMenuTextColor">?android:attr/actionMenuTextColor</item>
+        <item name="actionMenuTextAppearance">?android:attr/actionMenuTextAppearance</item>
+
+        <item name="controlBackground">@drawable/abc_control_background_material</item>
+    </style>
+    <style name="Base.Widget.AppCompat.Button.Borderless.Colored" parent="android:Widget.Material.Button.Borderless.Colored"/>
+    <style name="Base.Widget.AppCompat.Button.Colored" parent="android:Widget.Material.Button.Colored"/>
+    <style name="Base.Widget.AppCompat.RatingBar.Indicator" parent="android:Widget.Material.RatingBar.Indicator"/>
+    <style name="Base.Widget.AppCompat.RatingBar.Small" parent="android:Widget.Material.RatingBar.Small"/>
+    <style name="Base.Widget.AppCompat.Spinner.Underlined" parent="android:Widget.Material.Spinner.Underlined"/>
+    <style name="Base.Widget.Asp.Spinner.Underlined" parent="@style/Widget.AppCompat.Spinner.Underlined">
+        <item name="android:background">@drawable/asp_spinner_textfield_background_material</item>
+        <item name="android:paddingEnd">36dp</item>
+    </style>
+    <style name="CardView" parent="Base.CardView">
+        <item name="cardBackgroundColor">?android:attr/colorBackgroundFloating</item>
+    </style>
+    <style name="Widget.Asp.ListPopupWindow" parent="Widget.AppCompat.ListPopupWindow">
+        <item name="android:popupAnimationStyle">@style/Animation.Asp.Popup.Api23</item>
+        <item name="android:popupElevation">@dimen/asp_popup_menu_z</item>
+        <item name="android:popupEnterTransition" ns1:ignore="NewApi">@transition/asp_popup_window_enter</item>
+        <item name="android:popupExitTransition" ns1:ignore="NewApi">@transition/asp_popup_window_exit</item>
+    </style>
+</resources>

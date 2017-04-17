@@ -1,0 +1,15 @@
+<component name="libraryTable">
+  <library name="Gradle: net.xpece.android:support-spinner:2.2.0@aar">
+    <ANNOTATIONS>
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/support-spinner-2.2.0.aar/b947980b50750073cf5d4fbc481e1e19/annotations.zip!/" />
+    </ANNOTATIONS>
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/support-spinner-2.2.0.aar/b947980b50750073cf5d4fbc481e1e19/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/support-spinner-2.2.0.aar/b947980b50750073cf5d4fbc481e1e19/res" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.xpece.android/support-spinner/2.2.0/2a57d28073cd94998ce0bf6e06e3751108f0444d/support-spinner-2.2.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

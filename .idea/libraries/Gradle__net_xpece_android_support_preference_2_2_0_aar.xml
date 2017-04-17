@@ -1,0 +1,17 @@
+<component name="libraryTable">
+  <library name="Gradle: net.xpece.android:support-preference:2.2.0@aar">
+    <ANNOTATIONS>
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/support-preference-2.2.0.aar/7b0f7fb8ae4c1f2cffbba0cb8f18c6c6/annotations.zip!/" />
+    </ANNOTATIONS>
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/support-preference-2.2.0.aar/7b0f7fb8ae4c1f2cffbba0cb8f18c6c6/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/support-preference-2.2.0.aar/7b0f7fb8ae4c1f2cffbba0cb8f18c6c6/res" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.xpece.android/support-preference/2.2.0/8a2c6d835b3def3e89be8078fae897c76a4d0047/support-preference-2.2.0-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.xpece.android/support-preference/2.2.0/bb95ed5e6e2d21d8152a0bb78709c812292aa320/support-preference-2.2.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

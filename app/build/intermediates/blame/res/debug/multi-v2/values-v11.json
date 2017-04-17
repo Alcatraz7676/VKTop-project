@@ -1,0 +1,39 @@
+{
+    "logs": [
+        {
+            "outputFile": "C:\\Users\\maxim\\Desktop\\VkTop\\app\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-v11\\values-v11.xml",
+            "map": [
+                {
+                    "source": "C:\\Users\\maxim\\.gradle\\caches\\transforms-1\\files-1.1\\core-0.9.6.0.aar\\34f455b9c6620de6181fc89b9c68e2a0\\res\\values-v11\\values-v11.xml",
+                    "from": {
+                        "startLines": "2,19",
+                        "startColumns": "4,4",
+                        "startOffsets": "55,1044",
+                        "endLines": "18,35",
+                        "endColumns": "10,10",
+                        "endOffsets": "1039,2010"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\maxim\\Desktop\\VkTop\\vksdk_library\\build\\intermediates\\packaged_res\\debug\\values-v11\\values-v11.xml",
+                    "from": {
+                        "startLines": "2,9",
+                        "startColumns": "4,4",
+                        "startOffsets": "55,453",
+                        "endLines": "8,14",
+                        "endColumns": "12,12",
+                        "endOffsets": "448,825"
+                    },
+                    "to": {
+                        "startLines": "36,43",
+                        "startColumns": "4,4",
+                        "startOffsets": "2015,2413",
+                        "endLines": "42,48",
+                        "endColumns": "12,12",
+                        "endOffsets": "2408,2785"
+                    }
+                }
+            ]
+        }
+    ]
+}

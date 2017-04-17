@@ -1,0 +1,66 @@
+{
+    "logs": [
+        {
+            "outputFile": "C:\\Users\\maxim\\Desktop\\VkTop\\app\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-v23\\values-v23.xml",
+            "map": [
+                {
+                    "source": "C:\\Users\\maxim\\.gradle\\caches\\transforms-1\\files-1.1\\cardview-v7-28.0.0.aar\\4adbb3b44225412ddb00eb139e1f4200\\res\\values-v23\\values-v23.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endLines": "4",
+                        "endColumns": "12",
+                        "endOffsets": "200"
+                    },
+                    "to": {
+                        "startLines": "42",
+                        "startColumns": "4",
+                        "startOffsets": "3041",
+                        "endLines": "44",
+                        "endColumns": "12",
+                        "endOffsets": "3186"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\maxim\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-28.0.0.aar\\30660e1e5802a0aaa4f3b121a83bc082\\res\\values-v23\\values-v23.xml",
+                    "from": {
+                        "startLines": "2,3,4,5,6,19,32,33,34,35,36",
+                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4",
+                        "startOffsets": "55,190,325,400,487,1277,2079,2206,2311,2426,2533",
+                        "endLines": "2,3,4,5,18,31,32,33,34,35,36",
+                        "endColumns": "134,134,74,86,12,12,126,104,114,106,112",
+                        "endOffsets": "185,320,395,482,1272,2074,2201,2306,2421,2528,2641"
+                    },
+                    "to": {
+                        "startLines": "3,4,5,6,7,20,33,34,35,36,37",
+                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4",
+                        "startOffsets": "180,315,450,525,612,1402,2204,2331,2436,2551,2658",
+                        "endLines": "3,4,5,6,19,32,33,34,35,36,37",
+                        "endColumns": "134,134,74,86,12,12,126,104,114,106,112",
+                        "endOffsets": "310,445,520,607,1397,2199,2326,2431,2546,2653,2766"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\maxim\\.gradle\\caches\\transforms-1\\files-1.1\\support-spinner-2.2.0.aar\\b947980b50750073cf5d4fbc481e1e19\\res\\values-v23\\values-v23.xml",
+                    "from": {
+                        "startLines": "2,3,7",
+                        "startColumns": "4,4,4",
+                        "startOffsets": "100,180,450",
+                        "endLines": "2,6,12",
+                        "endColumns": "79,12,12",
+                        "endOffsets": "175,445,932"
+                    },
+                    "to": {
+                        "startLines": "2,38,45",
+                        "startColumns": "4,4,4",
+                        "startOffsets": "100,2771,3191",
+                        "endLines": "2,41,50",
+                        "endColumns": "79,12,12",
+                        "endOffsets": "175,3036,3673"
+                    }
+                }
+            ]
+        }
+    ]
+}

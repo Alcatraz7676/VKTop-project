@@ -1,0 +1,49 @@
+{
+  "project_info": {
+    "project_number": "817456864694",
+    "firebase_url": "https://vktop-1337.firebaseio.com",
+    "project_id": "vktop-1337",
+    "storage_bucket": "vktop-1337.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:817456864694:android:900cd0d32e92d26d",
+        "android_client_info": {
+          "package_name": "com.ovchinnikovm.android.vktop"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "817456864694-d1c0m0hiraroci4r3qra9tba36fj2cbp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ovchinnikovm.android.vktop",
+            "certificate_hash": "0a0820f3023bff28ec571af54a38844b33fdd61c"
+          }
+        },
+        {
+          "client_id": "817456864694-m8vo4d79lidgm0sn7ktuv5k9cckfmvtv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCbaKRmU6HX59cwX9HdMNcphVDgmXhaUuo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "817456864694-m8vo4d79lidgm0sn7ktuv5k9cckfmvtv.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      },
+      "admob_app_id": "ca-app-pub-5717076824212218~7622351649"
+    }
+  ],
+  "configuration_version": "1"
+}
