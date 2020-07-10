@@ -79,15 +79,15 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
         // Sort value
         switch (sortType) {
             case LIKES:
-                Picasso.with(context).load(R.drawable.ic_heart).into(holder.sortTypeImg);
+                Picasso.get().load(R.drawable.ic_heart).into(holder.sortTypeImg);
                 holder.sortTypeNum.setText(String.valueOf(item.getLikes()));
                 break;
             case SHARES:
-                Picasso.with(context).load(R.drawable.ic_bullhorn).into(holder.sortTypeImg);
+                Picasso.get().load(R.drawable.ic_bullhorn).into(holder.sortTypeImg);
                 holder.sortTypeNum.setText(String.valueOf(item.getReposts()));
                 break;
             case COMMENTS:
-                Picasso.with(context).load(R.drawable.ic_comment).into(holder.sortTypeImg);
+                Picasso.get().load(R.drawable.ic_comment).into(holder.sortTypeImg);
                 holder.sortTypeNum.setText(String.valueOf(item.getComments()));
                 break;
         }

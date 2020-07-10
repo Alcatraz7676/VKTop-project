@@ -1,5 +1,7 @@
+//noinspection GradleCompatible
 apply plugin: 'com.android.application'
 apply plugin: 'realm-android'
+apply plugin: 'io.fabric'
 
 android {
     compileSdkVersion 27
@@ -46,6 +48,8 @@ dependencies {
     implementation "com.android.support:cardview-v7:27.1.1"
     implementation "com.android.support:design:27.1.1"
     implementation "com.android.support:preference-v7:27.1.1"
+    // add it because of mixed libraries versions
+    implementation "com.android.support:exifinterface:27.1.1"
 
     // code generator for view
     implementation "com.jakewharton:butterknife:8.8.1"
@@ -53,7 +57,7 @@ dependencies {
     annotationProcessor "com.jakewharton:butterknife-compiler:8.8.1"
 
     // parser
-    implementation "com.google.code.gson:gson:2.8.2"
+    implementation "com.google.code.gson:gson:2.8.5"
 
     // compile 'com.vk:androidsdk:1.6.9'
     implementation project(':vksdk_library')
@@ -63,44 +67,40 @@ dependencies {
 
     // UI Testing
     androidTestImplementation "com.android.support.test.espresso:espresso-core:3.0.2"
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test:rules:1.0.2'
 
     // Material dialogs
     implementation "com.afollestad.material-dialogs:core:0.9.6.0"
 
     // LeakCanary
-    debugImplementation "com.squareup.leakcanary:leakcanary-android:1.5.4"
-    releaseImplementation "com.squareup.leakcanary:leakcanary-android-no-op:1.5.4"
-    testImplementation "com.squareup.leakcanary:leakcanary-android-no-op:1.5.4"
+    debugImplementation "com.squareup.leakcanary:leakcanary-android:1.6.1"
+    releaseImplementation "com.squareup.leakcanary:leakcanary-android-no-op:1.6.1"
+    testImplementation "com.squareup.leakcanary:leakcanary-android-no-op:1.6.1"
 
     // Dagger
-    annotationProcessor 'com.google.dagger:dagger-compiler:2.14.1'
-    implementation 'com.google.dagger:dagger-android-support:2.14.1'
+    annotationProcessor 'com.google.dagger:dagger-compiler:2.16'
+    implementation 'com.google.dagger:dagger-android-support:2.16'
     compileOnly "javax.annotation:jsr250-api:1.0"
-    implementation 'com.google.dagger:dagger:2.14.1'
+    implementation 'com.google.dagger:dagger:2.16'
 
     // Picasso
-    implementation 'com.squareup.picasso:picasso:2.5.2'
+    implementation 'com.squareup.picasso:picasso:2.71828'
 
     // EventBus
     implementation "org.greenrobot:eventbus:3.1.1"
-
-    // Dart-Henson
-    implementation "com.f2prateek.dart:dart:2.0.3"
-    annotationProcessor "com.f2prateek.dart:dart-processor:2.0.3"
-    implementation "com.f2prateek.dart:henson:2.0.3"
-    annotationProcessor "com.f2prateek.dart:henson-processor:2.0.3"
 
     // Multidex
     implementation "com.android.support:multidex:1.0.3"
 
     // RxJava
-    implementation 'io.reactivex.rxjava2:rxjava:2.1.8'
-    implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
+    implementation 'io.reactivex.rxjava2:rxjava:2.1.17'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
 
     // Retrofit
-    implementation 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
-    implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
-    implementation 'com.squareup.retrofit2:retrofit:2.3.0'
+    implementation 'com.squareup.retrofit2:adapter-rxjava2:2.4.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
+    implementation 'com.squareup.retrofit2:retrofit:2.4.0'
 
     // Range date picker
     implementation 'com.borax12.materialdaterangepicker:library:1.9'
@@ -108,10 +108,13 @@ dependencies {
     // Preferences
     implementation 'net.xpece.android:support-preference:2.2.0'
 
-    // Debug Database
-    debugImplementation 'com.amitshekhar.android:debug-db:1.0.4'
+    // Crashlytics
+    implementation 'com.crashlytics.sdk.android:crashlytics:2.9.4'
+    implementation 'com.google.firebase:firebase-core:16.0.1'
 }
 
 configurations.all {
-    resolutionStrategy.force "com.android.support:support-annotations:27.0.2"
+    resolutionStrategy.force "com.android.support:support-annotations:27.1.1"
 }
+
+apply plugin: 'com.google.gms.google-services'

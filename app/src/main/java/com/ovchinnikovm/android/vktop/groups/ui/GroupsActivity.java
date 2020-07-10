@@ -15,7 +15,7 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
-import com.ovchinnikovm.android.vktop.Henson;
+import com.ovchinnikovm.android.vktop.group.ui.GroupActivity;
 import com.ovchinnikovm.android.vktop.lib.PreCachingLayoutManager;
 import com.ovchinnikovm.android.vktop.R;
 import com.ovchinnikovm.android.vktop.VkTopApp;
@@ -193,14 +193,12 @@ public class GroupsActivity extends AppCompatActivity implements GroupsView, OnI
 
     @Override
     public void onItemClick(Group group) {
-        Intent intent = Henson.with(this)
-                .gotoGroupActivity()
-                .groupTitle(group.getName())
-                .groupDescription(group.getStatus())
-                .groupIconURL(group.getPhotoURL())
-                .memberNumber(group.getMembers())
-                .groupId(group.getId())
-                .build();
+        Intent intent = new Intent(this, GroupActivity.class);
+        intent.putExtra("groupTitle", group.getName());
+        intent.putExtra("groupDescription", group.getStatus());
+        intent.putExtra("groupIconURL", group.getPhotoURL());
+        intent.putExtra("memberNumber", group.getMembers());
+        intent.putExtra("groupId", group.getId());
 
         startActivity(intent);
         overridePendingTransition(0, R.anim.screen_splash_fade_out);
@@ -209,7 +207,7 @@ public class GroupsActivity extends AppCompatActivity implements GroupsView, OnI
     @Override
     protected void onDestroy() {
         presenter.onDestroy();
-        Picasso.with(this).cancelTag(POST_IMAGE_TAG);
+        Picasso.get().cancelTag(POST_IMAGE_TAG);
         super.onDestroy();
         RefWatcher refWatcher = VkTopApp.getRefWatcher();
         refWatcher.watch(this);

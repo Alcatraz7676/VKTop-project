@@ -50,7 +50,7 @@ public class PicassoImageLoader implements ImageLoader {
                     }
 
                     @Override
-                    public void onError() {
+                    public void onError(Exception e) {
                         imageView.setImageResource(R.drawable.group_oval);
                     }
                 });
@@ -77,7 +77,7 @@ public class PicassoImageLoader implements ImageLoader {
                 .load(URL)
                 .placeholder(R.drawable.image_placeholder)
                 .error(R.drawable.image_placeholder)
-                .tag("PostImage")
+                .tag(POST_IMAGE_TAG)
                 .transform(new Transformation() {
                     @Override
                     public Bitmap transform(Bitmap source) {

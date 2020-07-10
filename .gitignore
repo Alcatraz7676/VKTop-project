@@ -7,3 +7,6 @@
 /build
 /captures
 .externalNativeBuild
+.idea/assetWizardSettings.xml
+.idea/kotlinc.xml
+app/sampledata/

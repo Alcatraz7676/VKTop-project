@@ -18,13 +18,11 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.borax12.materialdaterangepicker.date.DatePickerDialog;
-import com.f2prateek.dart.Dart;
-import com.f2prateek.dart.InjectExtra;
-import com.ovchinnikovm.android.vktop.Henson;
 import com.ovchinnikovm.android.vktop.R;
 import com.ovchinnikovm.android.vktop.VkTopApp;
 import com.ovchinnikovm.android.vktop.group.GroupPresenter;
 import com.ovchinnikovm.android.vktop.group.di.GroupComponent;
+import com.ovchinnikovm.android.vktop.posts.ui.PostsActivity;
 import com.squareup.leakcanary.RefWatcher;
 
 import java.util.Calendar;
@@ -48,21 +46,12 @@ public class GroupActivity extends AppCompatActivity implements GroupView {
     private final static int MATERIAL_DIALOG_OPENED = 1;
     private final static int DATEPICKER_DIALOG_OPENED = 2;
 
-    @Nullable
-    @InjectExtra
-    String groupTitle;
-    @Nullable
-    @InjectExtra
-    String groupDescription;
-    @Nullable
-    @InjectExtra
-    String groupIconURL;
-    @Nullable
-    @InjectExtra
-    Integer memberNumber;
-    @Nullable
-    @InjectExtra
-    Integer groupId;
+    //
+    private String groupTitle;
+    private String groupDescription;
+    private String groupIconURL;
+    private int memberNumber;
+    private int groupId;
 
     @BindView(R.id.group_title)
     TextView groupTitleTextView;
@@ -106,7 +95,14 @@ public class GroupActivity extends AppCompatActivity implements GroupView {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         setupInjection();
         super.onCreate(savedInstanceState);
-        Dart.inject(this);
+
+        Intent intent = getIntent();
+        groupTitle = intent.getStringExtra("groupTitle");
+        groupDescription = intent.getStringExtra("groupDescription");
+        groupIconURL = intent.getStringExtra("groupIconURL");
+        memberNumber = intent.getIntExtra("memberNumber", 0);
+        groupId = intent.getIntExtra("groupId", 0);
+
         Log.i("mytag", groupTitle + " " + groupDescription + " " + groupIconURL);
         setContentView(R.layout.activity_group);
         ButterKnife.bind(this);
@@ -373,16 +369,14 @@ public class GroupActivity extends AppCompatActivity implements GroupView {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.sort_button:
-                Intent intent = Henson.with(this)
-                        .gotoPostsActivity()
-                        .groupId(groupId)
-                        .postsCount(postsCount)
-                        .groupName(groupTitle)
-                        .groupIconUrl(groupIconURL)
-                        .sortIntervalType(dialogSelectedIndex)
-                        .sortStart(sortStart)
-                        .sortEnd(sortEnd)
-                        .build();
+                Intent intent = new Intent(this, PostsActivity.class);
+                intent.putExtra("groupId", groupId);
+                intent.putExtra("postsCount", postsCount);
+                intent.putExtra("groupName", groupTitle);
+                intent.putExtra("groupIconURL", groupIconURL);
+                intent.putExtra("sortIntervalType", dialogSelectedIndex);
+                intent.putExtra("sortStart", sortStart);
+                intent.putExtra("sortEnd", sortEnd);
                 startActivity(intent);
                 overridePendingTransition(0, R.anim.screen_splash_fade_out);
                 break;

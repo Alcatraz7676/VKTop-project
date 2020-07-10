@@ -32,12 +32,9 @@ import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.media.AudioAttributes;
 
 import com.afollestad.materialdialogs.GravityEnum;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.f2prateek.dart.Dart;
-import com.f2prateek.dart.InjectExtra;
 import com.ovchinnikovm.android.vktop.LoginActivity;
 import com.ovchinnikovm.android.vktop.lib.PreCachingLayoutManager;
 import com.ovchinnikovm.android.vktop.R;
@@ -74,30 +71,10 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
     private final static String SORT_ITEMS_TYPE_KEY = "sort_type";
     private final static String CURRENT_PAGE_KEY = "current_page";
 
-    @Nullable
-    @InjectExtra
-    Integer groupId;
-    @Nullable
-    @InjectExtra
-    Integer postsCount;
-    @Nullable
-    @InjectExtra
-    String groupName;
-    @Nullable
-    @InjectExtra
-    String groupIconUrl;
-    @Nullable
-    @InjectExtra
-    Integer sortIntervalType;
-    @Nullable
-    @InjectExtra
-    Long sortStart;
-    @Nullable
-    @InjectExtra
-    Long sortEnd;
-    @Nullable
-    @InjectExtra
-    Integer itemId;
+    private int postsCount;
+    private String groupName;
+    private String groupIconUrl;
+    private int itemId;
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -138,7 +115,17 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Dart.inject(this);
+
+        Intent intent = getIntent();
+        int groupId = intent.getIntExtra("groupId", -1);
+        postsCount = intent.getIntExtra("postsCount", -1);
+        groupName = intent.getStringExtra("groupName");
+        groupIconUrl = intent.getStringExtra("groupIconURL");
+        int sortIntervalType = intent.getIntExtra("sortIntervalType", 0);
+        long sortStart = intent.getLongExtra("sortStart", 0);
+        long sortEnd = intent.getLongExtra("sortEnd", 0);
+        itemId = intent.getIntExtra("itemId", -1);
+
         setContentView(R.layout.activity_posts);
         ButterKnife.bind(this);
         setupInjection();
@@ -148,7 +135,7 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
         if (savedInstanceState != null)
             itemId = savedInstanceState.getInt(REALM_ID_KEY);
 
-        if (itemId == null) {
+        if (itemId == -1) {
             lockOrientation();
             if (sortIntervalType == 0)
                 showDeterminateProgressDialog();
@@ -302,7 +289,7 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         if (adapter != null) {
-            if (itemId != null)
+            if (itemId != -1)
                 outState.putInt(REALM_ID_KEY, itemId);
             outState.putParcelableArrayList(RV_ITEMS_KEY, adapter.getItems());
             outState.putParcelable(TOGGLE_EXPANDABLE_TV_KEY, new SparseBooleanArrayParcelable(adapter.getTogglePositions()));
@@ -488,7 +475,7 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
     @Override
     protected void onDestroy() {
         presenter.onDestroy();
-        Picasso.with(this).cancelTag(POST_IMAGE_TAG);
+        Picasso.get().cancelTag(POST_IMAGE_TAG);
         recyclerview.getRecycledViewPool().clear();
         super.onDestroy();
         RefWatcher refWatcher = VkTopApp.getRefWatcher();

@@ -6,8 +6,7 @@ import android.os.StrictMode;
 import android.support.multidex.MultiDexApplication;
 import android.util.Log;
 
-import com.amitshekhar.DebugDB;
-import com.ovchinnikovm.android.vktop.entities.RealmSortedItem;
+import com.crashlytics.android.Crashlytics;
 import com.ovchinnikovm.android.vktop.group.di.DaggerGroupComponent;
 import com.ovchinnikovm.android.vktop.group.di.GroupComponent;
 import com.ovchinnikovm.android.vktop.group.di.GroupModule;
@@ -34,8 +33,8 @@ import com.vk.sdk.VKSdk;
 
 import java.util.concurrent.atomic.AtomicLong;
 
+import io.fabric.sdk.android.Fabric;
 import io.realm.Realm;
-import io.realm.RealmConfiguration;
 
 public class VkTopApp extends MultiDexApplication {
 
@@ -67,7 +66,7 @@ public class VkTopApp extends MultiDexApplication {
     public void onCreate() {
         super.onCreate();
 
-        Log.i("DebugDB address", DebugDB.getAddressLog());
+        Fabric.with(this, new Crashlytics());
 
         StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
                 .detectAll()

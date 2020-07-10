@@ -41,8 +41,8 @@ public class LibsModule {
 
     @Provides
     @Singleton
-    Picasso providesLibraryImageLoader(Context context) {
-        return Picasso.with(context);
+    Picasso providesLibraryImageLoader() {
+        return Picasso.get();
     }
 
     @Provides
@@ -56,7 +56,6 @@ public class LibsModule {
     @Singleton
     Integer providesUserId() {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activityContext);
-        Log.i("test", String.valueOf(sharedPreferences.getInt(LoginActivity.KEY_PREF_CURRENT_USER, 0)) + " in dagger integer");
         return sharedPreferences.getInt(LoginActivity.KEY_PREF_CURRENT_USER, 0);
     }
 }

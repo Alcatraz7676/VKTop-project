@@ -21,7 +21,6 @@ import android.view.View;
 import android.widget.RelativeLayout;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.ovchinnikovm.android.vktop.Henson;
 import com.ovchinnikovm.android.vktop.LoginActivity;
 import com.ovchinnikovm.android.vktop.R;
 import com.ovchinnikovm.android.vktop.lib.RecyclerViewEmptySupport;
@@ -32,6 +31,7 @@ import com.ovchinnikovm.android.vktop.main.adapters.OnItemClickListener;
 import com.ovchinnikovm.android.vktop.main.adapters.OnItemLongClickListener;
 import com.ovchinnikovm.android.vktop.main.adapters.SortDataAdapter;
 import com.ovchinnikovm.android.vktop.main.di.MainComponent;
+import com.ovchinnikovm.android.vktop.posts.ui.PostsActivity;
 import com.ovchinnikovm.android.vktop.settings.SettingsActivity;
 import com.squareup.leakcanary.RefWatcher;
 import com.vk.sdk.VKSdk;
@@ -230,11 +230,9 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
         RealmSortedItem item = realmInstance.where(RealmSortedItem.class)
                 .equalTo("sortId", itemId).findFirst();
         String iconUrl = item.getGroupIconUrl();
-        Intent intent = Henson.with(this)
-                .gotoPostsActivity()
-                .itemId(itemId)
-                .groupIconUrl(iconUrl)
-                .build();
+        Intent intent = new Intent(this, PostsActivity.class);
+        intent.putExtra("itemId", itemId);
+        intent.putExtra("groupIconURL", iconUrl);
         startActivity(intent);
         overridePendingTransition(0, R.anim.screen_splash_fade_out);
     }
