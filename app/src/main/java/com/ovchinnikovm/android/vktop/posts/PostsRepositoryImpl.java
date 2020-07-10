@@ -123,8 +123,6 @@ public class PostsRepositoryImpl implements PostsRepository {
                         }
                     }
 
-
-
                     @Override
                     public void onError(@NonNull Throwable e) {
                         post(e.toString());
@@ -132,13 +130,13 @@ public class PostsRepositoryImpl implements PostsRepository {
 
                     @Override
                     public void onComplete() {
-                        setPosts(posts);
+                        setPosts();
                     }
                 });
 
     }
 
-    private void setPosts (Posts posts) {
+    private void setPosts () {
 
         long a = System.currentTimeMillis();
 
@@ -147,25 +145,13 @@ public class PostsRepositoryImpl implements PostsRepository {
 
         long b = System.currentTimeMillis();
 
-        Posts twentyTopPosts = new Posts();
-
-        if (posts.items.size() >= 20) {
-            twentyTopPosts.items = posts.items.subList(0, 20);
-        } else {
-            twentyTopPosts.items = posts.items.subList(0, posts.items.size());
-        }
-
-        twentyTopPosts.groups = posts.groups;
-        twentyTopPosts.profiles = posts.profiles;
-
-        long d = System.currentTimeMillis();
-
-        Log.i("posts", "Time of download and add response to array: " + ((d - c) / 1000.0)
+        Log.i("posts", "Time of download and add response to array: " + ((b - c) / 1000.0)
                 + " seconds. And time of sort is " + ((b - a) / 1000.0) + " seconds." );
-        Log.i("posts", "Size of the array: " + twentyTopPosts.items.size());
+        Log.i("posts", "Size of the array: " + posts.items.size());
         clearRequest();
         eventBus.post(new DialogEvent(true));
-        post(twentyTopPosts);
+        post(posts);
+        posts = null;
     }
 
     @Override
@@ -173,7 +159,6 @@ public class PostsRepositoryImpl implements PostsRepository {
         if (disposable != null && !disposable.isDisposed()) {
             disposable.dispose();
         }
-        posts = null;
     }
 
     private void post(Posts posts) {

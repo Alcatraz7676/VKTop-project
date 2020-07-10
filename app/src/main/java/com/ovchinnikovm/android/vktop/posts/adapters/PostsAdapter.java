@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.ovchinnikovm.android.vktop.R;
 import com.ovchinnikovm.android.vktop.entities.Attachment;
 import com.ovchinnikovm.android.vktop.entities.Group;
@@ -32,16 +33,19 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
     private Posts posts;
     private ImageLoader imageLoader;
     private OnItemClickListener clickListener;
+    private Context context;
 
     private Set<Profile> profiles;
     private Set<Group> groups;
 
-    public PostsAdapter(Posts posts, ImageLoader imageLoader, OnItemClickListener clickListener) {
+    public PostsAdapter(Posts posts, ImageLoader imageLoader, OnItemClickListener clickListener,
+                        Context context) {
         this.posts = posts;
         this.profiles = posts.profiles;
         this.groups = posts.groups;
         this.imageLoader = imageLoader;
         this.clickListener = clickListener;
+        this.context = context;
     }
 
     @Override
@@ -188,11 +192,10 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
 
     public void setItems(Posts newPosts) {
         posts.items.addAll(newPosts.items);
-        profiles.addAll(newPosts.profiles);
-        groups.addAll(newPosts.groups);
         notifyDataSetChanged();
     }
 
+    // Two methods below used to fix a bug with repetitive items in the post after scroll back
     @Override
     public long getItemId(int position) {
         return position;
@@ -201,6 +204,12 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
     @Override
     public int getItemViewType(int position) {
         return position;
+    }
+
+    @Override
+    public void onViewRecycled(ViewHolder holder) {
+        super.onViewRecycled(holder);
+        Glide.with(holder.view).clear(holder.singlePhoto);
     }
 
     @Override
@@ -292,6 +301,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
                 return group.getSmallPhotoUrl();
         }
         for (Profile profile : profiles) {
+            ownerId*=-1;
             if (profile.getId().equals(ownerId))
                 return profile.getSmallPhotoUrl();
         }
@@ -305,6 +315,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
                 return group.getName();
         }
         for (Profile profile : profiles) {
+            ownerId*=-1;
             if (profile.getId().equals(ownerId))
                 return profile.getFullName();
         }
@@ -312,6 +323,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
+        public View view;
         @BindView(R.id.position)
         TextView position;
         @BindView(R.id.date)
@@ -350,9 +362,6 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
         TextView comments;
         @BindView(R.id.replies)
         TextView reposts;
-
-        private View view;
-
         private PhotosAdapter photosAdapter;
         private List<String> photosURL;
         private MediaAdapter mediaAdapter;
@@ -369,7 +378,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
             this.view = itemView;
 
             photosURL = new ArrayList<>();
-            photosAdapter = new PhotosAdapter(photosURL, imageLoader);
+            photosAdapter = new PhotosAdapter(photosURL, imageLoader, context);
             photosRecyclerview.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
             photosRecyclerview.setAdapter(photosAdapter);
 
@@ -380,7 +389,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
 
 
             attPhotosURL = new ArrayList<>();
-            attPhotosAdapter = new PhotosAdapter(attPhotosURL, imageLoader);
+            attPhotosAdapter = new PhotosAdapter(attPhotosURL, imageLoader, context);
             attPhotosRecyclerview.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
             attPhotosRecyclerview.setAdapter(attPhotosAdapter);
 

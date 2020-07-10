@@ -68,6 +68,7 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
     PostsAdapter adapter;
 
     private MaterialDialog dialog;
+    private EndlessRecyclerViewScrollListener scrollListener;
 
     public PostsActivity() {
     }
@@ -81,7 +82,7 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
         setupInjection();
         setupActionBar();
         showProgressDeterminateDialog();
-        presenter.getPosts(groupId, postsCount);
+        presenter.downloadPosts(groupId, postsCount);
     }
 
     private void setupActionBar() {
@@ -119,7 +120,16 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
     }
 
     private void setupRecyclerView() {
-        recyclerview.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false));
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false);
+        recyclerview.setLayoutManager(linearLayoutManager);
+        recyclerview.addOnScrollListener(new EndlessRecyclerViewScrollListener(linearLayoutManager) {
+            @Override
+            public void onLoadMore(int page) {
+                // Triggered only when new data needs to be appended to the list
+                // Add whatever code is needed to append new items to the bottom of the list
+                setPosts(presenter.getPosts(page));
+            }
+        });
         recyclerview.setAdapter(adapter);
     }
 
@@ -143,7 +153,7 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
     @Override
     public void setPosts(Posts posts) {
         if (adapter == null) {
-            adapter = new PostsAdapter(posts, imageLoader, onItemClickListener);
+            adapter = new PostsAdapter(posts, imageLoader, onItemClickListener, this);
             setupRecyclerView();
         } else {
             adapter.setItems(posts);
@@ -182,6 +192,7 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
     @Override
     protected void onDestroy() {
         presenter.onDestroy();
+        recyclerview.getRecycledViewPool().clear();
         super.onDestroy();
         RefWatcher refWatcher = VkTopApp.getRefWatcher();
         refWatcher.watch(this);

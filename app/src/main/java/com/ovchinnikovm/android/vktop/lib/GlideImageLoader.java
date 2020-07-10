@@ -3,7 +3,6 @@ package com.ovchinnikovm.android.vktop.lib;
 import android.widget.ImageView;
 
 import com.bumptech.glide.RequestManager;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.ovchinnikovm.android.vktop.lib.base.ImageLoader;
 
@@ -20,7 +19,6 @@ public class GlideImageLoader implements ImageLoader{
                 .load(URL)
                 .apply(RequestOptions
                         .circleCropTransform()
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .dontAnimate())
                 .into(imageView);
     }
@@ -31,7 +29,7 @@ public class GlideImageLoader implements ImageLoader{
                 .load(URL)
                 .apply(RequestOptions
                         .noTransformation()
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .skipMemoryCache(true)
                         .override(600))
                 .into(imageView);
     }

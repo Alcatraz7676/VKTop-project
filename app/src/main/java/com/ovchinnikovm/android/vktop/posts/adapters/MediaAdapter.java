@@ -55,7 +55,10 @@ public class MediaAdapter extends RecyclerView.Adapter<MediaAdapter.ViewHolder> 
                 break;
             case "link":
                 holder.icon.setImageResource(R.drawable.ic_link);
-                holder.title.setText(attachment.getLinkTitle());
+                if (attachment.getLinkTitle().equals(""))
+                    holder.title.setText("Ссылка");
+                else
+                    holder.title.setText(attachment.getLinkTitle());
                 holder.subtitle.setText(attachment.getLinkUrl());
                 break;
         }

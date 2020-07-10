@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.support.multidex.MultiDexApplication;
 
+import com.bumptech.glide.Glide;
 import com.ovchinnikovm.android.vktop.group.di.DaggerGroupComponent;
 import com.ovchinnikovm.android.vktop.group.di.GroupComponent;
 import com.ovchinnikovm.android.vktop.group.di.GroupModule;
@@ -90,4 +91,15 @@ public class VkTopApp extends MultiDexApplication {
                 .build();
     }
 
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        Glide.get(this).clearMemory();
+    }
+
+    @Override
+    public void onTrimMemory(int level) {
+        super.onTrimMemory(level);
+        Glide.get(this).trimMemory(level);
+    }
 }
