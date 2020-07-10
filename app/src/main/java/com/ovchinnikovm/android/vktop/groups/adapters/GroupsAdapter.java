@@ -44,6 +44,11 @@ public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.ViewHolder
         imageLoader.loadIcon(holder.groupIcon, group.getPhotoURL());
     }
 
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
     public void setItems(List<Group> newGroups) {
         groups.clear();
         groups.addAll(newGroups);

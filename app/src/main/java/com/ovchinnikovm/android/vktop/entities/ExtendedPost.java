@@ -4,11 +4,15 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class PostItem {
+
+// This class is used in ExtendedPosts class
+public class ExtendedPost {
     private static final String BASE_POST_URL = "https://vk.com/wall";
     public List<Attachment> attachments;
     @SerializedName("copy_history")
     public List<NestedPost> nestedPost;
+    public transient List<String> photos;
+    public transient List<Attachment> other;
     private Integer id;
     private Integer date;
     @SerializedName("signer_id")
@@ -19,6 +23,15 @@ public class PostItem {
     private SocialValue likes;
     private SocialValue reposts;
     private SocialValue comments;
+    private transient String authorFullname;
+
+    public String getAuthorFullname() {
+        return authorFullname;
+    }
+
+    public void setAuthorFullname(String authorFullname) {
+        this.authorFullname = authorFullname;
+    }
 
     public String getPostUrl () {
         return BASE_POST_URL + groupId + "_" + id;

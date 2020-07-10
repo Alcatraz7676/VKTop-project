@@ -2,6 +2,8 @@ package com.ovchinnikovm.android.vktop.entities;
 
 import com.google.gson.annotations.SerializedName;
 
+
+// This class contains information about the user's profile
 public class Profile {
     private Integer id;
     @SerializedName("first_name")

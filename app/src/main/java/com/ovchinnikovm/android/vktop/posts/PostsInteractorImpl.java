@@ -9,7 +9,12 @@ public class PostsInteractorImpl implements PostsInteractor{
 
     @Override
     public void execute(Integer groupId, Integer postsCount) {
-        repository.getPosts(groupId, postsCount);
+        repository.getIds(groupId, postsCount);
+    }
+
+    @Override
+    public void execute(int page) {
+        repository.getPosts(page);
     }
 
     @Override

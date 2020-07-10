@@ -1,5 +1,7 @@
 package com.ovchinnikovm.android.vktop.entities;
 
+
+// This class is used for likes/replies/comments
 public class SocialValue {
     private Integer count;
 

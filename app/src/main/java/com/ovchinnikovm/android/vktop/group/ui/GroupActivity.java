@@ -108,10 +108,6 @@ public class GroupActivity extends AppCompatActivity implements GroupView {
         this.postsCount = postsCount;
         postsNumberTextView.setText(String.valueOf(postsCount));
         if (time < 60) {
-            if (time == 0) {
-                timeNumberTextView.setText(getResources().getQuantityString(R.plurals.seconds, 1, 1));
-                return;
-            }
             timeNumberTextView.setText(getResources().getQuantityString(R.plurals.seconds, time, time));
         } else {
             time = time / 60;

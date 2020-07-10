@@ -62,6 +62,6 @@ public class GroupPresenterImpl implements GroupPresenter {
     }
 
     private Integer getTime(Integer postsNumber) {
-        return postsNumber / 300;
+        return ((postsNumber / 250) + 1);
     }
 }

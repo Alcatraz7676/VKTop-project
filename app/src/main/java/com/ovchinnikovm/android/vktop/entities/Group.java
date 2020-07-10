@@ -2,6 +2,8 @@ package com.ovchinnikovm.android.vktop.entities;
 
 import com.google.gson.annotations.SerializedName;
 
+
+// This class contains information about the group in it.
 public class Group {
     private Integer id;
     private String name;
@@ -71,10 +73,12 @@ public class Group {
         this.status = status;
     }
 
+    /*
     @Override
     public String toString() {
         return "Id: " + getId() + ", " + "Name: " + getName() + ", " + "SubName: " + getSubName() +
                 ", " + "Photo URL: " + getPhotoURL() + ", Members count: " + getMembers() +
                 ", Status: " + ".";
     }
+    */
 }

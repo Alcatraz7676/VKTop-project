@@ -8,12 +8,12 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.ovchinnikovm.android.vktop.Henson;
+import com.ovchinnikovm.android.vktop.PreCachingLayoutManager;
 import com.ovchinnikovm.android.vktop.R;
 import com.ovchinnikovm.android.vktop.VkTopApp;
 import com.ovchinnikovm.android.vktop.entities.Group;
@@ -70,7 +70,8 @@ public class GroupsActivity extends AppCompatActivity implements GroupsView, OnI
     }
 
     private void setupRecyclerView() {
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setLayoutManager(new PreCachingLayoutManager(this));
+        adapter.setHasStableIds(true);
         recyclerView.setAdapter(adapter);
     }
 

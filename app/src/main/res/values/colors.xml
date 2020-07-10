@@ -4,4 +4,5 @@
     <color name="colorPrimaryDark">#4b6d9e</color>
     <color name="colorAccent">#1a79c4</color>
     <color name="postsBackground">#e4eaea</color>
+    <color name="photoBackground">#e6e6e6</color>
 </resources>

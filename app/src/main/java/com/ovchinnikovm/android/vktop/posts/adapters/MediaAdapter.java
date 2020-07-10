@@ -18,9 +18,13 @@ import butterknife.ButterKnife;
 public class MediaAdapter extends RecyclerView.Adapter<MediaAdapter.ViewHolder> {
 
     private List<Attachment> attachments;
+    private OnItemClickListener clickListener;
+    private String url;
 
-    public MediaAdapter(List<Attachment> attachments) {
+    public MediaAdapter(List<Attachment> attachments, OnItemClickListener clickListener) {
         this.attachments = attachments;
+        this.clickListener = clickListener;
+        setHasStableIds(true);
     }
 
     @Override
@@ -43,6 +47,7 @@ public class MediaAdapter extends RecyclerView.Adapter<MediaAdapter.ViewHolder> 
                 seconds = attachment.getAudioDuration() % 60;
                 holder.time.setText(minutes + ":" + seconds);
                 holder.time.setVisibility(View.VISIBLE);
+                setOnClickListener(holder.view, null);
                 break;
             case "video":
                 holder.icon.setImageResource(R.drawable.ic_video);
@@ -52,6 +57,7 @@ public class MediaAdapter extends RecyclerView.Adapter<MediaAdapter.ViewHolder> 
                 seconds = attachment.getVideoDuration() % 60;
                 holder.time.setText(minutes + ":" + seconds);
                 holder.time.setVisibility(View.VISIBLE);
+                setOnClickListener(holder.view, null);
                 break;
             case "link":
                 holder.icon.setImageResource(R.drawable.ic_link);
@@ -60,13 +66,30 @@ public class MediaAdapter extends RecyclerView.Adapter<MediaAdapter.ViewHolder> 
                 else
                     holder.title.setText(attachment.getLinkTitle());
                 holder.subtitle.setText(attachment.getLinkUrl());
+                setOnClickListener(holder.view, attachment.getLinkUrl());
                 break;
         }
     }
 
     @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
+    @Override
     public int getItemCount() {
         return attachments.size();
+    }
+
+    private void setOnClickListener(View view, String newUrl) {
+        if (newUrl == null)
+            view.setOnClickListener( l -> clickListener.onItemClick(url) );
+        else
+            view.setOnClickListener( l -> clickListener.onItemClick(newUrl));
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
@@ -79,9 +102,13 @@ public class MediaAdapter extends RecyclerView.Adapter<MediaAdapter.ViewHolder> 
         @BindView(R.id.time)
         TextView time;
 
+        private View view;
+
         public ViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+
+            this.view = itemView;
         }
     }
 }

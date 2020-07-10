@@ -1,6 +1,7 @@
 package com.ovchinnikovm.android.vktop.posts;
 
 public interface PostsRepository {
-    void getPosts(Integer groupId, Integer postsCount);
+    void getIds(Integer groupId, Integer postsCount);
+    void getPosts(int page);
     void clearRequest();
 }

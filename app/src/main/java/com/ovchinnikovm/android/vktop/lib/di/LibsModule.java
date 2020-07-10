@@ -2,7 +2,7 @@ package com.ovchinnikovm.android.vktop.lib.di;
 
 import android.content.Context;
 
-import com.ovchinnikovm.android.vktop.lib.GlideImageLoader;
+import com.ovchinnikovm.android.vktop.lib.PicassoImageLoader;
 import com.ovchinnikovm.android.vktop.lib.base.ImageLoader;
 import com.squareup.picasso.Picasso;
 
@@ -29,8 +29,8 @@ public class LibsModule {
 
     @Provides
     @Singleton
-    ImageLoader providesImageLoader(Picasso picasso) {
-        return new GlideImageLoader(picasso);
+    ImageLoader providesImageLoader(Picasso picasso, Context context) {
+        return new PicassoImageLoader(picasso, context);
     }
 
     @Provides

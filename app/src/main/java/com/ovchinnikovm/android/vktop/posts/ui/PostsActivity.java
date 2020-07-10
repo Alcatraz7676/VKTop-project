@@ -5,9 +5,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -17,10 +17,10 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.f2prateek.dart.Dart;
 import com.f2prateek.dart.InjectExtra;
 import com.ovchinnikovm.android.vktop.MainActivity;
+import com.ovchinnikovm.android.vktop.PreCachingLayoutManager;
 import com.ovchinnikovm.android.vktop.R;
 import com.ovchinnikovm.android.vktop.VkTopApp;
-import com.ovchinnikovm.android.vktop.entities.PostItem;
-import com.ovchinnikovm.android.vktop.entities.Posts;
+import com.ovchinnikovm.android.vktop.entities.ExtendedPosts;
 import com.ovchinnikovm.android.vktop.lib.base.ImageLoader;
 import com.ovchinnikovm.android.vktop.posts.PostsPresenter;
 import com.ovchinnikovm.android.vktop.posts.adapters.OnItemClickListener;
@@ -68,7 +68,6 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
     PostsAdapter adapter;
 
     private MaterialDialog dialog;
-    private EndlessRecyclerViewScrollListener scrollListener;
 
     public PostsActivity() {
     }
@@ -82,7 +81,7 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
         setupInjection();
         setupActionBar();
         showProgressDeterminateDialog();
-        presenter.downloadPosts(groupId, postsCount);
+        presenter.downloadPostsIds(groupId, postsCount);
     }
 
     private void setupActionBar() {
@@ -101,6 +100,16 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
                 .contentGravity(GravityEnum.CENTER)
                 .progress(false, ((postsCount / 100) + 1), true)
                 .cancelable(false)
+                .negativeText("Отмена")
+                .onNegative((dialog, which) -> {
+                    dialog.dismiss();
+                    Intent intent = new Intent(this, MainActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
+                            | Intent.FLAG_ACTIVITY_NEW_TASK
+                            | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                    overridePendingTransition(0, R.anim.screen_splash_fade_out);
+                })
                 .showListener(
                         dialogInterface -> dialog = (MaterialDialog) dialogInterface)
                 .show();
@@ -109,8 +118,10 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
     @Override
     public void incrementDialogNumber(DialogEvent event) {
         dialog.incrementProgress(1);
-        if (event.isLast())
+        if (event.isLast()) {
             dialog.dismiss();
+            presenter.getPosts(0);
+        }
     }
 
     private void setupInjection() {
@@ -120,17 +131,22 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
     }
 
     private void setupRecyclerView() {
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false);
-        recyclerview.setLayoutManager(linearLayoutManager);
-        recyclerview.addOnScrollListener(new EndlessRecyclerViewScrollListener(linearLayoutManager) {
+        PreCachingLayoutManager preCachingLayoutManager = new PreCachingLayoutManager(getApplicationContext(), PreCachingLayoutManager.VERTICAL, false);
+        recyclerview.setLayoutManager(preCachingLayoutManager);
+        recyclerview.addOnScrollListener(new EndlessRecyclerViewScrollListener(preCachingLayoutManager) {
             @Override
             public void onLoadMore(int page) {
                 // Triggered only when new data needs to be appended to the list
                 // Add whatever code is needed to append new items to the bottom of the list
-                setPosts(presenter.getPosts(page));
+                presenter.getPosts(page);
             }
         });
+        adapter.setHasStableIds(true);
         recyclerview.setAdapter(adapter);
+        recyclerview.setItemViewCacheSize(5);
+        recyclerview.setDrawingCacheEnabled(true);
+        recyclerview.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
+        recyclerview.setHasFixedSize(true);
     }
 
     @Override
@@ -147,17 +163,19 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
 
     @Override
     public void onError(String error) {
-        Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, error, Toast.LENGTH_LONG).show();
     }
 
     @Override
-    public void setPosts(Posts posts) {
+    public void setPosts(ExtendedPosts extendedPosts) {
         if (adapter == null) {
-            adapter = new PostsAdapter(posts, imageLoader, onItemClickListener, this);
+            adapter = new PostsAdapter(extendedPosts, imageLoader, onItemClickListener, this);
             setupRecyclerView();
         } else {
-            adapter.setItems(posts);
-            adapter.notifyDataSetChanged();
+            int before = adapter.getItemCount();
+            adapter.setItems(extendedPosts);
+            int after = adapter.getItemCount();
+            adapter.notifyItemRangeInserted(before, after-before);
         }
     }
 
@@ -183,9 +201,11 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
     }
 
     @Override
-    public void onItemClick(PostItem postItem) {
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(postItem.getPostUrl()));
-        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+    public void onItemClick(String url) {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                | Intent.FLAG_ACTIVITY_CLEAR_TASK
+                | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
     }
 
@@ -197,4 +217,7 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
         RefWatcher refWatcher = VkTopApp.getRefWatcher();
         refWatcher.watch(this);
     }
+
+
+
 }

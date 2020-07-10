@@ -35,7 +35,7 @@
         <item quantity="other">%1$d минута</item>
     </plurals>
 
-    <!-- Posts Screen -->
+    <!-- ExtendedPosts Screen -->
     <string name="sort_progress_dialog_title">Идет получение постов</string>
     <string name="please_wait">Пожалуйста, подождите&#8230;</string>
 

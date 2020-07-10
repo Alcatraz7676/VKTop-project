@@ -1,11 +1,16 @@
 package com.ovchinnikovm.android.vktop.entities;
 
 import java.util.List;
-import java.util.Set;
 
+
+// This class is used in getting the posts with id and SocialValue in it for further sorting.
 public class Posts {
-    public int count;
-    public List<PostItem> items;
-    public Set<Profile> profiles;
-    public Set<Group> groups;
+    public List<PostSortItem> items;
+
+    @Override
+    public String toString() {
+        return "Posts{" +
+                "items=" + items +
+                '}';
+    }
 }
