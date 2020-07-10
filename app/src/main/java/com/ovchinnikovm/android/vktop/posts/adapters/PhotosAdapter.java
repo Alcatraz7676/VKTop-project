@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.ovchinnikovm.android.vktop.R;
+import com.ovchinnikovm.android.vktop.entities.Photo;
 import com.ovchinnikovm.android.vktop.lib.base.ImageLoader;
 
 import java.util.List;
@@ -16,12 +17,12 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class PhotosAdapter extends RecyclerView.Adapter<PhotosAdapter.ViewHolder>{
-    private List<String> URLs;
+    private List<Photo> URLs;
     private ImageLoader imageLoader;
     private OnItemClickListener clickListener;
     private String url;
 
-    public PhotosAdapter(List<String> URLs, ImageLoader imageLoader,
+    public PhotosAdapter(List<Photo> URLs, ImageLoader imageLoader,
                          OnItemClickListener clickListener) {
         this.URLs = URLs;
         this.imageLoader = imageLoader;
@@ -44,7 +45,7 @@ public class PhotosAdapter extends RecyclerView.Adapter<PhotosAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        imageLoader.loadRecyclerViewImage(holder.image, URLs.get(position));
+        imageLoader.loadRecyclerViewImage(holder.image, URLs.get(position).getPhotoUrl());
     }
 
     @Override

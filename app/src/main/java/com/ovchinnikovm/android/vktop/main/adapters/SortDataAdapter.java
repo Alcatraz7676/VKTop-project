@@ -8,7 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.ovchinnikovm.android.vktop.R;
-import com.ovchinnikovm.android.vktop.RecyclerViewEmptySupport;
+import com.ovchinnikovm.android.vktop.lib.RecyclerViewEmptySupport;
 import com.ovchinnikovm.android.vktop.entities.RealmSortedItem;
 import com.ovchinnikovm.android.vktop.lib.base.ImageLoader;
 
@@ -58,7 +58,6 @@ public class SortDataAdapter extends RecyclerViewEmptySupport.Adapter<SortDataAd
             item.deleteFromRealm();
         });
         notifyItemRemoved(position);
-        notifyItemRangeChanged(position, data.size());
     }
 
     public RealmSortedItem getItem(int position) {

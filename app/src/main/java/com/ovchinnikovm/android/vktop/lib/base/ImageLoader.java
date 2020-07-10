@@ -4,6 +4,6 @@ import android.widget.ImageView;
 
 public interface ImageLoader {
     void loadIcon(ImageView imageView, String URL);
-    void loadImage(ImageView imageView, String URL);
+    void loadImage(ImageView imageView, String URL, Double heightToWidthRatio);
     void loadRecyclerViewImage(ImageView imageView, String URL);
 }

@@ -1,10 +1,12 @@
 package com.ovchinnikovm.android.vktop.posts.events;
 
-import com.ovchinnikovm.android.vktop.entities.ExtendedPosts;
+import com.ovchinnikovm.android.vktop.entities.ExtendedPost;
+
+import java.util.ArrayList;
 
 public class PostsEvent {
     private String error;
-    private ExtendedPosts extendedPosts;
+    private ArrayList<ExtendedPost> items;
 
     public String getError() {
         return error;
@@ -14,11 +16,11 @@ public class PostsEvent {
         this.error = error;
     }
 
-    public ExtendedPosts getExtendedPosts() {
-        return extendedPosts;
+    public ArrayList<ExtendedPost> getPosts() {
+        return items;
     }
 
-    public void setExtendedPosts(ExtendedPosts extendedPosts) {
-        this.extendedPosts = extendedPosts;
+    public void setPosts(ArrayList<ExtendedPost> items) {
+        this.items = items;
     }
 }

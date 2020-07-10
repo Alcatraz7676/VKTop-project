@@ -1,6 +1,7 @@
 package com.ovchinnikovm.android.vktop.posts;
 
 import com.ovchinnikovm.android.vktop.entities.RealmSortedItem;
+import com.ovchinnikovm.android.vktop.entities.SortType;
 
 public class PostsInteractorImpl implements PostsInteractor{
     private PostsRepository repository;
@@ -21,6 +22,11 @@ public class PostsInteractorImpl implements PostsInteractor{
     }
 
     @Override
+    public void stopVkRequest() {
+        repository.cancelVkRequest();
+    }
+
+    @Override
     public void getPosts(int page) {
         repository.getPosts(page);
     }
@@ -31,7 +37,7 @@ public class PostsInteractorImpl implements PostsInteractor{
     }
 
     @Override
-    public void setSortType(String type) {
+    public void setSortType(SortType type) {
         repository.setSortType(type);
     }
 }

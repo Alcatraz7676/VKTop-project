@@ -47,6 +47,7 @@ public class GroupActivity extends AppCompatActivity implements GroupView {
     private final static int ALL_DIALOGS_CLOSED = 0;
     private final static int MATERIAL_DIALOG_OPENED = 1;
     private final static int DATEPICKER_DIALOG_OPENED = 2;
+
     @Nullable
     @InjectExtra
     String groupTitle;
@@ -62,6 +63,7 @@ public class GroupActivity extends AppCompatActivity implements GroupView {
     @Nullable
     @InjectExtra
     Integer groupId;
+
     @BindView(R.id.group_title)
     TextView groupTitleTextView;
     @BindView(R.id.group_description)
@@ -84,8 +86,10 @@ public class GroupActivity extends AppCompatActivity implements GroupView {
     ProgressBar loadingIndicator;
     @BindView(R.id.disconnected_view)
     RelativeLayout disconnectedView;
+
     @Inject
     GroupPresenter presenter;
+
     MaterialDialog sortIntervalDialog;
     DatePickerDialog dpd;
     Integer dialogSelectedIndex = 0;

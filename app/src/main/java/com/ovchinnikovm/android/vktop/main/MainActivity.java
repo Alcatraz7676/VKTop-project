@@ -22,7 +22,7 @@ import android.widget.RelativeLayout;
 import com.ovchinnikovm.android.vktop.Henson;
 import com.ovchinnikovm.android.vktop.LoginActivity;
 import com.ovchinnikovm.android.vktop.R;
-import com.ovchinnikovm.android.vktop.RecyclerViewEmptySupport;
+import com.ovchinnikovm.android.vktop.lib.RecyclerViewEmptySupport;
 import com.ovchinnikovm.android.vktop.VkTopApp;
 import com.ovchinnikovm.android.vktop.entities.RealmSortedItem;
 import com.ovchinnikovm.android.vktop.groups.ui.GroupsActivity;

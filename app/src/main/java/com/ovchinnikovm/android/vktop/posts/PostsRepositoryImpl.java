@@ -16,12 +16,14 @@ import com.ovchinnikovm.android.vktop.entities.Attachment;
 import com.ovchinnikovm.android.vktop.entities.ExtendedPost;
 import com.ovchinnikovm.android.vktop.entities.ExtendedPosts;
 import com.ovchinnikovm.android.vktop.entities.Group;
+import com.ovchinnikovm.android.vktop.entities.Photo;
 import com.ovchinnikovm.android.vktop.entities.PostSortItem;
 import com.ovchinnikovm.android.vktop.entities.PostsApiResponse;
 import com.ovchinnikovm.android.vktop.entities.PostsSdkResponse;
 import com.ovchinnikovm.android.vktop.entities.Profile;
 import com.ovchinnikovm.android.vktop.entities.RealmSortedItem;
 import com.ovchinnikovm.android.vktop.entities.SocialValue;
+import com.ovchinnikovm.android.vktop.entities.SortType;
 import com.ovchinnikovm.android.vktop.posts.events.DialogEvent;
 import com.ovchinnikovm.android.vktop.posts.events.PostsEvent;
 import com.vk.sdk.VKAccessToken;
@@ -41,6 +43,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -59,9 +62,10 @@ public class PostsRepositoryImpl implements PostsRepository {
 
     private RealmSortedItem realmSortedItem;
 
-    private String sortType = "likes";
+    private SortType sortType = SortType.LIKES;
 
     private Disposable disposable;
+    private VKRequest vkRequest;
 
     // Variables for log time
     private long c;
@@ -159,21 +163,32 @@ public class PostsRepositoryImpl implements PostsRepository {
             }
 
             Realm realm = Realm.getDefaultInstance();
-            realm.beginTransaction();
-            realm.copyToRealm(realmSortedItem);
-            realm.commitTransaction();
+            realm.executeTransaction(realm1 -> {
+                // increment index
+                Number currentIdNum = realm1.where(RealmSortedItem.class).max("sortId");
+                int nextId;
+                if(currentIdNum == null) {
+                    nextId = 1;
+                } else {
+                    nextId = currentIdNum.intValue() + 1;
+                }
+                realmSortedItem.setSortId(nextId);
+                realm1.copyToRealm(realmSortedItem);
 
-            long b = System.currentTimeMillis();
+                long b = System.currentTimeMillis();
 
-            Log.i("mytag", "Time of download and add response to array: " + ((b - c) / 1000.0)
-                    + " seconds. And time of sort is " + ((b - a) / 1000.0) + " seconds.");
-            Log.i("mytag", "Size of the array: " + posts.response.size());
+                Log.i("mytag", "Time of download and add response to array: " + ((b - c) / 1000.0)
+                        + " seconds. And time of sort is " + ((b - a) / 1000.0) + " seconds.");
+                Log.i("mytag", "Size of the array: " + posts.response.size());
+
+                eventBus.post(new DialogEvent(true, nextId));
+            });
         }
         eventBus.post(new DialogEvent(true));
     }
 
     @Override
-    public void setSortType(String type) {
+    public void setSortType(SortType type) {
         sortType = type;
     }
 
@@ -183,21 +198,21 @@ public class PostsRepositoryImpl implements PostsRepository {
         List<PostSortItem> posts;
 
         switch (sortType) {
-            case "likes":
+            case LIKES:
                 posts = realmSortedItem.getByLikes();
                 break;
-            case "shares":
+            case SHARES:
                 posts = realmSortedItem.getByShares();
                 break;
-            case "comments":
+            case COMMENTS:
                 posts = realmSortedItem.getByComments();
                 break;
             default:
                 posts = realmSortedItem.getByLikes();
         }
 
-        Log.i("mytag", String.valueOf(page));
-        Log.i("mytag", String.valueOf(posts.size()));
+        Log.i("mytag", "Page num: " + String.valueOf(page));
+        Log.i("mytag", "Posts size: " + String.valueOf(posts.size()));
 
         List<Integer> twentyIds = new ArrayList<>();
         int start = page*20;
@@ -223,7 +238,7 @@ public class PostsRepositoryImpl implements PostsRepository {
         for(Integer id : twentyIds) {
             postsParameters.append(realmSortedItem.getGroupId()).append("_").append(id).append(",");
         }
-        VKRequest vkRequest = new VKApiWall()
+        vkRequest = new VKApiWall()
                 .getById(VKParameters.from(VKApiConst.POSTS, postsParameters.toString(),
                         VKApiConst.EXTENDED, 1));
         vkRequest.attempts = 0;
@@ -258,10 +273,12 @@ public class PostsRepositoryImpl implements PostsRepository {
                         if (numberOfPhotos == 1) {
                             for (Attachment attachment : post.attachments) {
                                 if (attachment.getType().equals("photo")) {
-                                    post.photos.add(attachment.getPhoto());
+                                    post.photos.add(new Photo(attachment.getPhoto(),
+                                            (attachment.getPhotoHeight() * 1.00) / attachment.getPhotoWidth()));
                                     break;
                                 } else if (attachment.getType().equals("posted_photo")) {
-                                    post.photos.add(attachment.getPostedPhoto());
+                                    post.photos.add(new Photo(attachment.getPostedPhoto(),
+                                            (attachment.getPhotoHeight() * 1.00) / attachment.getPhotoWidth()));
                                     break;
                                 }
                             }
@@ -269,9 +286,9 @@ public class PostsRepositoryImpl implements PostsRepository {
                         } else if (numberOfPhotos > 1) {
                             for (Attachment attachment : post.attachments) {
                                 if (attachment.getType().equals("photo")) {
-                                    post.photos.add(attachment.getPhoto());
+                                    post.photos.add(new Photo(attachment.getPhoto(), null));
                                 } else if (attachment.getType().equals("posted_photo")) {
-                                    post.photos.add(attachment.getPostedPhoto());
+                                    post.photos.add(new Photo(attachment.getPhoto(), null));
                                 }
                             }
                         }
@@ -280,7 +297,8 @@ public class PostsRepositoryImpl implements PostsRepository {
                         post.other = new ArrayList<>();
                         for (Attachment attachment : post.attachments) {
                             if (attachment.getType().equals("audio") || attachment.getType().equals("video")
-                                    || attachment.getType().equals("link")) {
+                                    || attachment.getType().equals("link") || attachment.getType().equals("poll")
+                                    || attachment.getType().equals("doc")) {
                                 post.other.add(attachment);
                             }
                         }
@@ -295,6 +313,7 @@ public class PostsRepositoryImpl implements PostsRepository {
                         }
                         for (Profile profile : profiles) {
                             if (profile.getId().equals(post.nestedPost.get(0).getGroupId())) {
+                                Log.i("testing", profile.getFullName());
                                 post.nestedPost.get(0).setIconUrl(profile.getSmallPhotoUrl());
                                 post.nestedPost.get(0).setReplyName(profile.getFullName());
                             }
@@ -308,10 +327,12 @@ public class PostsRepositoryImpl implements PostsRepository {
                         if (numberOfPhotos == 1) {
                             for (Attachment attachment : post.nestedPost.get(0).attachments) {
                                 if (attachment.getType().equals("photo")) {
-                                    post.nestedPost.get(0).photos.add(attachment.getPhoto());
+                                    post.nestedPost.get(0).photos.add(new Photo(attachment.getPhoto(),
+                                            (attachment.getPhotoHeight() * 1.00) / attachment.getPhotoWidth()));
                                     break;
                                 } else if (attachment.getType().equals("posted_photo")) {
-                                    post.nestedPost.get(0).photos.add(attachment.getPostedPhoto());
+                                    post.nestedPost.get(0).photos.add(new Photo(attachment.getPostedPhoto(),
+                                            (attachment.getPhotoHeight() * 1.00) / attachment.getPhotoWidth()));
                                     break;
                                 }
                             }
@@ -319,9 +340,9 @@ public class PostsRepositoryImpl implements PostsRepository {
                         } else if (numberOfPhotos > 1) {
                             for (Attachment attachment : post.nestedPost.get(0).attachments) {
                                 if (attachment.getType().equals("photo")) {
-                                    post.nestedPost.get(0).photos.add(attachment.getPhoto());
+                                    post.nestedPost.get(0).photos.add(new Photo(attachment.getPhoto(), null));
                                 } else if (attachment.getType().equals("posted_photo")) {
-                                    post.nestedPost.get(0).photos.add(attachment.getPostedPhoto());
+                                    post.nestedPost.get(0).photos.add(new Photo(attachment.getPhoto(), null));
                                 }
                             }
                         }
@@ -330,7 +351,8 @@ public class PostsRepositoryImpl implements PostsRepository {
                         post.nestedPost.get(0).other = new ArrayList<>();
                         for (Attachment attachment : post.nestedPost.get(0).attachments) {
                             if (attachment.getType().equals("audio") || attachment.getType().equals("video")
-                                    || attachment.getType().equals("link")) {
+                                    || attachment.getType().equals("link") || attachment.getType().equals("poll")
+                                    || attachment.getType().equals("doc")) {
                                 post.nestedPost.get(0).other.add(attachment);
                             }
                         }
@@ -373,31 +395,33 @@ public class PostsRepositoryImpl implements PostsRepository {
                 .create(RequestInterface.class);
 
         a = System.currentTimeMillis();
+
         disposable = Observable
                 .intervalRange(0, (realmSortedItem.getPostsCount() / 100) + 1, 400, 400, TimeUnit.MILLISECONDS)
                 .flatMap(offset -> requestInterface
                         .getPosts(realmSortedItem.getGroupId(), offset * 100,
                                 VKAccessToken.currentToken().accessToken)
                         .map(postsApiResponse -> postsApiResponse.response)
-                        .retryWhen(new RetryWithDelay(3, 400))
+                        .retryWhen(new RetryWithDelay(400))
                         .subscribeOn(Schedulers.computation()))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         items -> {
                             long b = System.currentTimeMillis();
-                            Log.i("mytag", "Ids: Get that post in " + ((b - a) / 1000.0)
+                            Log.i("tmpTag", "Ids: Get that post in " + ((b - a) / 1000.0)
                                     + " seconds. First id = " + items.get(0).getId());
                             a = System.currentTimeMillis();
                             posts.response.addAll(items);
                             eventBus.post(new DialogEvent(false));
                         },  e -> {
-                            Log.i("mytag", "JUST GOT ERROR WHILE LOAD IDS LMAO");
+                            Log.i("tmpTag", "JUST GOT ERROR WHILE LOAD IDS LMAO");
                             post(e.toString());
                         }, () -> {
-                            Log.i("mytag", "IN THE COMPLETE CALLBACK");
+                            Log.i("tmpTag", "IN THE COMPLETE CALLBACK");
                             sortPosts(posts);
                         }
                 );
+
     }
 
     private void downloadIdsForLastPeriod(PostsApiResponse<PostSortItem> posts, int time) {
@@ -423,7 +447,7 @@ public class PostsRepositoryImpl implements PostsRepository {
                         .getPosts(realmSortedItem.getGroupId(), offset * 100,
                                 VKAccessToken.currentToken().accessToken)
                         .map(postsApiResponse -> postsApiResponse.response)
-                        .retryWhen(new RetryWithDelay(3, 400))
+                        .retryWhen(new RetryWithDelay(400))
                         .subscribeOn(Schedulers.computation()))
                 .takeUntil(items -> currentTimeInSeconds - items.get(items.size() - 1).getDate() > time)
                 .observeOn(AndroidSchedulers.mainThread())
@@ -502,7 +526,7 @@ public class PostsRepositoryImpl implements PostsRepository {
                         .getPosts(realmSortedItem.getGroupId(), offset * 100,
                                 VKAccessToken.currentToken().accessToken)
                         .map(postsApiResponse -> postsApiResponse.response)
-                        .retryWhen(new RetryWithDelay(3, 400))
+                        .retryWhen(new RetryWithDelay(400))
                         .subscribeOn(Schedulers.computation()))
                 .takeUntil(items -> items.get(items.size() - 1).getDate() < sortStart)
                 .observeOn(AndroidSchedulers.mainThread())
@@ -569,7 +593,16 @@ public class PostsRepositoryImpl implements PostsRepository {
     }
 
     @Override
+    public void cancelVkRequest() {
+        if (vkRequest != null) {
+            vkRequest.cancel();
+            vkRequest = null;
+        }
+    }
+
+    @Override
     public void clearRequest() {
+        cancelVkRequest();
         if (disposable != null && !disposable.isDisposed()) {
             disposable.dispose();
         }
@@ -585,18 +618,18 @@ public class PostsRepositoryImpl implements PostsRepository {
 
     private void post(ExtendedPosts posts, String error) {
         PostsEvent event = new PostsEvent();
-        event.setError(error);
-        event.setExtendedPosts(posts);
+        if (error != null)
+            event.setError(error);
+        else
+            event.setPosts(posts.items);
         eventBus.post(event);
     }
 
     public class RetryWithDelay implements Function<Observable<? extends Throwable>, Observable<?>> {
-        private final int maxRetries;
         private final int retryDelayMillis;
         private int retryCount;
 
-        public RetryWithDelay(final int maxRetries, final int retryDelayMillis) {
-            this.maxRetries = maxRetries;
+        public RetryWithDelay(final int retryDelayMillis) {
             this.retryDelayMillis = retryDelayMillis;
             this.retryCount = 0;
         }
@@ -606,15 +639,12 @@ public class PostsRepositoryImpl implements PostsRepository {
             return attempts
                     .flatMap((Function<Throwable, Observable<?>>) throwable -> {
                         post("SKIP BUNCH OF POSTS num: " + retryCount);
-                        Log.i("mytag", "SKIP BUNCH OF POSTS num: " + retryCount);
-                        if (++retryCount < maxRetries) {
-                            // When this Observable calls onNext, the original
-                            // Observable will be retried (i.e. re-subscribed).
-                            return Observable.timer(retryDelayMillis,
-                                    TimeUnit.MILLISECONDS);
-                        }
-                        // Max retries hit. Just pass the error along.
-                        return Observable.error(throwable);
+                        Log.i("tmpTag", "SKIP BUNCH OF POSTS num: " + retryCount);
+                        ++retryCount;
+                        // When this Observable calls onNext, the original
+                        // Observable will be retried (i.e. re-subscribed).
+                        return Observable.timer(retryDelayMillis,
+                                TimeUnit.MILLISECONDS);
                     });
         }
     }

@@ -11,6 +11,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.MotionEvent;
 import android.view.View;
@@ -27,8 +28,6 @@ import com.ovchinnikovm.android.vktop.posts.adapters.OnItemClickListener;
 
 public class ExpandableTextView extends LinearLayout implements View.OnClickListener {
 
-    private static final String TAG = ExpandableTextView.class.getSimpleName();
-
     /* The default number of lines */
     private static final int MAX_COLLAPSED_LINES = 8;
 
@@ -44,7 +43,7 @@ public class ExpandableTextView extends LinearLayout implements View.OnClickList
 
     private boolean mRelayout;
 
-    private boolean mCollapsed = true; // Show short version as default.
+    private boolean mCollapsed = false; // Show short version as default.
 
     private int mCollapsedHeight;
 
@@ -56,16 +55,11 @@ public class ExpandableTextView extends LinearLayout implements View.OnClickList
 
     private Drawable mExpandDrawable;
 
-    private Drawable mCollapseDrawable;
-
     private int mAnimationDuration;
 
     private float mAnimAlphaStart;
 
     private boolean mAnimating;
-
-    /* Listener for callback */
-    private OnExpandStateChangeListener mListener;
 
     /* Listener for open post after expanded */
     private OnItemClickListener clickListener;
@@ -126,7 +120,6 @@ public class ExpandableTextView extends LinearLayout implements View.OnClickList
         }
 
         mCollapsed = !mCollapsed;
-        mButton.setImageDrawable(mCollapsed ? mExpandDrawable : mCollapseDrawable);
 
         if (mCollapsedStatus != null) {
             mCollapsedStatus.put(mPosition, mCollapsed);
@@ -135,13 +128,8 @@ public class ExpandableTextView extends LinearLayout implements View.OnClickList
         // mark that the animation is in progress
         mAnimating = true;
 
-        Animation animation;
-        if (mCollapsed) {
-            animation = new ExpandCollapseAnimation(this, getHeight(), mCollapsedHeight);
-        } else {
-            animation = new ExpandCollapseAnimation(this, getHeight(), getHeight() +
-                    mTextHeightWithMaxLines - mTv.getHeight());
-        }
+        Animation animation = new ExpandCollapseAnimation(this, getHeight() + mButton.getHeight(), getHeight() +
+                mTextHeightWithMaxLines - mTv.getHeight());
 
         animation.setFillAfter(true);
         animation.setAnimationListener(new Animation.AnimationListener() {
@@ -156,13 +144,8 @@ public class ExpandableTextView extends LinearLayout implements View.OnClickList
                 // clear the animation flag
                 mAnimating = false;
 
-                // notify the listener
-                if (mListener != null) {
-                    mListener.onExpandStateChanged(mTv, !mCollapsed);
-                }
                 mTv.setOnClickListener(l -> clickListener.onItemClick(url));
                 mButton.setVisibility(View.GONE);
-
             }
             @Override
             public void onAnimationRepeat(Animation animation) { }
@@ -181,6 +164,7 @@ public class ExpandableTextView extends LinearLayout implements View.OnClickList
 
     @Override
     protected void onFinishInflate() {
+        super.onFinishInflate();
         findViews();
     }
 
@@ -212,26 +196,21 @@ public class ExpandableTextView extends LinearLayout implements View.OnClickList
 
         // Doesn't fit in collapsed mode. Collapse text view as needed. Show
         // button.
-        if (mCollapsed) {
+        if (!mCollapsed) {
             mTv.setMaxLines(mMaxCollapsedLines);
+            mButton.setVisibility(View.VISIBLE);
         }
-        mButton.setVisibility(View.VISIBLE);
 
         // Re-measure with new setup
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
-        if (mCollapsed) {
+        if (!mCollapsed) {
             // Gets the margin between the TextView's bottom and the ViewGroup's bottom
-
             mTv.post(() -> mMarginBetweenTxtAndBottom = getHeight() - mTv.getHeight());
 
             // Saves the collapsed height of this ViewGroup
             mCollapsedHeight = getMeasuredHeight();
         }
-    }
-
-    public void setOnExpandStateChangeListener(@Nullable OnExpandStateChangeListener listener) {
-        mListener = listener;
     }
 
     public void setText(@Nullable CharSequence text, @NonNull SparseBooleanArray collapsedStatus,
@@ -240,10 +219,14 @@ public class ExpandableTextView extends LinearLayout implements View.OnClickList
         this.url = url;
         mCollapsedStatus = collapsedStatus;
         mPosition = position;
-        boolean isCollapsed = collapsedStatus.get(position, true);
+        boolean isCollapsed = collapsedStatus.get(position, false);
         clearAnimation();
+        if (isCollapsed) {
+            mButton.setVisibility(View.GONE);
+            //this.getLayoutParams().height = newHeight - 100;
+        }
         mCollapsed = isCollapsed;
-        mButton.setImageDrawable(mCollapsed ? mExpandDrawable : mCollapseDrawable);
+        mButton.setImageDrawable(mExpandDrawable);
         setText(text);
         getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
         requestLayout();
@@ -269,13 +252,9 @@ public class ExpandableTextView extends LinearLayout implements View.OnClickList
         mAnimationDuration = typedArray.getInt(R.styleable.ExpandableTextView_animDuration, DEFAULT_ANIM_DURATION);
         mAnimAlphaStart = typedArray.getFloat(R.styleable.ExpandableTextView_animAlphaStart, DEFAULT_ANIM_ALPHA_START);
         mExpandDrawable = typedArray.getDrawable(R.styleable.ExpandableTextView_expandDrawable);
-        mCollapseDrawable = typedArray.getDrawable(R.styleable.ExpandableTextView_collapseDrawable);
 
         if (mExpandDrawable == null) {
             mExpandDrawable = getDrawable(getContext(), R.drawable.ic_expand_more_black_12dp);
-        }
-        if (mCollapseDrawable == null) {
-            mCollapseDrawable = getDrawable(getContext(), R.drawable.ic_expand_less_black_12dp);
         }
 
         typedArray.recycle();
@@ -288,21 +267,10 @@ public class ExpandableTextView extends LinearLayout implements View.OnClickList
     }
 
     private void findViews() {
-        mTv = (TextView) findViewById(R.id.expandable_text);
-        mTv.setOnClickListener(this);
-        mButton = (ImageButton) findViewById(R.id.expand_collapse);
-        mButton.setImageDrawable(mCollapsed ? mExpandDrawable : mCollapseDrawable);
+        mTv = findViewById(R.id.expandable_text);
+        mButton = findViewById(R.id.expand_collapse);
+        mButton.setImageDrawable(mExpandDrawable);
         mButton.setOnClickListener(this);
-    }
-
-    public interface OnExpandStateChangeListener {
-        /**
-         * Called when the expand/collapse animation has been finished
-         *
-         * @param textView - TextView being expanded/collapsed
-         * @param isExpanded - true if the TextView has been expanded
-         */
-        void onExpandStateChanged(TextView textView, boolean isExpanded);
     }
 
     class ExpandCollapseAnimation extends Animation {
@@ -324,7 +292,7 @@ public class ExpandableTextView extends LinearLayout implements View.OnClickList
             if (Float.compare(mAnimAlphaStart, 1.0f) != 0) {
                 mTv.setAlpha(mAnimAlphaStart + interpolatedTime * (1.0f - mAnimAlphaStart));
             }
-            mTargetView.getLayoutParams().height = newHeight;
+            mTargetView.getLayoutParams().height = newHeight - 100;
             mTargetView.requestLayout();
         }
 

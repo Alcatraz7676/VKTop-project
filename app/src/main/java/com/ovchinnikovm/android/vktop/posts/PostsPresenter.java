@@ -1,6 +1,7 @@
 package com.ovchinnikovm.android.vktop.posts;
 
 import com.ovchinnikovm.android.vktop.entities.RealmSortedItem;
+import com.ovchinnikovm.android.vktop.entities.SortType;
 import com.ovchinnikovm.android.vktop.posts.events.DialogEvent;
 import com.ovchinnikovm.android.vktop.posts.events.PostsEvent;
 
@@ -13,5 +14,6 @@ public interface PostsPresenter {
     void onEventMainThread(PostsEvent event);
     void onEventMainThread(DialogEvent event);
     void getPosts(int page);
-    void setSortType(String type);
+    void stopVkRequest();
+    void setSortType(SortType type);
 }

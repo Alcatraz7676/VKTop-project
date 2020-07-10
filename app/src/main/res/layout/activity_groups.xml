@@ -32,7 +32,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:src="@drawable/ic_disconnected"/>
+            android:src="@drawable/ic_disconnected" />
 
         <TextView
             android:id="@+id/disconnected_title_text"
@@ -44,7 +44,7 @@
             android:fontFamily="sans-serif-medium"
             android:gravity="center"
             android:text="@string/disconnected_title_text"
-            android:textAppearance="?android:textAppearanceMedium"/>
+            android:textAppearance="?android:textAppearanceMedium" />
 
         <TextView
             android:id="@+id/disconnected_subtitle_text"
@@ -59,7 +59,7 @@
             android:paddingRight="8dp"
             android:text="@string/disconnected_subtitle_text"
             android:textAppearance="?android:textAppearanceSmall"
-            android:textColor="#A2AAB0"/>
+            android:textColor="#A2AAB0" />
 
         <Button
             android:id="@+id/disconnected_button"
@@ -68,7 +68,7 @@
             android:layout_below="@id/disconnected_subtitle_text"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="8dp"
-            android:text="@string/disconnected_button_text"/>
+            android:text="@string/disconnected_button_text" />
 
     </RelativeLayout>
 

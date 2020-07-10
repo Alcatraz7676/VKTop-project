@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,14 +15,16 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.ovchinnikovm.android.vktop.PreCachingLayoutManager;
+import com.ovchinnikovm.android.vktop.entities.Photo;
+import com.ovchinnikovm.android.vktop.lib.PreCachingLayoutManager;
 import com.ovchinnikovm.android.vktop.R;
 import com.ovchinnikovm.android.vktop.entities.Attachment;
 import com.ovchinnikovm.android.vktop.entities.ExtendedPost;
-import com.ovchinnikovm.android.vktop.entities.ExtendedPosts;
 import com.ovchinnikovm.android.vktop.entities.NestedPost;
+import com.ovchinnikovm.android.vktop.entities.SortType;
 import com.ovchinnikovm.android.vktop.lib.ExpandableTextView;
 import com.ovchinnikovm.android.vktop.lib.base.ImageLoader;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -31,19 +34,22 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> {
-    private ExtendedPosts extendedPosts;
+    private ArrayList<ExtendedPost> items;
     private ImageLoader imageLoader;
     private OnItemClickListener clickListener;
+    // Запоминает места, где были раскрыты ExpandableTextView
     private SparseBooleanArray togglePositions;
     private Context context;
+    private SortType sortType;
 
-    public PostsAdapter(ExtendedPosts extendedPosts, ImageLoader imageLoader,
-                        OnItemClickListener clickListener, Context context) {
-        this.extendedPosts = extendedPosts;
+    public PostsAdapter(ArrayList<ExtendedPost> items, ImageLoader imageLoader,
+                        OnItemClickListener clickListener, Context context, SortType sortType) {
+        this.items = items;
         this.imageLoader = imageLoader;
         this.clickListener = clickListener;
         this.context = context;
         togglePositions = new SparseBooleanArray();
+        this.sortType = sortType;
     }
 
     @Override
@@ -56,7 +62,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
 
-        ExtendedPost item = extendedPosts.items.get(position);
+        ExtendedPost item = items.get(position);
         // Set clicklistener
         holder.setOnClickListener(item, clickListener);
         holder.setPostUrl(item.getPostUrl());
@@ -70,22 +76,33 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
                     clickListener, item.getPostUrl());
             holder.text.setVisibility(View.VISIBLE);
         }
-        // Likes of the post
-        holder.likes.setText(String.valueOf(item.getLikes()));
-        // Reposts of the post
-        holder.reposts.setText(String.valueOf(item.getReposts()));
-        // Comments of the post
-        holder.comments.setText(String.valueOf(item.getComments()));
+        // Sort value
+        switch (sortType) {
+            case LIKES:
+                Picasso.with(context).load(R.drawable.ic_heart).into(holder.sortTypeImg);
+                holder.sortTypeNum.setText(String.valueOf(item.getLikes()));
+                break;
+            case SHARES:
+                Picasso.with(context).load(R.drawable.ic_bullhorn).into(holder.sortTypeImg);
+                holder.sortTypeNum.setText(String.valueOf(item.getReposts()));
+                break;
+            case COMMENTS:
+                Picasso.with(context).load(R.drawable.ic_comment).into(holder.sortTypeImg);
+                holder.sortTypeNum.setText(String.valueOf(item.getComments()));
+                break;
+        }
         // Author's full name of the post
         if (item.getAuthorFullname() != null) {
             holder.postAuthorName.setText(item.getAuthorFullname());
             holder.postAuthorIcon.setVisibility(View.VISIBLE);
             holder.postAuthorName.setVisibility(View.VISIBLE);
+            holder.separator.setVisibility(View.VISIBLE);
         }
         if (item.attachments != null) {
             if (item.photos.size() == 1) {
                 holder.singlePhoto.setVisibility(View.VISIBLE);
-                imageLoader.loadImage(holder.singlePhoto, item.photos.get(0));
+                imageLoader.loadImage(holder.singlePhoto, item.photos.get(0).getPhotoUrl(),
+                        item.photos.get(0).getHeightToWidthRatio());
                 holder.singlePhoto.setBackgroundColor(Color.TRANSPARENT);
             } else if (item.photos.size() > 1) {
                 holder.photosRecyclerview.setVisibility(View.VISIBLE);
@@ -93,6 +110,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
             }
             if (item.other != null && !item.other.isEmpty()) {
                 holder.mediaRecyclerview.setVisibility(View.VISIBLE);
+                holder.separator.setVisibility(View.VISIBLE);
                 holder.setMediaAttachments(item.other);
             }
         }
@@ -119,7 +137,8 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
             if (item.nestedPost.get(0).attachments != null) {
                 if (item.nestedPost.get(0).photos.size() == 1) {
                     holder.attSinglePhoto.setVisibility(View.VISIBLE);
-                    imageLoader.loadImage(holder.attSinglePhoto, item.nestedPost.get(0).photos.get(0));
+                    imageLoader.loadImage(holder.attSinglePhoto, item.nestedPost.get(0).photos.get(0).getPhotoUrl(),
+                            item.nestedPost.get(0).photos.get(0).getHeightToWidthRatio());
                     holder.singlePhoto.setBackgroundColor(Color.TRANSPARENT);
                 } else if (item.nestedPost.get(0).photos.size() > 1) {
                     holder.attPhotosRecyclerview.setVisibility(View.VISIBLE);
@@ -127,6 +146,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
                 }
                 if (!item.nestedPost.get(0).other.isEmpty()) {
                     holder.attMediaRecyclerview.setVisibility(View.VISIBLE);
+                    holder.separator.setVisibility(View.VISIBLE);
                     holder.setAttMediaAttachments(item.nestedPost.get(0).other);
                 }
             }
@@ -140,6 +160,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
         holder.text.setVisibility(View.GONE);
         holder.postAuthorIcon.setVisibility(View.GONE);
         holder.postAuthorName.setVisibility(View.GONE);
+        holder.separator.setVisibility(View.GONE);
         holder.singlePhoto.setVisibility(View.GONE);
         holder.photosRecyclerview.setVisibility(View.GONE);
         holder.mediaRecyclerview.setVisibility(View.GONE);
@@ -152,25 +173,41 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
         holder.attSinglePhoto.setBackgroundColor(ContextCompat.getColor(context, R.color.photoBackground));
     }
 
-    public void setItems(ExtendedPosts newExtendedPosts) {
-        extendedPosts.items.addAll(newExtendedPosts.items);
+    public void addItems(ArrayList<ExtendedPost> items) {
+        this.items.addAll(items);
+    }
+
+    public ArrayList<ExtendedPost> getItems() {
+        return items;
+    }
+
+    public void setSortType(SortType type) {
+        sortType = type;
+    }
+
+    public SparseBooleanArray getTogglePositions() {
+        return togglePositions;
+    }
+
+    public void setTogglePositions(SparseBooleanArray togglePositions) {
+        this.togglePositions = togglePositions;
     }
 
     public void removeItems() {
-        extendedPosts.items.clear();
+        items.clear();
         togglePositions = new SparseBooleanArray();
     }
 
     // Two methods below used to fix a bug with repetitive item in the post after scroll back
     @Override
     public long getItemId(int position) {
-        return extendedPosts.items.get(position).getId();
+        return items.get(position).getId();
         //return position;
     }
 
     @Override
     public int getItemCount() {
-        return extendedPosts.items.size();
+        return items.size();
     }
 
     private String getPostDate(long time) {
@@ -187,47 +224,50 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
         String month;
         switch (monthNumber) {
             case Calendar.JANUARY:
-                month = "января";
+                month = context.getString(R.string.month_jan);
                 break;
             case Calendar.FEBRUARY:
-                month = "февраля";
+                month = context.getString(R.string.month_feb);
                 break;
             case Calendar.MARCH:
-                month = "марта";
+                month = context.getString(R.string.month_mar);
                 break;
             case Calendar.APRIL:
-                month = "апреля";
+                month = context.getString(R.string.month_apr);
                 break;
             case Calendar.MAY:
-                month = "мая";
+                month = context.getString(R.string.month_may);
                 break;
             case Calendar.JUNE:
-                month = "июня";
+                month = context.getString(R.string.month_jun);
                 break;
             case Calendar.JULY:
-                month = "июля";
+                month = context.getString(R.string.month_jul);
                 break;
             case Calendar.AUGUST:
-                month = "августа";
+                month = context.getString(R.string.month_aug);
                 break;
             case Calendar.SEPTEMBER:
-                month = "сентября";
+                month = context.getString(R.string.month_sep);
                 break;
             case Calendar.OCTOBER:
-                month = "октября";
+                month = context.getString(R.string.month_oct);
                 break;
             case Calendar.NOVEMBER:
-                month = "ноября";
+                month = context.getString(R.string.month_nov);
                 break;
             case Calendar.DECEMBER:
-                month = "декабря";
+                month = context.getString(R.string.month_dec);
                 break;
             default:
-                month = "какого-то месяца";
+                month = context.getString(R.string.month_some);
                 break;
         }
         int year = postDate.get(Calendar.YEAR);
-        return day + " " + month + " " + year + " года в " + hour + ":" + minute;
+        if (year == Calendar.getInstance().get(Calendar.YEAR))
+            return day + " " + month + " " + context.getString(R.string.date) + " " + hour + ":" + minute;
+        else
+            return day + " " + month + " " + year + " " + context.getString(R.string.date) + " " + hour + ":" + minute;
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
@@ -266,20 +306,20 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
         ImageView postAuthorIcon;
         @BindView(R.id.post_author_name)
         TextView postAuthorName;
-        @BindView(R.id.likes)
-        TextView likes;
-        @BindView(R.id.comments)
-        TextView comments;
-        @BindView(R.id.replies)
-        TextView reposts;
+        @BindView(R.id.sort_type_img)
+        ImageView sortTypeImg;
+        @BindView(R.id.sort_type_num)
+        TextView sortTypeNum;
+        @BindView(R.id.view)
+        View separator;
 
         private PhotosAdapter photosAdapter;
-        private List<String> photosURL;
+        private List<Photo> photosURL;
         private MediaAdapter mediaAdapter;
         private List<Attachment> mediaAttachments;
 
         private PhotosAdapter attPhotosAdapter;
-        private List<String> attPhotosURL;
+        private List<Photo> attPhotosURL;
         private MediaAdapter attMediaAdapter;
         private List<Attachment> attMediaAttachments;
 
@@ -296,7 +336,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
             photosRecyclerview.setAdapter(photosAdapter);
 
             mediaAttachments = new ArrayList<>();
-            mediaAdapter = new MediaAdapter(mediaAttachments, clickListener);
+            mediaAdapter = new MediaAdapter(mediaAttachments, clickListener, context);
             mediaAdapter.setHasStableIds(true);
             mediaRecyclerview.setLayoutManager(new PreCachingLayoutManager(context,
                     LinearLayoutManager.VERTICAL, false));
@@ -311,7 +351,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
             attPhotosRecyclerview.setAdapter(attPhotosAdapter);
 
             attMediaAttachments = new ArrayList<>();
-            attMediaAdapter = new MediaAdapter(attMediaAttachments, clickListener);
+            attMediaAdapter = new MediaAdapter(attMediaAttachments, clickListener, context);
             attMediaAdapter.setHasStableIds(true);
             attMediaRecyclerview.setLayoutManager(new PreCachingLayoutManager(context,
                     LinearLayoutManager.VERTICAL, false));
@@ -325,7 +365,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
             attMediaAdapter.setUrl(url);
         }
 
-        private void setPhotos(List<String> newURLs) {
+        private void setPhotos(List<Photo> newURLs) {
             photosURL.clear();
             photosURL.addAll(newURLs);
             photosAdapter.notifyDataSetChanged();
@@ -337,7 +377,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
             mediaAdapter.notifyDataSetChanged();
         }
 
-        private void setAttPhotos(List<String> newURLs) {
+        private void setAttPhotos(List<Photo> newURLs) {
             attPhotosURL.clear();
             attPhotosURL.addAll(newURLs);
             attPhotosAdapter.notifyDataSetChanged();

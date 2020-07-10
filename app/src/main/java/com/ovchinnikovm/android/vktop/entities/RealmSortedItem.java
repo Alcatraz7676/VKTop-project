@@ -10,8 +10,6 @@ import io.realm.annotations.Required;
 
 
 public class RealmSortedItem extends RealmObject {
-    @Ignore
-    private static Integer nextId = 1;
     @PrimaryKey
     @Required
     private Integer sortId;
@@ -27,11 +25,9 @@ public class RealmSortedItem extends RealmObject {
     private RealmList<PostSortItem> byComments = new RealmList<>();
 
     public RealmSortedItem() {
-        sortId = nextId++;
     }
 
     public RealmSortedItem(String groupId, Integer postsCount, String groupIconUrl, String groupName) {
-        sortId = nextId++;
         this.groupId = groupId;
         this.postsCount = postsCount;
         this.groupIconUrl = groupIconUrl;
@@ -40,6 +36,10 @@ public class RealmSortedItem extends RealmObject {
 
     public int getItemId() {
         return sortId;
+    }
+
+    public void setSortId(int sortId) {
+        this.sortId = sortId;
     }
 
     public String getSortRange() {

@@ -5,4 +5,5 @@
     <color name="colorAccent">#5b7aa8</color>
     <color name="postsBackground">#e5e9ea</color>
     <color name="photoBackground">#e6e6e6</color>
+    <color name="separator">#dadada</color>
 </resources>

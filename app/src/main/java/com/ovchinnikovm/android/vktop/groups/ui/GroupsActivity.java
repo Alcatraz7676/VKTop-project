@@ -16,7 +16,7 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.ovchinnikovm.android.vktop.Henson;
-import com.ovchinnikovm.android.vktop.PreCachingLayoutManager;
+import com.ovchinnikovm.android.vktop.lib.PreCachingLayoutManager;
 import com.ovchinnikovm.android.vktop.R;
 import com.ovchinnikovm.android.vktop.VkTopApp;
 import com.ovchinnikovm.android.vktop.entities.Group;
@@ -142,7 +142,7 @@ public class GroupsActivity extends AppCompatActivity implements GroupsView, OnI
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.search_group_menu, menu);
         final MenuItem searchItem = menu.findItem(R.id.action_search);
-        searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        searchView = (SearchView) searchItem.getActionView();
         adapter.filter(filterText);
         searchView.setQuery(filterText, false);
         if (searchviewExpanded) {

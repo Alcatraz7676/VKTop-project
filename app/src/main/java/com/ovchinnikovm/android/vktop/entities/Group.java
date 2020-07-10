@@ -74,13 +74,4 @@ public class Group implements Serializable {
     public void setStatus(String status) {
         this.status = status;
     }
-
-    /*
-    @Override
-    public String toString() {
-        return "Id: " + getId() + ", " + "Name: " + getName() + ", " + "SubName: " + getSubName() +
-                ", " + "Photo URL: " + getPhotoURL() + ", Members count: " + getMembers() +
-                ", Status: " + ".";
-    }
-    */
 }

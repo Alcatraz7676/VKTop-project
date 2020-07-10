@@ -1,14 +1,25 @@
 package com.ovchinnikovm.android.vktop.posts.ui;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.util.SparseBooleanArray;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -23,11 +34,13 @@ import com.afollestad.materialdialogs.GravityEnum;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.f2prateek.dart.Dart;
 import com.f2prateek.dart.InjectExtra;
-import com.ovchinnikovm.android.vktop.PreCachingLayoutManager;
+import com.ovchinnikovm.android.vktop.lib.PreCachingLayoutManager;
 import com.ovchinnikovm.android.vktop.R;
 import com.ovchinnikovm.android.vktop.VkTopApp;
-import com.ovchinnikovm.android.vktop.entities.ExtendedPosts;
+import com.ovchinnikovm.android.vktop.entities.ExtendedPost;
 import com.ovchinnikovm.android.vktop.entities.RealmSortedItem;
+import com.ovchinnikovm.android.vktop.entities.SortType;
+import com.ovchinnikovm.android.vktop.lib.SparseBooleanArrayParcelable;
 import com.ovchinnikovm.android.vktop.lib.base.ImageLoader;
 import com.ovchinnikovm.android.vktop.main.MainActivity;
 import com.ovchinnikovm.android.vktop.posts.PostsPresenter;
@@ -36,6 +49,9 @@ import com.ovchinnikovm.android.vktop.posts.adapters.PostsAdapter;
 import com.ovchinnikovm.android.vktop.posts.di.PostsComponent;
 import com.ovchinnikovm.android.vktop.posts.events.DialogEvent;
 import com.squareup.leakcanary.RefWatcher;
+import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
 
 import javax.inject.Inject;
 
@@ -43,6 +59,12 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class PostsActivity extends AppCompatActivity implements PostsView, OnItemClickListener {
+
+    private final static String REALM_ID_KEY = "realm_id";
+    private final static String RV_ITEMS_KEY = "rv_items";
+    private final static String TOGGLE_EXPANDABLE_TV_KEY = "toggle_tv";
+    private final static String SORT_ITEMS_TYPE_KEY = "sort_type";
+    private final static String CURRENT_PAGE_KEY = "current_page";
 
     @Nullable
     @InjectExtra
@@ -96,6 +118,12 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
     private PreCachingLayoutManager preCachingLayoutManager;
     private PostsAdapter adapter;
 
+    private SortType sortTypeForConstructor = SortType.LIKES;
+
+    private boolean activityStoped = false;
+
+    private int currentPage = 0;
+
     public PostsActivity() {
     }
 
@@ -108,6 +136,10 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
         setupInjection();
         setupActionBar();
         presenter.onCreate();
+
+        if (savedInstanceState != null)
+            itemId = savedInstanceState.getInt(REALM_ID_KEY);
+
         if (itemId == null) {
             lockOrientation();
             if (sortIntervalType == 0)
@@ -118,17 +150,29 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
             presenter.downloadPostsIds(sortIntervalType, sortStart, sortEnd, realmItem);
         } else {
             presenter.setSortedItem(itemId);
-            presenter.getPosts(0);
-            /*
             if (savedInstanceState != null) {
-                Parcelable state = savedInstanceState.getParcelable("KeyForLayoutManagerState");
-                adapter = new PostsAdapter(extendedPosts, imageLoader, onItemClickListener, this);
-                setupRecyclerView();
-                if (state != null)
-                    recyclerview.getLayoutManager().onRestoreInstanceState(state);
+                ArrayList<ExtendedPost> items = savedInstanceState.getParcelableArrayList(RV_ITEMS_KEY);
+                sortTypeForConstructor = (SortType) savedInstanceState.getSerializable(SORT_ITEMS_TYPE_KEY);
+                currentPage = savedInstanceState.getInt(CURRENT_PAGE_KEY, 0);
+                setPosts(items);
+                SparseBooleanArray sbarray = savedInstanceState.getParcelable(TOGGLE_EXPANDABLE_TV_KEY);
+                adapter.setTogglePositions(sbarray);
+            } else {
+                presenter.getPosts(0);
             }
-            */
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        activityStoped = false;
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        activityStoped = true;
     }
 
     private void lockOrientation() {
@@ -147,36 +191,47 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        ArrayAdapter<?> spinnerAdapter = ArrayAdapter.createFromResource(this, R.array.sort_items, R.layout.spinner_item);
+        ArrayAdapter<?> spinnerAdapter = ArrayAdapter.createFromResource(this,
+                R.array.sort_items, R.layout.spinner_item);
         spinnerAdapter.setDropDownViewResource(R.layout.spinner_item_dropdown);
         spinner.setAdapter(spinnerAdapter);
         spinner.setSelection(0, false);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String sortType;
+                SortType sortType;
                 switch (position) {
                     case 0:
-                        sortType = "likes";
+                        sortType = SortType.LIKES;
                         break;
                     case 1:
-                        sortType = "shares";
+                        sortType = SortType.SHARES;
                         break;
                     case 2:
-                        sortType = "comments";
+                        sortType = SortType.COMMENTS;
                         break;
                     default:
-                        sortType = "likes";
+                        sortType = SortType.LIKES;
                 }
+                sortTypeForConstructor = sortType;
                 presenter.setSortType(sortType);
+                currentPage = 0;
 
-                recyclerview.clearOnScrollListeners();
-                adapter.removeItems();
-                adapter.notifyDataSetChanged();
-                recyclerview.getRecycledViewPool().clear();
-                addScrollListener();
+                if (adapter != null) {
+                    adapter.setSortType(sortType);
 
-                presenter.getPosts(0);
+                    recyclerview.clearOnScrollListeners();
+                    adapter.removeItems();
+                    adapter.notifyDataSetChanged();
+                    recyclerview.getRecycledViewPool().clear();
+                    addScrollListener();
+
+                    presenter.getPosts(0);
+                } else {
+                    presenter.stopVkRequest();
+
+                    presenter.getPosts(0);
+                }
             }
 
             @Override
@@ -186,6 +241,7 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
         });
 
         imageLoader.loadIcon(groupIconImageView, groupIconUrl);
+        groupIconImageView.setOnClickListener(v -> spinner.performClick());
     }
 
     public void showDeterminateProgressDialog() {
@@ -233,20 +289,27 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
                 .show();
     }
 
-    // Данный код был предназначен для сохранения состояния активити после поворота, но оказался нерабочим
-    /*
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        //outState.putInt("position", recyclerview.getAdapterPosition());
-        outState.putParcelable("KeyForLayoutManagerState", recyclerview.getLayoutManager().onSaveInstanceState());
+        if (adapter != null) {
+            if (itemId != null)
+                outState.putInt(REALM_ID_KEY, itemId);
+            outState.putParcelableArrayList(RV_ITEMS_KEY, adapter.getItems());
+            outState.putParcelable(TOGGLE_EXPANDABLE_TV_KEY, new SparseBooleanArrayParcelable(adapter.getTogglePositions()));
+            outState.putSerializable(SORT_ITEMS_TYPE_KEY, sortTypeForConstructor);
+            outState.putInt(CURRENT_PAGE_KEY, currentPage);
+        }
         super.onSaveInstanceState(outState);
     }
-    */
 
     @Override
     public void incrementDialogNumber(DialogEvent event) {
         if (event.isLast()) {
+            Log.i("get_posts", event.getRealmId().toString());
             dismissDialog();
+            if (event.getRealmId() != null) {
+                itemId = event.getRealmId();
+            }
         } else {
             dialog.incrementProgress(1);
         }
@@ -254,7 +317,55 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
 
     private void dismissDialog() {
         dialog.dismiss();
+        if (activityStoped) {
+            showNotification();
+        }
         presenter.getPosts(0);
+    }
+
+    private void showNotification() {
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        String NOTIFICATION_CHANNEL_ID = "my_channel_id";
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel notificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID,
+                    "Sort end notification", NotificationManager.IMPORTANCE_HIGH);
+
+            // Configure the notification channel.
+            notificationChannel.setDescription("This notification pop up when sorting ends and app is hidden");
+            notificationChannel.enableLights(true);
+            notificationChannel.setLightColor(ContextCompat.getColor(this, R.color.colorPrimary));
+            notificationChannel.enableVibration(false);
+            notificationManager.createNotificationChannel(notificationChannel);
+        }
+        NotificationCompat.Builder notificationBuilder =
+                new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID);
+
+        Bitmap icon = ((RoundedBitmapDrawable)groupIconImageView.getDrawable()).getBitmap();
+
+        Intent intent = getApplicationContext().getPackageManager()
+                .getLaunchIntentForPackage(getPackageName())
+                .setPackage(null)
+                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+
+        notificationBuilder
+                .setAutoCancel(true)
+                .setLargeIcon(icon)
+                .setTicker(getResources().getString(R.string.notification_title))
+                .setContentTitle(getResources().getString(R.string.notification_title))
+                .setContentText(getResources().getString(R.string.notification_text))
+                .setContentIntent(pendingIntent);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            notificationBuilder.setSmallIcon(R.drawable.ic_lolipop_notification);
+            notificationBuilder.setColor(ContextCompat.getColor(this, R.color.colorPrimary));
+        } else {
+            notificationBuilder.setSmallIcon(R.mipmap.ic_launcher);
+        }
+
+        notificationManager.notify(/*notification id*/1, notificationBuilder.build());
     }
 
     private void setupInjection() {
@@ -264,7 +375,8 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
     }
 
     private void setupRecyclerView() {
-        preCachingLayoutManager = new PreCachingLayoutManager(getApplicationContext(), PreCachingLayoutManager.VERTICAL, false);
+        preCachingLayoutManager = new PreCachingLayoutManager(getApplicationContext(),
+                PreCachingLayoutManager.VERTICAL, false);
         recyclerview.setLayoutManager(preCachingLayoutManager);
         addScrollListener();
 
@@ -277,12 +389,13 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
     }
 
     private void addScrollListener() {
-        recyclerview.addOnScrollListener(new EndlessRecyclerViewScrollListener(preCachingLayoutManager) {
+        recyclerview.addOnScrollListener(new EndlessRecyclerViewScrollListener(preCachingLayoutManager, currentPage) {
             @Override
             public void onLoadMore(int page) {
                 // Triggered only when new data needs to be appended to the list
                 // Add whatever code is needed to append new item to the bottom of the list
                 presenter.getPosts(page);
+                currentPage++;
             }
         });
     }
@@ -293,15 +406,16 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
     }
 
     @Override
-    public void setPosts(ExtendedPosts extendedPosts) {
+    public void setPosts(ArrayList<ExtendedPost> items) {
         loadingBar.setVisibility(View.GONE);
-        if (extendedPosts != null) {
+        if (items != null && items.size() > 0) {
             if (adapter == null) {
-                adapter = new PostsAdapter(extendedPosts, imageLoader, onItemClickListener, this);
+                adapter = new PostsAdapter(items, imageLoader, onItemClickListener,
+                        this, sortTypeForConstructor);
                 setupRecyclerView();
             } else {
                 int before = adapter.getItemCount();
-                adapter.setItems(extendedPosts);
+                adapter.addItems(items);
                 adapter.notifyItemRangeInserted(before, adapter.getItemCount() - 1);
             }
         } else if(adapter == null) {
@@ -347,6 +461,7 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
     @Override
     protected void onDestroy() {
         presenter.onDestroy();
+        Picasso.with(this).cancelTag("PostImage");
         recyclerview.getRecycledViewPool().clear();
         super.onDestroy();
         RefWatcher refWatcher = VkTopApp.getRefWatcher();

@@ -2,7 +2,10 @@ package com.ovchinnikovm.android.vktop.lib;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
@@ -49,11 +52,17 @@ public class PicassoImageLoader implements ImageLoader {
     }
 
     @Override
-    public void loadImage(ImageView imageView, String URL) {
+    public void loadImage(ImageView imageView, String URL, Double heightToWidthRatio) {
+        GradientDrawable gd = new GradientDrawable();
+        gd.setShape(GradientDrawable.RECTANGLE);
+        gd.setColor(ContextCompat.getColor(context, R.color.photoBackground));
+        int height = (int) (604 * heightToWidthRatio);
+        gd.setSize(604, height);
         picasso
                 .load(URL)
-                .placeholder(R.drawable.image_placeholder)
+                .placeholder(gd)
                 .error(R.drawable.image_placeholder)
+                .tag("PostImage")
                 .into(imageView);
     }
 
@@ -63,6 +72,7 @@ public class PicassoImageLoader implements ImageLoader {
                 .load(URL)
                 .placeholder(R.drawable.image_placeholder)
                 .error(R.drawable.image_placeholder)
+                .tag("PostImage")
                 .transform(new Transformation() {
                     @Override
                     public Bitmap transform(Bitmap source) {

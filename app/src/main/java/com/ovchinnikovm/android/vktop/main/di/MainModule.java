@@ -37,6 +37,6 @@ public class MainModule {
     @Singleton
     RealmResults<RealmSortedItem> providesItemsList() {
         Realm realm = Realm.getDefaultInstance();
-        return realm.where(RealmSortedItem.class).findAll();
+        return realm.where(RealmSortedItem.class).sort("sortId").findAll();
     }
 }

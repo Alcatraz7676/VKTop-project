@@ -63,5 +63,26 @@
         <item>По комментариям</item>
     </string-array>
     <string name="empty_message">К сожалению посты для выбранного периода времени отсутствуют. Попробуйте другой.</string>
+    <string name="link">Ссылка</string>
+    <string name="month_jan">января</string>
+    <string name="month_feb">февраля</string>
+    <string name="month_mar">марта</string>
+    <string name="month_apr">апреля</string>
+    <string name="month_may">мая</string>
+    <string name="month_jun">июня</string>
+    <string name="month_jul">июля</string>
+    <string name="month_aug">августа</string>
+    <string name="month_sep">сентября</string>
+    <string name="month_oct">октября</string>
+    <string name="month_nov">ноября</string>
+    <string name="month_dec">декабря</string>
+    <string name="month_some">какого-то месяца</string>
+    <string name="date">в</string>
+    <string name="poll_size">голосов</string>
+    <string name="doc_size">Мб</string>
+    
+    <!-- Notification -->
+    <string name="notification_title">Записи отсортированы</string>
+    <string name="notification_text">Нажмите чтобы перейти в приложение</string>
 
 </resources>

@@ -65,5 +65,26 @@
         <item>By commentaries</item>
     </string-array>
     <string name="empty_message">Unfortunately there is no posts for selected period of time. Try another one. </string>
+    <string name="link">Link</string>
+    <string name="month_jan">January</string>
+    <string name="month_feb">February</string>
+    <string name="month_mar">March</string>
+    <string name="month_apr">April</string>
+    <string name="month_may">May</string>
+    <string name="month_jun">June</string>
+    <string name="month_jul">July</string>
+    <string name="month_aug">August</string>
+    <string name="month_sep">September</string>
+    <string name="month_oct">October</string>
+    <string name="month_nov">November</string>
+    <string name="month_dec">December</string>
+    <string name="month_some">Some month</string>
+    <string name="date">at</string>
+    <string name="poll_size">people voted</string>
+    <string name="doc_size">Mb</string>
+
+    <!-- Notification -->
+    <string name="notification_title">Posts are sorted</string>
+    <string name="notification_text">Click to open the app</string>
 
 </resources>

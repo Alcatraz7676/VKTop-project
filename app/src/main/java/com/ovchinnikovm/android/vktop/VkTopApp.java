@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.support.multidex.MultiDexApplication;
 
+import com.ovchinnikovm.android.vktop.entities.RealmSortedItem;
 import com.ovchinnikovm.android.vktop.group.di.DaggerGroupComponent;
 import com.ovchinnikovm.android.vktop.group.di.GroupComponent;
 import com.ovchinnikovm.android.vktop.group.di.GroupModule;
@@ -27,11 +28,15 @@ import com.vk.sdk.VKAccessToken;
 import com.vk.sdk.VKAccessTokenTracker;
 import com.vk.sdk.VKSdk;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 import io.realm.Realm;
+import io.realm.RealmConfiguration;
 
 public class VkTopApp extends MultiDexApplication {
 
     private static VkTopApp instance;
+
     VKAccessTokenTracker vkAccessTokenTracker = new VKAccessTokenTracker() {
         @Override
         public void onVKAccessTokenChanged(VKAccessToken oldToken, VKAccessToken newToken) {

@@ -1,5 +1,6 @@
 package com.ovchinnikovm.android.vktop.posts.adapters;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,10 +21,12 @@ public class MediaAdapter extends RecyclerView.Adapter<MediaAdapter.ViewHolder> 
     private List<Attachment> attachments;
     private OnItemClickListener clickListener;
     private String url;
+    private Context context;
 
-    public MediaAdapter(List<Attachment> attachments, OnItemClickListener clickListener) {
+    public MediaAdapter(List<Attachment> attachments, OnItemClickListener clickListener, Context context) {
         this.attachments = attachments;
         this.clickListener = clickListener;
+        this.context = context;
         setHasStableIds(true);
     }
 
@@ -44,7 +47,7 @@ public class MediaAdapter extends RecyclerView.Adapter<MediaAdapter.ViewHolder> 
                 holder.icon.setImageResource(R.drawable.ic_song);
                 holder.title.setText(attachment.getAudioArtist());
                 holder.subtitle.setText(attachment.getAudioTitle());
-                setOnClickListener(holder.view, null);
+                setOnClickListener(holder.view);
                 break;
             case "video":
                 holder.icon.setImageResource(R.drawable.ic_video);
@@ -59,16 +62,32 @@ public class MediaAdapter extends RecyclerView.Adapter<MediaAdapter.ViewHolder> 
                     holder.time.setText(minutes + ":" + seconds);
                 }
                 holder.time.setVisibility(View.VISIBLE);
-                setOnClickListener(holder.view, null);
+                setOnClickListener(holder.view);
                 break;
             case "link":
                 holder.icon.setImageResource(R.drawable.ic_link);
                 if (attachment.getLinkTitle().equals(""))
-                    holder.title.setText("Ссылка");
+                    holder.title.setText(R.string.link);
                 else
                     holder.title.setText(attachment.getLinkTitle());
                 holder.subtitle.setText(attachment.getLinkUrl());
-                setOnClickListener(holder.view, attachment.getLinkUrl());
+                setOnClickListener(holder.view);
+                break;
+            case "poll":
+                holder.icon.setImageResource(R.drawable.ic_poll);
+                holder.title.setText(attachment.getQuestion());
+                holder.subtitle.setText(attachment.getVotes().toString() + " " + context.getString(R.string.poll_size));
+                setOnClickListener(holder.view);
+                break;
+            case "doc":
+                if (attachment.getDocType().equals("gif"))
+                    holder.icon.setImageResource(R.drawable.ic_gif);
+                else
+                    holder.icon.setImageResource(R.drawable.ic_document);
+                holder.title.setText(attachment.getDocTitle());
+                double docSize = attachment.getDocSize() * 1.0 / (1024 * 1024);
+                holder.subtitle.setText(String.format("%.2f", docSize) + " " + context.getString(R.string.doc_size));
+                setOnClickListener(holder.view);
                 break;
         }
     }
@@ -83,11 +102,8 @@ public class MediaAdapter extends RecyclerView.Adapter<MediaAdapter.ViewHolder> 
         return attachments.size();
     }
 
-    private void setOnClickListener(View view, String newUrl) {
-        if (newUrl == null)
-            view.setOnClickListener( l -> clickListener.onItemClick(url) );
-        else
-            view.setOnClickListener( l -> clickListener.onItemClick(newUrl));
+    private void setOnClickListener(View view) {
+        view.setOnClickListener( l -> clickListener.onItemClick(url) );
     }
 
     public void setUrl(String url) {

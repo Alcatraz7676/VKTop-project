@@ -1,6 +1,11 @@
 package com.ovchinnikovm.android.vktop.posts;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+
 import com.ovchinnikovm.android.vktop.entities.RealmSortedItem;
+import com.ovchinnikovm.android.vktop.entities.SortType;
 import com.ovchinnikovm.android.vktop.posts.events.DialogEvent;
 import com.ovchinnikovm.android.vktop.posts.events.PostsEvent;
 import com.ovchinnikovm.android.vktop.posts.ui.PostsView;
@@ -22,6 +27,11 @@ public class PostsPresenterImpl implements PostsPresenter {
     @Override
     public void onCreate() {
         eventBus.register(this);
+    }
+
+    @Override
+    public void stopVkRequest() {
+        interactor.stopVkRequest();
     }
 
     @Override
@@ -48,7 +58,7 @@ public class PostsPresenterImpl implements PostsPresenter {
     }
 
     @Override
-    public void setSortType(String type) {
+    public void setSortType(SortType type) {
         interactor.setSortType(type);
     }
 
@@ -60,7 +70,7 @@ public class PostsPresenterImpl implements PostsPresenter {
             if(errorMsg != null) {
                 view.onError(errorMsg);
             } else {
-                view.setPosts(event.getExtendedPosts());
+                view.setPosts(event.getPosts());
             }
         }
     }
