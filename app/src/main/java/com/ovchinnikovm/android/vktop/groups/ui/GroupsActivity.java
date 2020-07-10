@@ -113,6 +113,7 @@ public class GroupsActivity extends AppCompatActivity implements GroupsView, OnI
     @Override
     public void onError(String error) {
         Toast.makeText(this, error, Toast.LENGTH_LONG).show();
+        Crashlytics.log("Error in onError method of GroupsActivity class. Text of error: " + error);
     }
 
     @Override

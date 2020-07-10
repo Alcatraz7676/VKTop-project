@@ -9,6 +9,7 @@ import android.support.v7.preference.PreferenceManager;
 import android.widget.Button;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.crashlytics.android.Crashlytics;
 import com.ovchinnikovm.android.vktop.main.MainActivity;
 import com.squareup.leakcanary.RefWatcher;
 import com.vk.sdk.VKAccessToken;
@@ -62,7 +63,7 @@ public class LoginActivity extends AppCompatActivity {
             }
             @Override
             public void onError(VKError error) {
-
+                Crashlytics.log("Error with login vk account. Text of error: " + error);
             }
         })) {
             super.onActivityResult(requestCode, resultCode, data);

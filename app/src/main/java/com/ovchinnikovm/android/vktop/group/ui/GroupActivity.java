@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.borax12.materialdaterangepicker.date.DatePickerDialog;
+import com.crashlytics.android.Crashlytics;
 import com.ovchinnikovm.android.vktop.R;
 import com.ovchinnikovm.android.vktop.VkTopApp;
 import com.ovchinnikovm.android.vktop.group.GroupPresenter;
@@ -257,6 +258,7 @@ public class GroupActivity extends AppCompatActivity implements GroupView {
     @Override
     public void onError(String error) {
         Toast.makeText(this, error, Toast.LENGTH_LONG).show();
+        Crashlytics.log("Error in onError method of GroupActivity class. Text of error: " + error);
     }
 
     @Override

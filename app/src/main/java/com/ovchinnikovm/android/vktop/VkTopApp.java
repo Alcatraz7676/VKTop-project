@@ -2,8 +2,11 @@ package com.ovchinnikovm.android.vktop;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.Context;
 import android.content.Intent;
 import android.os.StrictMode;
+import android.support.multidex.MultiDex;
+import android.support.multidex.MultiDexApplication;
 
 import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.ads.MobileAds;
@@ -34,7 +37,7 @@ import com.vk.sdk.VKSdk;
 import io.fabric.sdk.android.Fabric;
 import io.realm.Realm;
 
-public class VkTopApp extends Application {
+public class VkTopApp extends MultiDexApplication {
 
     private static VkTopApp instance;
 

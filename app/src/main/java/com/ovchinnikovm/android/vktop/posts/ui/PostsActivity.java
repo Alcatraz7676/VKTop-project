@@ -35,6 +35,7 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.GravityEnum;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -438,6 +439,7 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
     @Override
     public void onError(String error) {
         Toast.makeText(this, error, Toast.LENGTH_LONG).show();
+        Crashlytics.log("Error in onError method of PostsActivity class. Text of error: " + error);
     }
 
     @Override
@@ -507,6 +509,8 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
         presenter.onDestroy();
         Picasso.get().cancelTag(POST_IMAGE_TAG);
         recyclerview.getRecycledViewPool().clear();
+        adView.destroy();
+        adView = null;
         super.onDestroy();
         RefWatcher refWatcher = VkTopApp.getRefWatcher();
         refWatcher.watch(this);

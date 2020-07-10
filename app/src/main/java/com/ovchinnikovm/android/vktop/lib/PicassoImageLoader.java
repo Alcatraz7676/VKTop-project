@@ -9,6 +9,7 @@ import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.widget.ImageView;
 
+import com.crashlytics.android.Crashlytics;
 import com.ovchinnikovm.android.vktop.R;
 import com.ovchinnikovm.android.vktop.lib.base.ImageLoader;
 import com.squareup.picasso.Callback;
@@ -48,6 +49,7 @@ public class PicassoImageLoader implements ImageLoader {
                     @Override
                     public void onError(Exception e) {
                         imageView.setImageResource(R.drawable.group_oval);
+                        Crashlytics.log("Error with making round image. Text of error: " + e.getMessage());
                     }
                 });
     }

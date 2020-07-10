@@ -92,23 +92,33 @@ public class PostsRepositoryImpl implements PostsRepository {
                 downloadIds(posts);
                 break;
             case 1:
-                setSortRange(System.currentTimeMillis() - 31536000000L, System.currentTimeMillis());
+                realmSortedItem.setSortRange(
+                        formatSortRange(System.currentTimeMillis() - 31536000000L, System.currentTimeMillis())
+                );
                 downloadIdsForLastPeriod(posts, 31536000);
                 break;
             case 2:
-                setSortRange(System.currentTimeMillis() - 2592000000L, System.currentTimeMillis());
+                realmSortedItem.setSortRange(
+                    formatSortRange(System.currentTimeMillis() - 2592000000L, System.currentTimeMillis())
+                );
                 downloadIdsForLastPeriod(posts, 2592000);
                 break;
             case 3:
-                setSortRange(System.currentTimeMillis() - 604800000L, System.currentTimeMillis());
+                realmSortedItem.setSortRange(
+                    formatSortRange(System.currentTimeMillis() - 604800000L, System.currentTimeMillis())
+                );
                 downloadIdsForLastPeriod(posts, 604800);
                 break;
             case 4:
-                setSortRange(System.currentTimeMillis() - 86400000L, System.currentTimeMillis());
+                realmSortedItem.setSortRange(
+                    formatSortRange(System.currentTimeMillis() - 86400000L, System.currentTimeMillis())
+                );
                 downloadIdsForLastPeriod(posts, 86400);
                 break;
             case 5:
-                setSortRange(sortStart, sortEnd);
+                realmSortedItem.setSortRange(
+                    formatSortRange(sortStart, sortEnd)
+                );
                 downloadIdsInRange(posts, sortStart / 1000, sortEnd / 1000);
                 break;
             default:
@@ -124,7 +134,7 @@ public class PostsRepositoryImpl implements PostsRepository {
                 .equalTo("sortId", itemId).findFirst();
     }
 
-    private void setSortRange(long from, long to) {
+    private String formatSortRange(long from, long to) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(from);
         String fromDateString = "" + calendar.get(Calendar.DAY_OF_MONTH) + "."
@@ -132,7 +142,7 @@ public class PostsRepositoryImpl implements PostsRepository {
         calendar.setTimeInMillis(to);
         String toDateString = "" + calendar.get(Calendar.DAY_OF_MONTH) + "."
                 + (calendar.get(Calendar.MONTH) + 1) + "." + calendar.get(Calendar.YEAR);
-        realmSortedItem.setSortRange(fromDateString + " - " + toDateString);
+        return fromDateString + " - " + toDateString;
     }
 
     private void sortPosts(PostsApiResponse<PostSortItem> posts) {
@@ -160,7 +170,12 @@ public class PostsRepositoryImpl implements PostsRepository {
             realmSortedItem.addByComments(byComments);
 
             if (realmSortedItem.getSortRange() == null) {
-                setSortRange((posts.response.get(posts.response.size() - 1).getDate() * 1000L), System.currentTimeMillis());
+                realmSortedItem.setSortRange(
+                    formatSortRange(
+                            (posts.response.get(posts.response.size() - 1).getDate() * 1000L),
+                            System.currentTimeMillis()
+                    )
+                );
             }
 
             Realm realm = Realm.getDefaultInstance();
@@ -369,7 +384,8 @@ public class PostsRepositoryImpl implements PostsRepository {
             @Override
             public void onError(VKError error) {
                 super.onError(error);
-                Log.i("mytag", "JUST GOT ERROR WHILE LOAD POSTS LMAO");
+                Log.i("mytag", "JUST GOT ERROR WHILE LOAD POSTS \nError text: " +
+                        error.toString());
                 post(error.toString());
             }
         });
@@ -426,7 +442,8 @@ public class PostsRepositoryImpl implements PostsRepository {
                             posts.response.addAll(items);
                             eventBus.post(new DialogEvent(false));
                         },  e -> {
-                            Log.i("tmpTag", "JUST GOT ERROR WHILE LOAD IDS LMAO");
+                            Log.i("tmpTag", "JUST GOT ERROR WHILE LOAD IDS \nError text: " +
+                            e.toString());
                             post(e.toString());
                         }, () -> {
                             Log.i("tmpTag", "IN THE COMPLETE CALLBACK");
@@ -517,7 +534,8 @@ public class PostsRepositoryImpl implements PostsRepository {
                             } else
                                 posts.response.addAll(items);
                         },  e -> {
-                            Log.i("mytag", "JUST GOT ERROR WHILE LOAD IDS LMAO");
+                            Log.i("mytag", "JUST GOT ERROR WHILE LOAD IDS \nError text: " +
+                            e.toString());
                             post(e.toString());
                         }, () -> {
                             Log.i("mytag", "IN THE COMPLETE LAST PERIOD CALLBACK");
@@ -613,7 +631,8 @@ public class PostsRepositoryImpl implements PostsRepository {
                             else
                                 posts.response.addAll(items);
                         },  e -> {
-                            Log.i("mytag", "JUST GOT ERROR WHILE LOAD IDS IN RANGE LMAO");
+                            Log.i("mytag", "JUST GOT ERROR WHILE LOAD IDS IN RANGE \nError text: " +
+                                    e.toString());
                             post(e.toString());
                         }, () -> {
                             Log.i("mytag", "IN THE COMPLETE IDS RANGE CALLBACK");
@@ -648,7 +667,7 @@ public class PostsRepositoryImpl implements PostsRepository {
 
     private void post(ExtendedPosts posts, String error) {
         PostsEvent event = new PostsEvent();
-        if (error != null)
+        if (posts == null)
             event.setError(error);
         else
             event.setPosts(posts.items);
