@@ -41,7 +41,7 @@ public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.ViewHolder
         holder.setOnClickListener(group, clickListener);
         holder.groupTitle.setText(group.getName());
         holder.groupDescription.setText(group.getSubName());
-        imageLoader.load(holder.groupIcon, group.getPhotoURL());
+        imageLoader.loadIcon(holder.groupIcon, group.getPhotoURL());
     }
 
     public void setItems(List<Group> newGroups) {

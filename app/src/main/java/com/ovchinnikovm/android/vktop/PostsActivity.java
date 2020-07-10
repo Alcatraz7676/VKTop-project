@@ -8,7 +8,7 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.ovchinnikovm.android.vktop.entities.Post;
+import com.ovchinnikovm.android.vktop.entities.PostItem;
 import com.ovchinnikovm.android.vktop.entities.PostsResponse;
 import com.squareup.leakcanary.RefWatcher;
 import com.vk.sdk.api.VKApiConst;
@@ -27,15 +27,15 @@ import butterknife.BindView;
 
 public class PostsActivity extends AppCompatActivity {
 
-    @BindView(R.id.rv_posts)
+    @BindView(R.id.recyclerview)
     RecyclerView rvPosts;
 
-    ArrayList<Post> mItems = new ArrayList<>();
+    ArrayList<PostItem> mItems = new ArrayList<>();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_posts);
+        setContentView(R.layout.recyclerview_container);
         downloadPosts();
     }
 
@@ -60,11 +60,11 @@ public class PostsActivity extends AppCompatActivity {
                             Gson gson = new GsonBuilder().create();
                             PostsResponse postsResponse = gson
                                     .fromJson(vkResponse.responseString, PostsResponse.class);
-                            for (Post post : postsResponse.response.items) {
-                                Post item = new Post();
-                                if (post.getText().equals(""))
+                            for (PostItem postItem : postsResponse.response.items) {
+                                PostItem item = new PostItem();
+                                if (postItem.getText().equals(""))
                                     continue;
-                                item.setText(post.getText());
+                                item.setText(postItem.getText());
                                 mItems.add(item);
                             }
                             rvPosts.setAdapter(new PostsAdapter(mItems));

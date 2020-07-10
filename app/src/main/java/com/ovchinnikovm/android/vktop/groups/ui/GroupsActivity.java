@@ -9,10 +9,10 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
 
+import com.ovchinnikovm.android.vktop.Henson;
 import com.ovchinnikovm.android.vktop.R;
 import com.ovchinnikovm.android.vktop.VkTopApp;
 import com.ovchinnikovm.android.vktop.entities.Group;
-import com.ovchinnikovm.android.vktop.group.ui.Henson;
 import com.ovchinnikovm.android.vktop.groups.GroupsPresenter;
 import com.ovchinnikovm.android.vktop.groups.adapters.GroupsAdapter;
 import com.ovchinnikovm.android.vktop.groups.adapters.OnItemClickListener;
@@ -28,7 +28,7 @@ import butterknife.ButterKnife;
 
 public class GroupsActivity extends AppCompatActivity implements GroupsView, OnItemClickListener {
 
-    @BindView(R.id.rv_groups)
+    @BindView(R.id.recyclerview)
     RecyclerView recyclerView;
 
     @Inject
@@ -42,22 +42,22 @@ public class GroupsActivity extends AppCompatActivity implements GroupsView, OnI
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_groups);
+        setContentView(R.layout.recyclerview_container);
         ButterKnife.bind(this);
         setupInjection();
         setupRecyclerView();
         presenter.getGroups();
     }
 
-    private void setupRecyclerView() {
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(adapter);
-    }
-
     private void setupInjection() {
         VkTopApp app = (VkTopApp) getApplication();
         GroupsComponent groupsComponent = app.getGroupsComponent(this, this, this);
         groupsComponent.inject(this);
+    }
+
+    private void setupRecyclerView() {
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(adapter);
     }
 
     @Override
@@ -74,6 +74,7 @@ public class GroupsActivity extends AppCompatActivity implements GroupsView, OnI
 
     @Override
     public void onError(String error) {
+
 
     }
 

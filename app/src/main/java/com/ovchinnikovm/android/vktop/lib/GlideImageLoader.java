@@ -15,13 +15,20 @@ public class GlideImageLoader implements ImageLoader{
     }
 
     @Override
-    public void load(ImageView imageView, String URL) {
+    public void loadIcon(ImageView imageView, String URL) {
         glideRequestManager
                 .load(URL)
                 .apply(RequestOptions
                         .circleCropTransform()
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .dontAnimate())
+                .into(imageView);
+    }
+
+    @Override
+    public void loadImage(ImageView imageView, String URL) {
+        glideRequestManager
+                .load(URL)
                 .into(imageView);
     }
 }

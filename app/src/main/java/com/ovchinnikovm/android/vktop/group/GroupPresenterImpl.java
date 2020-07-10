@@ -45,7 +45,7 @@ public class GroupPresenterImpl implements GroupPresenter {
 
     @Override
     public void loadIcon(ImageView imageView, String URL) {
-        imageLoader.load(imageView, URL);
+        imageLoader.loadIcon(imageView, URL);
     }
 
     @Override

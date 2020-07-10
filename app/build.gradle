@@ -11,6 +11,12 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        vectorDrawables.useSupportLibrary = true
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = [ 'dart.henson.package' : 'com.ovchinnikovm.android.vktop' ]
+            }
+        }
     }
     buildTypes {
         debug {
@@ -60,10 +66,11 @@ dependencies {
     // LeakCanary
     debugCompile "com.squareup.leakcanary:leakcanary-android:$rootProject.leakCanaryVersion"
     releaseCompile "com.squareup.leakcanary:leakcanary-android-no-op:$rootProject.leakCanaryVersion"
+    testCompile "com.squareup.leakcanary:leakcanary-android-no-op:$rootProject.leakCanaryVersion"
 
     // Dagger
     annotationProcessor "com.google.dagger:dagger-compiler:$rootProject.ext.dagger2Version"
-    compile "javax.annotation:jsr250-api:$rootProject.ext.jsr250Version"
+    provided "javax.annotation:jsr250-api:$rootProject.ext.jsr250Version"
     compile "com.google.dagger:dagger:$rootProject.ext.dagger2Version"
 
     // Glide

@@ -1,10 +1,10 @@
 package com.ovchinnikovm.android.vktop.group.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import com.f2prateek.dart.Dart;
 import com.f2prateek.dart.InjectExtra;
+import com.ovchinnikovm.android.vktop.Henson;
 import com.ovchinnikovm.android.vktop.R;
 import com.ovchinnikovm.android.vktop.VkTopApp;
 import com.ovchinnikovm.android.vktop.group.GroupPresenter;
@@ -37,7 +38,6 @@ public class GroupActivity extends AppCompatActivity implements GroupView {
     Integer memberNumber;
     @Nullable @InjectExtra
     Integer groupId;
-
     @BindView(R.id.group_title)
     TextView groupTitleTextView;
     @BindView(R.id.group_description)
@@ -52,9 +52,9 @@ public class GroupActivity extends AppCompatActivity implements GroupView {
     TextView timeNumberTextView;
     @BindView(R.id.sort_button)
     Button sortButton;
-
     @Inject
     GroupPresenter presenter;
+    private Integer postsCount;
 
     public GroupActivity() {
     }
@@ -101,20 +101,18 @@ public class GroupActivity extends AppCompatActivity implements GroupView {
     }
 
     @Override
-    public void setPostsAndTime(Integer postsNumber, Integer time) {
-        Log.i("mytag", String.valueOf(postsNumber) + " " + String.valueOf(time));
-        postsNumberTextView.setText(String.valueOf(postsNumber));
+    public void setPostsAndTime(Integer postsCount, Integer time) {
+        this.postsCount = postsCount;
+        postsNumberTextView.setText(String.valueOf(postsCount));
         if (time < 60) {
             if (time == 0) {
                 timeNumberTextView.setText(getResources().getQuantityString(R.plurals.seconds, 1, 1));
                 return;
             }
             timeNumberTextView.setText(getResources().getQuantityString(R.plurals.seconds, time, time));
-            Log.i("mytag", String.format("%1$d seconds", time));
         } else {
             time = time / 60;
             timeNumberTextView.setText(getResources().getQuantityString(R.plurals.minutes, time, time));
-            Log.i("mytag", String.format("%1$d minutes", time));
         }
     }
 
@@ -131,7 +129,14 @@ public class GroupActivity extends AppCompatActivity implements GroupView {
 
     @OnClick(R.id.sort_button)
     public void onViewClicked() {
+        Intent intent = Henson.with(this)
+                .gotoPostsActivity()
+                .groupId(groupId)
+                .postsCount(postsCount)
+                .build();
 
+        startActivity(intent);
+        overridePendingTransition( 0, R.anim.screen_splash_fade_out );
     }
 
     @Override

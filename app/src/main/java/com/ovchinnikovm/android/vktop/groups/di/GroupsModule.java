@@ -47,7 +47,7 @@ public class GroupsModule {
     @Provides
     @Singleton
     List<Group> providesItemsList() {
-        return new ArrayList<Group>();
+        return new ArrayList<>();
     }
 
     @Provides

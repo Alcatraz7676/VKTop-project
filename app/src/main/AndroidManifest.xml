@@ -25,6 +25,8 @@
             android:parentActivityName=".MainActivity"/>
         <activity android:name=".group.ui.GroupActivity"
                   android:parentActivityName=".groups.ui.GroupsActivity"/>
+        <activity android:name=".posts.ui.PostsActivity"
+                  android:parentActivityName=".group.ui.GroupActivity" />
         <activity android:name="com.vk.sdk.VKServiceActivity"
             android:label="ServiceActivity"
             android:theme="@style/VK.Transparent" />

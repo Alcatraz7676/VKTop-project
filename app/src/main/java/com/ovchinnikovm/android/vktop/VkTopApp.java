@@ -7,12 +7,15 @@ import com.ovchinnikovm.android.vktop.group.di.DaggerGroupComponent;
 import com.ovchinnikovm.android.vktop.group.di.GroupComponent;
 import com.ovchinnikovm.android.vktop.group.di.GroupModule;
 import com.ovchinnikovm.android.vktop.group.ui.GroupView;
-import com.ovchinnikovm.android.vktop.groups.adapters.OnItemClickListener;
 import com.ovchinnikovm.android.vktop.groups.di.DaggerGroupsComponent;
 import com.ovchinnikovm.android.vktop.groups.di.GroupsComponent;
 import com.ovchinnikovm.android.vktop.groups.di.GroupsModule;
 import com.ovchinnikovm.android.vktop.groups.ui.GroupsView;
 import com.ovchinnikovm.android.vktop.lib.di.LibsModule;
+import com.ovchinnikovm.android.vktop.posts.di.DaggerPostsComponent;
+import com.ovchinnikovm.android.vktop.posts.di.PostsComponent;
+import com.ovchinnikovm.android.vktop.posts.di.PostsModule;
+import com.ovchinnikovm.android.vktop.posts.ui.PostsView;
 import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;
 import com.vk.sdk.VKAccessToken;
@@ -61,7 +64,7 @@ public class VkTopApp extends android.app.Application {
     }
 
     public GroupsComponent getGroupsComponent(Activity activity, GroupsView view,
-                                              OnItemClickListener clickListener) {
+                                              com.ovchinnikovm.android.vktop.groups.adapters.OnItemClickListener clickListener) {
         return DaggerGroupsComponent
                 .builder()
                 .libsModule(new LibsModule(activity))
@@ -74,6 +77,15 @@ public class VkTopApp extends android.app.Application {
                 .builder()
                 .libsModule(new LibsModule(activity))
                 .groupModule(new GroupModule(view))
+                .build();
+    }
+
+    public PostsComponent getPostsComponent(Activity activity, PostsView view,
+                                            com.ovchinnikovm.android.vktop.posts.adapters.OnItemClickListener clickListener) {
+        return DaggerPostsComponent
+                .builder()
+                .libsModule(new LibsModule(activity))
+                .postsModule(new PostsModule(view, clickListener))
                 .build();
     }
 

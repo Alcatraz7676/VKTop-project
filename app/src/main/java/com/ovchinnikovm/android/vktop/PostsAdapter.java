@@ -6,41 +6,40 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.ovchinnikovm.android.vktop.entities.Post;
+import com.ovchinnikovm.android.vktop.entities.PostItem;
 
 import java.util.List;
 
-import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> {
-    private List<Post> posts;
+    private List<PostItem> postItems;
 
-    public PostsAdapter(List<Post> posts) {
-        this.posts = posts;
+    public PostsAdapter(List<PostItem> postItems) {
+        this.postItems = postItems;
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new ViewHolder(LayoutInflater
                 .from(parent.getContext())
-                .inflate(R.layout.post_item, parent, false));
+                .inflate(R.layout.item_post, parent, false));
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        Post post = posts.get(position);
-        holder.postTextView.setText(post.getText());
+        PostItem postItem = postItems.get(position);
+        holder.postTextView.setText(postItem.getText());
     }
 
     @Override
     public int getItemCount() {
-        return posts.size();
+        return postItems.size();
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
 
-        @BindView(R.id.postTextView)
+        //@BindView(R.id.postTextView)
         TextView postTextView;
 
         public ViewHolder(View view) {
