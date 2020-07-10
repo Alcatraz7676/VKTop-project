@@ -64,7 +64,7 @@
     <!-- Posts Screen -->
     <string name="sort_progress_dialog_title">Receiving posts\n(app may be minimized)</string>
     <string name="please_wait">Please, wait&#8230;</string>
-    <string name="app_name" translatable="false">VkTop</string>
+    <string name="app_name" translatable="false">VKTop</string>
     <string-array name="sort_items">
         <item>By likes</item>
         <item>By shares</item>

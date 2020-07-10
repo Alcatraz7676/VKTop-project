@@ -302,17 +302,19 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
     @Override
     public void incrementDialogNumber(DialogEvent event) {
         if (event.isLast()) {
-            Log.i("get_posts", event.getRealmId().toString());
-            dismissDialog();
             if (event.getRealmId() != null) {
+                dismissDialogAndGetPosts();
                 itemId = event.getRealmId();
+            } else {
+                dialog.dismiss();
+                showEmptyView();
             }
         } else {
             dialog.incrementProgress(1);
         }
     }
 
-    private void dismissDialog() {
+    private void dismissDialogAndGetPosts() {
         dialog.dismiss();
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         Boolean enableNotificationsPref = sharedPref.getBoolean(SettingsActivity.KEY_PREF_NOTIFICATION_SWITCH, true);
@@ -386,6 +388,12 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
         VkTopApp app = (VkTopApp) getApplication();
         PostsComponent postsComponent = app.getPostsComponent(this, this, this);
         postsComponent.inject(this);
+    }
+
+    private void showEmptyView() {
+        loadingBar.setVisibility(View.GONE);
+        spinner.setEnabled(false);
+        emptyView.setVisibility(View.VISIBLE);
     }
 
     private void setupRecyclerView() {

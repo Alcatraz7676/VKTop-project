@@ -1,7 +1,20 @@
+buildscript {
+    repositories {
+        maven { url 'https://maven.fabric.io/public' }
+    }
+
+    dependencies {
+        classpath 'io.fabric.tools:gradle:1.+'
+    }
+}
 //noinspection GradleCompatible
 apply plugin: 'com.android.application'
 apply plugin: 'realm-android'
 apply plugin: 'io.fabric'
+
+repositories {
+    maven { url 'https://maven.fabric.io/public' }
+}
 
 android {
     compileSdkVersion 27
@@ -103,7 +116,9 @@ dependencies {
     implementation 'net.xpece.android:support-preference:2.2.0'
 
     // Crashlytics
-    implementation 'com.crashlytics.sdk.android:crashlytics:2.9.4'
+    implementation('com.crashlytics.sdk.android:crashlytics:2.9.4@aar') {
+        transitive = true
+    }
     implementation 'com.google.firebase:firebase-core:16.0.1'
 
     // TapTargetView

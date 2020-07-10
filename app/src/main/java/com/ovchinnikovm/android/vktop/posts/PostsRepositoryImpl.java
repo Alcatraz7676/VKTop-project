@@ -186,8 +186,9 @@ public class PostsRepositoryImpl implements PostsRepository {
 
                 eventBus.post(new DialogEvent(true, nextId));
             });
+        } else {
+            eventBus.post(new DialogEvent(true));
         }
-        eventBus.post(new DialogEvent(true));
     }
 
     @Override
