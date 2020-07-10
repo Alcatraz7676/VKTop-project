@@ -4,8 +4,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NavUtils;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -35,16 +38,25 @@ import butterknife.OnClick;
 public class GroupsActivity extends AppCompatActivity implements GroupsView, OnItemClickListener {
 
     private final static String LIST_ITEMS_KEY = "recycler_list_items";
+    private final static String FILTER_TEXT_KEY = "filter_text";
+    private final static String SEARCHVIEW_EXPANDED = "searchview_expanded";
+
     @BindView(R.id.recyclerview)
     RecyclerView recyclerView;
     @BindView(R.id.loading_indicator)
     ProgressBar loadingIndicator;
     @BindView(R.id.disconnected_view)
     RelativeLayout disconnectedView;
+
     @Inject
     GroupsAdapter adapter;
     @Inject
     GroupsPresenter presenter;
+
+    private SearchView searchView;
+    private Boolean searchviewExpanded = false;
+
+    private String filterText = "";
 
     public GroupsActivity() {
     }
@@ -58,11 +70,18 @@ public class GroupsActivity extends AppCompatActivity implements GroupsView, OnI
         ButterKnife.bind(this);
         setupRecyclerView();
         presenter.onStart();
-        if (savedInstanceState != null &&
-                !((ArrayList<Group>) savedInstanceState.getSerializable(LIST_ITEMS_KEY)).isEmpty()) {
-
-            setGroups((ArrayList<Group>) savedInstanceState.getSerializable(LIST_ITEMS_KEY));
-            showGroups();
+        if (savedInstanceState != null) {
+            if (!((ArrayList<Group>) savedInstanceState.getSerializable(LIST_ITEMS_KEY)).isEmpty()) {
+                setGroups((ArrayList<Group>) savedInstanceState.getSerializable(LIST_ITEMS_KEY));
+                showGroups();
+            } else {
+                presenter.getGroups();
+            }
+            if (!savedInstanceState.getString(FILTER_TEXT_KEY, "").equals("")) {
+                filterText = savedInstanceState.getString(FILTER_TEXT_KEY, "");
+            }
+            if (savedInstanceState.getBoolean(SEARCHVIEW_EXPANDED))
+                searchviewExpanded = true;
         } else
             presenter.getGroups();
     }
@@ -83,6 +102,8 @@ public class GroupsActivity extends AppCompatActivity implements GroupsView, OnI
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putSerializable(LIST_ITEMS_KEY, adapter.getItems());
+        outState.putString(FILTER_TEXT_KEY, filterText);
+        outState.putBoolean(SEARCHVIEW_EXPANDED, !searchView.isIconified());
     }
 
     @Override
@@ -114,6 +135,35 @@ public class GroupsActivity extends AppCompatActivity implements GroupsView, OnI
         loadingIndicator.setVisibility(View.VISIBLE);
         recyclerView.setVisibility(View.GONE);
         disconnectedView.setVisibility(View.GONE);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.search_group_menu, menu);
+        final MenuItem searchItem = menu.findItem(R.id.action_search);
+        searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        adapter.filter(filterText);
+        searchView.setQuery(filterText, false);
+        if (searchviewExpanded) {
+            searchView.setIconified(false);
+        }
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                filterText = s;
+                adapter.filter(s);
+                return false;
+            }
+        });
+
+        return true;
     }
 
     @Override

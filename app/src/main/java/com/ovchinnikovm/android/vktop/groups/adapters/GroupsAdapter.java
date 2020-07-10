@@ -17,14 +17,16 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.ViewHolder>{
+public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.ViewHolder> {
 
     private List<Group> groups;
+    private List<Group> groupsCopy;
     private ImageLoader imageLoader;
     private OnItemClickListener clickListener;
 
     public GroupsAdapter(List<Group> groups, ImageLoader imageLoader, OnItemClickListener clickListener) {
         this.groups = groups;
+        groupsCopy = groups;
         this.imageLoader = imageLoader;
         this.clickListener = clickListener;
     }
@@ -51,11 +53,27 @@ public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.ViewHolder
     }
 
     public ArrayList<Group> getItems() {
-        return (ArrayList<Group>) groups;
+        return (ArrayList<Group>) groupsCopy;
+    }
+
+    public void filter(String text) {
+        groups.clear();
+        if (!text.isEmpty()) {
+            text = text.toLowerCase().trim();
+            for (Group item : groupsCopy){
+                if (item.getName().toLowerCase().contains(text)){
+                    groups.add(item);
+                }
+            }
+        } else {
+            groups.addAll(groupsCopy);
+        }
+        notifyDataSetChanged();
     }
 
     public void setItems(List<Group> newGroups) {
         groups = new ArrayList<>(newGroups);
+        groupsCopy = new ArrayList<>(groups);
         notifyDataSetChanged();
     }
 

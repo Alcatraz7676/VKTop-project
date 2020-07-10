@@ -233,12 +233,15 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
                 .show();
     }
 
+    // Данный код был предназначен для сохранения состояния активити после поворота, но оказался нерабочим
+    /*
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         //outState.putInt("position", recyclerview.getAdapterPosition());
         outState.putParcelable("KeyForLayoutManagerState", recyclerview.getLayoutManager().onSaveInstanceState());
         super.onSaveInstanceState(outState);
     }
+    */
 
     @Override
     public void incrementDialogNumber(DialogEvent event) {
