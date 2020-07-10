@@ -11,6 +11,7 @@ import android.graphics.RectF;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
@@ -19,18 +20,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.RelativeLayout;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.crashlytics.android.Crashlytics;
-import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
-import com.google.android.gms.ads.MobileAds;
 import com.ovchinnikovm.android.vktop.LoginActivity;
 import com.ovchinnikovm.android.vktop.R;
 import com.ovchinnikovm.android.vktop.lib.RecyclerViewEmptySupport;
@@ -51,12 +48,10 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import io.fabric.sdk.android.Fabric;
 import io.realm.Realm;
 import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt;
 
 import static android.support.v7.preference.PreferenceManager.getDefaultSharedPreferences;
-import static com.ovchinnikovm.android.vktop.posts.ui.PostsActivity.RETURN_FROM_ACTIVITY_KEY;
 
 public class MainActivity extends AppCompatActivity implements OnItemClickListener, OnItemLongClickListener {
 
@@ -98,23 +93,24 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
         } else {
             SharedPreferences sharedPreferences = getDefaultSharedPreferences(getApplicationContext());
             boolean firstEnter = sharedPreferences.getBoolean(KEY_PREF_FIRST_ENTER, true);
-            boolean returnFromActivity = sharedPreferences.getBoolean(RETURN_FROM_ACTIVITY_KEY, false);
             if (firstEnter) {
-                new MaterialTapTargetPrompt.Builder(this)
+                new Handler().postDelayed(() -> new MaterialTapTargetPrompt.Builder(MainActivity.this)
                         .setTarget(fab)
                         .setPrimaryText(R.string.fab_title)
                         .setSecondaryText(R.string.fab_subtitle)
-                        .setBackgroundColour(ContextCompat.getColor(this, R.color.colorPrimaryTransparent))
+                        .setBackgroundColour(ContextCompat.getColor(MainActivity.this, R.color.colorPrimaryTransparent))
                         .setAnimationInterpolator(new FastOutSlowInInterpolator())
                         .setPromptStateChangeListener((prompt, state) -> {
                             SharedPreferences.Editor editor = sharedPreferences.edit();
                             editor.putBoolean(KEY_PREF_FIRST_ENTER, false);
                             editor.apply();
-                        }).show();
+                        }).show(), 500);
+
             }
             /* Рекламный блок на весь экран, который показывается с перерывом в 5 минут,
                когда пользователь возвращается в активити. В данный момент решил отказаться от него.
-            if (returnFromActivity) {
+
+            if (sharedPreferences.getBoolean(RETURN_FROM_ACTIVITY_KEY, false);) {
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putBoolean(RETURN_FROM_ACTIVITY_KEY, false);
                 editor.apply();
