@@ -7,6 +7,13 @@ import java.util.List;
 public class GroupsEvent {
     private String error;
     private List<Group> groups;
+    private boolean global;
+
+    public GroupsEvent(List<Group> groups, String error, boolean global) {
+        this.error = error;
+        this.groups = groups;
+        this.global = global;
+    }
 
     public String getError() {
         return error;
@@ -22,5 +29,13 @@ public class GroupsEvent {
 
     public void setGroups(List<Group> images) {
         this.groups = images;
+    }
+
+    public boolean isGlobal() {
+        return global;
+    }
+
+    public void setGlobal(boolean global) {
+        this.global = global;
     }
 }

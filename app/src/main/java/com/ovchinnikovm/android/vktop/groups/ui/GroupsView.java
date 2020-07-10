@@ -9,6 +9,8 @@ public interface GroupsView {
 
     void setGroups(List<Group> groups);
 
+    void addGlobalGroups(List<Group> groups);
+
     void showDisconnectedView();
 
     void showGroups();

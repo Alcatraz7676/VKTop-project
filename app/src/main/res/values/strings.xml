@@ -60,6 +60,7 @@
     <string name="disconnected_subtitle_text">Click the button to try again</string>
     <string name="disconnected_button_text">RETRY</string>
     <string name="groups_title_text">Choose a Group</string>
+    <string name="global_search_label">Global search</string>
 
     <!-- Posts Screen -->
     <string name="sort_progress_dialog_title">Receiving posts\n(app may be minimized)</string>

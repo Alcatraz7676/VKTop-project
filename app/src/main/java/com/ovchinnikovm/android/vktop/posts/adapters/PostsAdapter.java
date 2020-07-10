@@ -43,6 +43,9 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
     private SortType sortType;
     private Integer sortedPostsCount;
 
+    private static final int TYPE_FIRST_POST = 1;
+    private static final int TYPE_POST = 0;
+
     public PostsAdapter(ArrayList<ExtendedPost> items, ImageLoader imageLoader,
                         OnItemClickListener clickListener, Context context, SortType sortType,
                         Integer sortedPostsCount) {
@@ -58,9 +61,9 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
     @Override
     public int getItemViewType(int position) {
         if (position == 0)
-            return 1;
+            return TYPE_FIRST_POST;
         else
-            return 0;
+            return TYPE_POST;
     }
 
     @Override
@@ -77,7 +80,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
         // Set clicklistener
         holder.setOnClickListener(item, clickListener);
         holder.setPostUrl(item.getPostUrl());
-        if (holder.getItemViewType() == 1) {
+        if (holder.getItemViewType() == TYPE_FIRST_POST) {
             holder.numberOfSortedPosts.setVisibility(View.VISIBLE);
             holder.divider.setVisibility(View.VISIBLE);
             holder.numberOfSortedPosts.setText(context.getResources()

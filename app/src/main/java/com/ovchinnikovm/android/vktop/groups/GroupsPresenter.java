@@ -6,5 +6,6 @@ public interface GroupsPresenter {
     void onStart();
     void onDestroy();
     void getGroups();
+    void getGlobalGroups(String query);
     void onEventMainThread(GroupsEvent event);
 }

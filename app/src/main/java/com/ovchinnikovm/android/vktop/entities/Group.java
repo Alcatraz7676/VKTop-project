@@ -18,6 +18,11 @@ public class Group implements Serializable {
     @SerializedName("members_count")
     private Integer members;
     private String status;
+    @SerializedName("is_closed")
+    private int closed;
+    @SerializedName("is_member")
+    private int member;
+    private String type;
 
     public String getSmallPhotoUrl() {
         return smallPhotoUrl;
@@ -73,5 +78,33 @@ public class Group implements Serializable {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public boolean isClosed() {
+        if (closed == 1)
+            return true;
+        return false;
+    }
+
+    public void setClosed(int closed) {
+        this.closed = closed;
+    }
+
+    public boolean isMember() {
+        if (member == 1)
+            return true;
+        return false;
+    }
+
+    public void setMember(int member) {
+        this.member = member;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

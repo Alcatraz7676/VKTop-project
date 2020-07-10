@@ -41,10 +41,15 @@ public class GroupsPresenterImpl implements GroupsPresenter {
     public void getGroups() {
         if (isOnline()) {
             view.showLoadingIndicator();
-            interactor.execute();
+            interactor.getGroups();
         } else {
             view.showDisconnectedView();
         }
+    }
+
+    @Override
+    public void getGlobalGroups(String query) {
+        interactor.getGlobalGroups(query);
     }
 
     private boolean isOnline() {
@@ -55,15 +60,17 @@ public class GroupsPresenterImpl implements GroupsPresenter {
     }
 
     @Override
-    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    @Subscribe
     public void onEventMainThread(GroupsEvent event) {
         String errorMsg = event.getError();
         if (view != null) {
             if(errorMsg != null) {
                 view.onError(errorMsg);
-            } else {
+            } else if (!event.isGlobal()){
                 view.setGroups(event.getGroups());
                 view.showGroups();
+            } else {
+                view.addGlobalGroups(event.getGroups());
             }
         }
     }

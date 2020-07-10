@@ -8,7 +8,12 @@ public class GroupsInteractorImpl implements GroupsInteractor {
     }
 
     @Override
-    public void execute() {
+    public void getGroups() {
         repository.getGroups();
+    }
+
+    @Override
+    public void getGlobalGroups(String query) {
+        repository.getGlobalGroups(query);
     }
 }

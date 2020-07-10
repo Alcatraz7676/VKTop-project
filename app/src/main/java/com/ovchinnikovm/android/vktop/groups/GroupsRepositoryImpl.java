@@ -36,7 +36,6 @@ public class GroupsRepositoryImpl implements GroupsRepository {
             @Override
             public void onComplete(VKResponse response) {
                 super.onComplete(response);
-
                 Gson gson = new GsonBuilder()
                         .create();
                 GroupResponse groupResponse = gson
@@ -54,6 +53,40 @@ public class GroupsRepositoryImpl implements GroupsRepository {
         });
     }
 
+    @Override
+    public void getGlobalGroups(String query) {
+        VKRequest vkRequest = new VKApiGroups()
+                .search(VKParameters
+                        .from(VKApiConst.Q, query,
+                                VKApiConst.COUNT, 100,
+                                VKApiConst.FIELDS, "activity,members_count,status"));
+        vkRequest.executeWithListener(new VKRequest.VKRequestListener() {
+            @Override
+            public void onComplete(VKResponse response) {
+                super.onComplete(response);
+                Gson gson = new GsonBuilder()
+                        .create();
+                GroupResponse groupResponse = gson
+                        .fromJson(response.responseString, GroupResponse.class);
+                List<Group> items = new ArrayList<>();
+                for (Group group : groupResponse.response.items) {
+                    if (!group.isClosed() && (group.getType().equals("page") || group.getType().equals("group")) && !group.isMember()) {
+                        items.add(group);
+                        if (items.size() >= 10)
+                            break;
+                    }
+                }
+                postGlobal(items);
+            }
+
+            @Override
+            public void onError(VKError error) {
+                super.onError(error);
+                postGlobal(error.toString());
+            }
+        });
+    }
+
     private void post(List<Group> items) {
         post(items, null);
     }
@@ -63,9 +96,20 @@ public class GroupsRepositoryImpl implements GroupsRepository {
     }
 
     private void post(List<Group> items, String error) {
-        GroupsEvent event = new GroupsEvent();
-        event.setError(error);
-        event.setGroups(items);
+        GroupsEvent event = new GroupsEvent(items, error, false);
         eventBus.postSticky(event);
+    }
+
+    private void postGlobal(List<Group> items) {
+        postGlobal(items, null);
+    }
+
+    private void postGlobal(String error) {
+        postGlobal(null, error);
+    }
+
+    private void postGlobal(List<Group> items, String error) {
+        GroupsEvent event = new GroupsEvent(items, error, true);
+        eventBus.post(event);
     }
 }

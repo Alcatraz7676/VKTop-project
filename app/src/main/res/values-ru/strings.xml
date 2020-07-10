@@ -59,6 +59,7 @@
     <string name="disconnected_subtitle_text">Нажмите кнопку чтобы попробовать снова</string>
     <string name="disconnected_button_text">ПОВТОРИТЬ ПОПЫТКУ</string>
     <string name="groups_title_text">Выберите группу</string>
+    <string name="global_search_label">Глобальный поиск</string>
 
     <!-- Posts Screen -->
     <string name="sort_progress_dialog_title">Идет получение постов\n(приложение можно свернуть)</string>

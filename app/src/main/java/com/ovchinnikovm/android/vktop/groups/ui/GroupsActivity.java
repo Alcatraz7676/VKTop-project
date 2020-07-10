@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NavUtils;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -16,6 +15,7 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
+import com.jakewharton.rxbinding2.support.v7.widget.RxSearchView;
 import com.ovchinnikovm.android.vktop.group.ui.GroupActivity;
 import com.ovchinnikovm.android.vktop.lib.PreCachingLayoutManager;
 import com.ovchinnikovm.android.vktop.R;
@@ -30,12 +30,15 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Predicate;
 
 import static com.ovchinnikovm.android.vktop.lib.PicassoImageLoader.POST_IMAGE_TAG;
 
@@ -122,6 +125,11 @@ public class GroupsActivity extends AppCompatActivity implements GroupsView, OnI
     }
 
     @Override
+    public void addGlobalGroups(List<Group> groups) {
+        adapter.addGlobalGroups(groups);
+    }
+
+    @Override
     public void showDisconnectedView() {
         loadingIndicator.setVisibility(View.GONE);
         recyclerView.setVisibility(View.GONE);
@@ -153,20 +161,15 @@ public class GroupsActivity extends AppCompatActivity implements GroupsView, OnI
         if (searchviewExpanded) {
             searchView.setIconified(false);
         }
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String s) {
-                filterText = s;
-                adapter.filter(s);
-                return false;
-            }
-        });
+        RxSearchView.queryTextChanges(searchView)
+                .debounce(400, TimeUnit.MILLISECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(charSequence -> {
+                    filterText = charSequence.toString();
+                    adapter.filter(filterText);
+                    if (!charSequence.toString().trim().equals(""))
+                        presenter.getGlobalGroups(filterText);
+                });
 
         return true;
     }
