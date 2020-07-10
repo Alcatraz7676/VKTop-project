@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'me.tatarka.retrolambda'
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -20,6 +21,11 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 dependencies {
@@ -38,14 +44,20 @@ dependencies {
     // parser
     compile "com.google.code.gson:gson:$rootProject.gsonVersion"
 
-    // VK sdk
-    compile "com.vk:androidsdk:$rootProject.vksdkVersion"
+    //compile 'com.vk:androidsdk:1.6.9'
+    compile project(':vksdk_library')
 
     // dependencies for local unit tests
     testCompile "junit:junit:$rootProject.junitVersion"
 
     // UI Testing
     androidTestCompile "com.android.support.test.espresso:espresso-core:$rootProject.espressoVersion"
+
+    // Material dialogs
+    compile "com.afollestad.material-dialogs:core:$rootProject.materialDialogsVersion"
+
+    debugCompile "com.squareup.leakcanary:leakcanary-android:$rootProject.leakCanaryVersion"
+    releaseCompile "com.squareup.leakcanary:leakcanary-android-no-op:$rootProject.leakCanaryVersion"
 }
 
 configurations.all {

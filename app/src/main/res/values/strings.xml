@@ -1,4 +1,13 @@
 <resources>
     <string name="app_name">VkTop</string>
     <integer name="com_vk_sdk_AppId">5851095</integer>
+    
+    <!-- Login dialog -->
+    <string name="enter_by_yourself">ВВЕСТИ ЛОГИН/ПАРОЛЬ</string>
+    <string name="enter_through_app">ВОЙТИ ЧЕРЕЗ ПРИЛОЖЕНИЕ ВКОНТАКТЕ</string>
+    <string name="skip_login">ПРОПУСТИТЬ</string>
+    <string name="login_title">Выберете способ авторизации</string>
+
+    <!-- Main Screen -->
+    <string name="logout_menu_item">ВЫЙТИ</string>
 </resources>

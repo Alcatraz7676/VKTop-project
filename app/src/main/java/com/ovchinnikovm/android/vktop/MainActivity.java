@@ -5,16 +5,17 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.ovchinnikovm.android.vktop.model.PostItem;
 import com.ovchinnikovm.android.vktop.model.PostsResponse;
-import com.vk.sdk.VKAccessToken;
-import com.vk.sdk.VKCallback;
+import com.squareup.leakcanary.RefWatcher;
 import com.vk.sdk.VKSdk;
 import com.vk.sdk.api.VKApiConst;
-import com.vk.sdk.api.VKError;
 import com.vk.sdk.api.VKParameters;
 import com.vk.sdk.api.VKRequest;
 import com.vk.sdk.api.VKResponse;
@@ -42,28 +43,15 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         rvPosts.setLayoutManager(new LinearLayoutManager(this));
-
-        if (VKSdk.isLoggedIn()) {
-            downloadPosts();
-        } else {
-            VKSdk.login(this);
+        if (getSharedPreferences("com.ovchinnikovm.android.vktop", MODE_PRIVATE).getBoolean("firstrun", true)) {
+            Intent intent = new Intent(this, LoginActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
+                    | Intent.FLAG_ACTIVITY_NEW_TASK
+                    | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            overridePendingTransition(0, 0);
         }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (!VKSdk.onActivityResult(requestCode, resultCode, data, new VKCallback<VKAccessToken>() {
-            @Override
-            public void onResult(VKAccessToken token) {
-
-            }
-            @Override
-            public void onError(VKError error) {
-
-            }
-        })) {
-            super.onActivityResult(requestCode, resultCode, data);
-        }
+        downloadPosts();
     }
 
     public void downloadPosts() {
@@ -100,8 +88,38 @@ public class MainActivity extends AppCompatActivity {
 
                 } catch (JSONException e) {
                     e.printStackTrace();
+                    Toast.makeText(MainActivity.this, e.getLocalizedMessage(), Toast.LENGTH_LONG)
+                            .show();
                 }
             }
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.logout && VKSdk.isLoggedIn()) {
+            VKSdk.logout();
+            Intent intent = new Intent(this, LoginActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
+                    | Intent.FLAG_ACTIVITY_NEW_TASK
+                    | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            overridePendingTransition(0, 0);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        RefWatcher refWatcher = VkTopApp.getRefWatcher();
+        refWatcher.watch(this);
     }
 }
