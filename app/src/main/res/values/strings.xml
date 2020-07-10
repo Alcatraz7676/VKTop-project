@@ -23,7 +23,7 @@
         <item>За последний год</item>
         <item>За последний месяц</item>
         <item>За последнюю неделю</item>
-        <item>Выбрать свою</item>
+        <item>Выбрать свой</item>
     </string-array>
     <plurals name="seconds">
         <item quantity="zero">%1$d секунд</item>

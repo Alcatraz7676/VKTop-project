@@ -1,7 +1,7 @@
 package com.ovchinnikovm.android.vktop.posts;
 
 import com.ovchinnikovm.android.vktop.posts.events.DialogEvent;
-import com.ovchinnikovm.android.vktop.posts.events.ExtendedPostsEvent;
+import com.ovchinnikovm.android.vktop.posts.events.PostsEvent;
 import com.ovchinnikovm.android.vktop.posts.ui.PostsView;
 
 import org.greenrobot.eventbus.EventBus;
@@ -19,24 +19,21 @@ public class PostsPresenterImpl implements PostsPresenter {
     }
 
     @Override
-    public void onResume() {
+    public void onCreate() {
         eventBus.register(this);
-    }
-
-    @Override
-    public void onPause() {
-        eventBus.unregister(this);
     }
 
     @Override
     public void onDestroy() {
         view = null;
         interactor.stopRequest();
+        eventBus.unregister(this);
     }
 
     @Override
-    public void downloadPostsIds(Integer groupId, Integer postsCount, Integer sortIntervalType) {
-        interactor.execute(groupId, postsCount, sortIntervalType);
+    public void downloadPostsIds(Integer groupId, Integer postsCount, Integer sortIntervalType,
+                                 Long sortStart, Long sortEnd) {
+        interactor.execute(groupId, postsCount, sortIntervalType, sortStart, sortEnd);
     }
 
     @Override
@@ -51,7 +48,7 @@ public class PostsPresenterImpl implements PostsPresenter {
 
     @Override
     @Subscribe
-    public void onEventMainThread(ExtendedPostsEvent event) {
+    public void onEventMainThread(PostsEvent event) {
         String errorMsg = event.getError();
         if (view != null) {
             if(errorMsg != null) {

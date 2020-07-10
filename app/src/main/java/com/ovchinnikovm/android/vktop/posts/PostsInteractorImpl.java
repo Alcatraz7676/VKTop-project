@@ -8,8 +8,9 @@ public class PostsInteractorImpl implements PostsInteractor{
     }
 
     @Override
-    public void execute(Integer groupId, Integer postsCount, Integer sortIntervalType) {
-        repository.getIds(groupId, postsCount, sortIntervalType);
+    public void execute(Integer groupId, Integer postsCount, Integer sortIntervalType,
+                        Long sortStart, Long sortEnd) {
+        repository.getIds(groupId, postsCount, sortIntervalType, sortStart, sortEnd);
     }
 
     @Override

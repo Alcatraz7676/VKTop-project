@@ -14,6 +14,5 @@ public interface RequestInterface {
                                                         @Query("offset") Long offset,
                                                         @Query("count") Integer count,
                                                         @Query("filter") String filter,
-                                                        @Query("access_token") String accessToken,
-                                                        @Query("version") String version);
+                                                        @Query("access_token") String accessToken);
 }

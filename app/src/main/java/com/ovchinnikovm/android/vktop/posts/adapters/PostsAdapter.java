@@ -165,6 +165,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
     @Override
     public long getItemId(int position) {
         return extendedPosts.items.get(position).getId();
+        //return position;
     }
 
     @Override

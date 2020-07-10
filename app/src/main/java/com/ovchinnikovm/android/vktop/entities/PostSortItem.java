@@ -7,12 +7,22 @@ public class PostSortItem {
     private SocialValue likes;
     private SocialValue reposts;
     private SocialValue comments;
+    private Integer date;
 
     public PostSortItem(Integer id, SocialValue likes, SocialValue reposts, SocialValue comments) {
         this.id = id;
         this.likes = likes;
         this.reposts = reposts;
         this.comments = comments;
+    }
+
+    public PostSortItem(Integer id, SocialValue likes, SocialValue reposts,
+                            SocialValue comments, Integer date) {
+        this.id = id;
+        this.likes = likes;
+        this.reposts = reposts;
+        this.comments = comments;
+        this.date = date;
     }
 
     public Integer getId() {
@@ -29,6 +39,10 @@ public class PostSortItem {
 
     public Integer getComments() {
         return comments.getCount();
+    }
+
+    public Integer getDate() {
+        return date;
     }
 
     @Override

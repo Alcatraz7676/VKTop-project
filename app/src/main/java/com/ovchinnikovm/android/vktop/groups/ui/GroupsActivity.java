@@ -10,6 +10,8 @@ import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.ovchinnikovm.android.vktop.Henson;
@@ -34,6 +36,8 @@ public class GroupsActivity extends AppCompatActivity implements GroupsView, OnI
 
     @BindView(R.id.recyclerview)
     RecyclerView recyclerView;
+    @BindView(R.id.loading_indicator)
+    ProgressBar loadingIndicator;
 
     @Inject
     GroupsAdapter adapter;
@@ -82,7 +86,9 @@ public class GroupsActivity extends AppCompatActivity implements GroupsView, OnI
 
     @Override
     public void setGroups(List<Group> groups) {
+        loadingIndicator.setVisibility(View.GONE);
         adapter.setItems(groups);
+
     }
 
     @Override
@@ -90,7 +96,7 @@ public class GroupsActivity extends AppCompatActivity implements GroupsView, OnI
         switch (item.getItemId()) {
             case android.R.id.home:
                 NavUtils.navigateUpFromSameTask(GroupsActivity.this);
-                overridePendingTransition( 0, R.anim.screen_splash_fade_out );
+                overridePendingTransition(0, R.anim.screen_splash_fade_out);
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -99,7 +105,7 @@ public class GroupsActivity extends AppCompatActivity implements GroupsView, OnI
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        overridePendingTransition( 0, R.anim.screen_splash_fade_out );
+        overridePendingTransition(0, R.anim.screen_splash_fade_out);
     }
 
     @Override
@@ -114,7 +120,7 @@ public class GroupsActivity extends AppCompatActivity implements GroupsView, OnI
                 .build();
 
         startActivity(intent);
-        overridePendingTransition( 0, R.anim.screen_splash_fade_out );
+        overridePendingTransition(0, R.anim.screen_splash_fade_out);
     }
 
     @Override

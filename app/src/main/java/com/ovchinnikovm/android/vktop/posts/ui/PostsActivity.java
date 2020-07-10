@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -30,6 +31,7 @@ import com.ovchinnikovm.android.vktop.posts.adapters.PostsAdapter;
 import com.ovchinnikovm.android.vktop.posts.di.PostsComponent;
 import com.ovchinnikovm.android.vktop.posts.events.DialogEvent;
 import com.squareup.leakcanary.RefWatcher;
+import com.vk.sdk.VKAccessToken;
 
 import javax.inject.Inject;
 
@@ -53,6 +55,12 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
     @Nullable
     @InjectExtra
     Integer sortIntervalType;
+    @Nullable
+    @InjectExtra
+    Long sortStart;
+    @Nullable
+    @InjectExtra
+    Long sortEnd;
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -86,8 +94,13 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
         ButterKnife.bind(this);
         setupInjection();
         setupActionBar();
-        showProgressDeterminateDialog();
-        presenter.downloadPostsIds(groupId, postsCount, sortIntervalType);
+        if (sortIntervalType == 0)
+            showDeterminateProgressDialog();
+        else
+            showIndeterminateProgressDialog();
+        presenter.onCreate();
+        presenter.downloadPostsIds(groupId, postsCount, sortIntervalType, sortStart, sortEnd);
+        Log.i("mytag", VKAccessToken.currentToken().accessToken);
     }
 
     private void setupActionBar() {
@@ -137,7 +150,7 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
         imageLoader.loadIcon(groupIconImageView, groupIconUrl);
     }
 
-    public void showProgressDeterminateDialog() {
+    public void showDeterminateProgressDialog() {
         new MaterialDialog.Builder(this)
                 .title(R.string.sort_progress_dialog_title)
                 .content(R.string.please_wait)
@@ -159,13 +172,41 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
                 .show();
     }
 
+    public void showIndeterminateProgressDialog() {
+        new MaterialDialog.Builder(this)
+                .title(R.string.sort_progress_dialog_title)
+                .content(R.string.please_wait)
+                .contentGravity(GravityEnum.CENTER)
+                .progress(true, 0)
+                .progressIndeterminateStyle(true)
+                .cancelable(false)
+                .negativeText("Отмена")
+                .onNegative((dialog, which) -> {
+                    dialog.dismiss();
+                    Intent intent = new Intent(this, MainActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
+                            | Intent.FLAG_ACTIVITY_NEW_TASK
+                            | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                    overridePendingTransition(0, R.anim.screen_splash_fade_out);
+                })
+                .showListener(
+                        dialogInterface -> dialog = (MaterialDialog) dialogInterface)
+                .show();
+    }
+
     @Override
     public void incrementDialogNumber(DialogEvent event) {
-        dialog.incrementProgress(1);
         if (event.isLast()) {
-            dialog.dismiss();
-            presenter.getPosts(0);
+            dismissDialog();
+        } else {
+            dialog.incrementProgress(1);
         }
+    }
+
+    private void dismissDialog() {
+        dialog.dismiss();
+        presenter.getPosts(0);
     }
 
     private void setupInjection() {
@@ -199,20 +240,8 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        presenter.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        presenter.onPause();
-        super.onPause();
-    }
-
-    @Override
     public void onError(String error) {
-        Toast.makeText(this, error, Toast.LENGTH_LONG).show();
+        Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
     }
 
     @Override

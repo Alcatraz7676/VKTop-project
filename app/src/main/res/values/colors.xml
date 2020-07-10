@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#5b7aa8</color>
-    <color name="colorPrimaryDark">#4b6d9e</color>
-    <color name="colorAccent">#1a79c4</color>
-    <color name="postsBackground">#e4eaea</color>
+    <color name="colorPrimary">#2B3D4D</color>
+    <color name="colorPrimaryDark">#23303D</color>
+    <color name="colorAccent">#5b7aa8</color>
+    <color name="postsBackground">#e5e9ea</color>
     <color name="photoBackground">#e6e6e6</color>
 </resources>

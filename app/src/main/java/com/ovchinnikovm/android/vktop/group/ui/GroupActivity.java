@@ -13,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.borax12.materialdaterangepicker.date.DatePickerDialog;
 import com.f2prateek.dart.Dart;
 import com.f2prateek.dart.InjectExtra;
 import com.ovchinnikovm.android.vktop.Henson;
@@ -21,6 +22,8 @@ import com.ovchinnikovm.android.vktop.VkTopApp;
 import com.ovchinnikovm.android.vktop.group.GroupPresenter;
 import com.ovchinnikovm.android.vktop.group.di.GroupComponent;
 import com.squareup.leakcanary.RefWatcher;
+
+import java.util.Calendar;
 
 import javax.inject.Inject;
 
@@ -67,6 +70,8 @@ public class GroupActivity extends AppCompatActivity implements GroupView {
     GroupPresenter presenter;
     MaterialDialog sortIntervalDialog;
     Integer dialogSelectedIndex = 0;
+    Long sortStart;
+    Long sortEnd;
     private Integer postsCount;
     private Integer time;
 
@@ -88,18 +93,55 @@ public class GroupActivity extends AppCompatActivity implements GroupView {
                 .itemsCallbackSingleChoice(
                         dialogSelectedIndex,
                         (dialog, view, which, text) -> {
-                            changeText(which);
-                            dialogSelectedIndex = which;
+                            if (which != 4) {
+                                dialog.dismiss();
+                                changeText(which);
+                                dialogSelectedIndex = which;
+                            }
+                            else {
+                                Calendar now = Calendar.getInstance();
+                                DatePickerDialog dpd = DatePickerDialog.newInstance(
+                                        null,
+                                        now.get(Calendar.YEAR),
+                                        now.get(Calendar.MONTH),
+                                        now.get(Calendar.DAY_OF_MONTH)
+                                );
+                                Calendar vkBornDate = Calendar.getInstance();
+                                long vkBornMilliseconds = 1160438400000L;
+                                vkBornDate.setTimeInMillis(vkBornMilliseconds);
+                                dpd.setOnDateSetListener((view1, year, monthOfYear, dayOfMonth, yearEnd, monthOfYearEnd, dayOfMonthEnd) -> {
+
+                                    dialog.dismiss();
+
+                                    Calendar sortStartCalendar = Calendar.getInstance();
+                                    sortStartCalendar.set(Calendar.YEAR, year);
+                                    sortStartCalendar.set(Calendar.MONTH, monthOfYear);
+                                    sortStartCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                                    sortStart = sortStartCalendar.getTimeInMillis() / 1000;
+                                    Calendar sortEndCalendar = Calendar.getInstance();
+                                    sortEndCalendar.set(Calendar.YEAR, yearEnd);
+                                    sortEndCalendar.set(Calendar.MONTH, monthOfYearEnd);
+                                    sortEndCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonthEnd);
+                                    sortEnd = sortEndCalendar.getTimeInMillis() / 1000;
+                                    changeText(4);
+                                    dialogSelectedIndex = 4;
+
+                                });
+                                dpd.setMinDate(vkBornDate);
+                                dpd.setMaxDate(Calendar.getInstance());
+                                dpd.show(getFragmentManager(), "Datepickerdialog");
+                            }
                             return true;
                         })
                 .positiveText(R.string.choose_label)
+                .autoDismiss(false)
                 .build();
 
         presenter.getPostsCount(groupId);
     }
 
     private void changeText(int newIndex) {
-        if (dialogSelectedIndex != newIndex) {
+        if (newIndex == 4 || dialogSelectedIndex != newIndex) {
             switch (newIndex) {
                 case 0:
                     averageTimeLabel.setText(R.string.average_time_label);
@@ -135,6 +177,14 @@ public class GroupActivity extends AppCompatActivity implements GroupView {
                         setTime(time);
                     }
                     break;
+                case 4:
+                    averageTimeLabel.setText(R.string.max_time_label);
+                    int range = (int) ((System.currentTimeMillis() / 1000) - sortStart);
+                    range = (range / 432000) + 1;
+                    if (time < range)
+                        setTime(time);
+                    else
+                        setTime(range);
             }
         }
     }
@@ -208,6 +258,8 @@ public class GroupActivity extends AppCompatActivity implements GroupView {
                         .groupName(groupTitle)
                         .groupIconUrl(groupIconURL)
                         .sortIntervalType(dialogSelectedIndex)
+                        .sortStart(sortStart)
+                        .sortEnd(sortEnd)
                         .build();
 
                 startActivity(intent);

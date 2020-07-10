@@ -22,7 +22,7 @@ import com.ovchinnikovm.android.vktop.entities.PostsSdkResponse;
 import com.ovchinnikovm.android.vktop.entities.Profile;
 import com.ovchinnikovm.android.vktop.entities.SocialValue;
 import com.ovchinnikovm.android.vktop.posts.events.DialogEvent;
-import com.ovchinnikovm.android.vktop.posts.events.ExtendedPostsEvent;
+import com.ovchinnikovm.android.vktop.posts.events.PostsEvent;
 import com.vk.sdk.VKAccessToken;
 import com.vk.sdk.api.VKApiConst;
 import com.vk.sdk.api.VKError;
@@ -43,17 +43,17 @@ import java.util.concurrent.TimeUnit;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class PostsRepositoryImpl implements PostsRepository {
-    public static final String BASE_URL = "https://api.vk.com/method/";
+    private static final String BASE_URL = "https://api.vk.com/method/";
     private EventBus eventBus;
     private Gson gson;
 
-    private int offset;
     private String groupId;
     private int postsCount;
 
@@ -65,11 +65,7 @@ public class PostsRepositoryImpl implements PostsRepository {
 
     private Disposable disposable;
 
-    private int requestNumber;
-
-    private int numberOfRequests;
-
-    // Variables for time
+    // Variables for log time
     private long c;
     private long a;
 
@@ -78,7 +74,8 @@ public class PostsRepositoryImpl implements PostsRepository {
     }
 
     @Override
-    public void getIds(Integer groupId, Integer postsCount, Integer sortIntervalType) {
+    public void getIds(Integer groupId, Integer postsCount, Integer sortIntervalType,
+                       Long sortStart, Long sortEnd) {
 
         this.groupId = "-" + groupId.toString();
         this.postsCount = postsCount;
@@ -92,6 +89,21 @@ public class PostsRepositoryImpl implements PostsRepository {
 
         switch (sortIntervalType) {
             case 0:
+                downloadIds(posts);
+                break;
+            case 1:
+                downloadIdsForLastPeriod(posts, 31536000);
+                break;
+            case 2:
+                downloadIdsForLastPeriod(posts, 2592000);
+                break;
+            case 3:
+                downloadIdsForLastPeriod(posts, 604800);
+                break;
+            case 4:
+                downloadIdsInRange(posts, sortStart, sortEnd);
+                break;
+            default:
                 downloadIds(posts);
                 break;
         }
@@ -178,9 +190,9 @@ public class PostsRepositoryImpl implements PostsRepository {
 
         long b = System.currentTimeMillis();
 
-        Log.i("extendedPosts", "Time of download and add response to array: " + ((b - c) / 1000.0)
+        Log.i("mytag", "Time of download and add response to array: " + ((b - c) / 1000.0)
                 + " seconds. And time of sort is " + ((b - a) / 1000.0) + " seconds." );
-        Log.i("extendedPosts", "Size of the array: " + posts.response.size());
+        Log.i("mytag", "Size of the array: " + posts.response.size());
         eventBus.post(new DialogEvent(true));
     }
 
@@ -355,7 +367,7 @@ public class PostsRepositoryImpl implements PostsRepository {
             @Override
             public void onError(VKError error) {
                 super.onError(error);
-                Log.i("extendedPosts", "JUST GOT ERROR WHILE LOAD POSTS LMAO");
+                Log.i("mytag", "JUST GOT ERROR WHILE LOAD POSTS LMAO");
                 post(error.toString());
             }
         });
@@ -386,27 +398,142 @@ public class PostsRepositoryImpl implements PostsRepository {
 
         a = System.currentTimeMillis();
         disposable = Observable
-                .intervalRange(0, (postsCount / 100) + 1, 0, 400, TimeUnit.MILLISECONDS)
+                .intervalRange(0, (postsCount / 100) + 1, 400, 400, TimeUnit.MILLISECONDS)
                 .flatMap(offset -> requestInterface
                         .getPosts(groupId, offset * 100, 100, "owner",
-                                VKAccessToken.currentToken().accessToken, "5.68")
+                                VKAccessToken.currentToken().accessToken)
                         .map(postsApiResponse -> postsApiResponse.response)
+                        .retryWhen(new RetryWithDelay(3, 400))
                         .subscribeOn(Schedulers.computation()))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         items -> {
                             long b = System.currentTimeMillis();
-                            Log.i("extendedPosts", "Get that post in " + ((b - a) / 1000.0) + " seconds.");
+                            Log.i("mytag", "Ids: Get that post in " + ((b - a) / 1000.0)
+                                    + " seconds. First id = " + items.get(0).getId());
                             a = System.currentTimeMillis();
                             posts.response.addAll(items);
                             eventBus.post(new DialogEvent(false));
                         },  e -> {
-                            Log.i("extendedPosts", "JUST GOT ERROR WHILE LOAD IDS LMAO");
+                            Log.i("mytag", "JUST GOT ERROR WHILE LOAD IDS LMAO");
                             post(e.toString());
                 }, () -> {
-                            Log.i("extendedPosts", "IN THE COMPLETE CALLBACK");
+                            Log.i("mytag", "IN THE COMPLETE CALLBACK");
                             sortPosts(posts);
                 }
+                );
+    }
+
+    private void downloadIdsForLastPeriod(PostsApiResponse<PostSortItem> posts, int time) {
+
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.registerTypeAdapter(PostsApiResponse.class, new PostsApiResponseWithDateDeserializer());
+        Gson gson = gsonBuilder.create();
+
+        RequestInterface requestInterface = new Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .build()
+                .create(RequestInterface.class);
+
+        long currentTimeInSeconds = System.currentTimeMillis() / 1000;
+        a = System.currentTimeMillis();
+        disposable = Observable
+                .intervalRange(0, (postsCount / 100) + 1, 400, 400, TimeUnit.MILLISECONDS)
+                .flatMap(offset -> requestInterface
+                        .getPosts(groupId, offset * 100, 100, "owner",
+                                VKAccessToken.currentToken().accessToken)
+                        .map(postsApiResponse -> postsApiResponse.response)
+                        .retryWhen(new RetryWithDelay(3, 400))
+                        .subscribeOn(Schedulers.computation()))
+                .takeUntil(items -> currentTimeInSeconds - items.get(items.size() - 1).getDate() > time)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        items -> {
+                            long b = System.currentTimeMillis();
+                            Log.i("mytag", "IdsWithForLastPeriod: Get that post in " + ((b - a) / 1000.0)
+                                    + " seconds. First id = " + items.get(0).getId());
+                            a = System.currentTimeMillis();
+                            if (currentTimeInSeconds - items.get(items.size() - 1).getDate() > time) {
+                                for (PostSortItem item : items) {
+                                    if (currentTimeInSeconds - item.getDate() <= time) {
+                                        posts.response.add(item);
+                                    } else
+                                        break;
+                                }
+                            } else
+                                posts.response.addAll(items);
+                        },  e -> {
+                            Log.i("mytag", "JUST GOT ERROR WHILE LOAD IDS LMAO");
+                            post(e.toString());
+                        }, () -> {
+                            Log.i("mytag", "IN THE COMPLETE LAST PERIOD CALLBACK");
+                            sortPosts(posts);
+                        }
+                );
+    }
+
+    private void downloadIdsInRange(PostsApiResponse<PostSortItem> posts, Long sortStart,
+                                    Long sortEnd) {
+
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.registerTypeAdapter(PostsApiResponse.class, new PostsApiResponseWithDateDeserializer());
+        Gson gson = gsonBuilder.create();
+
+        RequestInterface requestInterface = new Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .build()
+                .create(RequestInterface.class);
+
+        a = System.currentTimeMillis();
+        disposable = Observable
+                .intervalRange(0, (postsCount / 100) + 1, 400, 400, TimeUnit.MILLISECONDS)
+                .flatMap(offset -> requestInterface
+                        .getPosts(groupId, offset * 100, 100, "owner",
+                                VKAccessToken.currentToken().accessToken)
+                        .map(postsApiResponse -> postsApiResponse.response)
+                        .retryWhen(new RetryWithDelay(3, 400))
+                        .subscribeOn(Schedulers.computation()))
+                .takeUntil(items -> items.get(items.size() - 1).getDate() < sortStart)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        items -> {
+                            long b = System.currentTimeMillis();
+                            Log.i("mytag", "IdsInRange: Get that post in " + ((b - a) / 1000.0)
+                                    + " seconds. First id = " + items.get(0).getId());
+                            a = System.currentTimeMillis();
+                            if (items.get(items.size() - 1).getDate() < sortStart) {
+                                if (items.get(0).getDate() > sortEnd) {
+                                    for (PostSortItem item : items) {
+                                        if (item.getDate() >= sortStart && item.getDate() <= sortEnd)
+                                            posts.response.add(item);
+                                    }
+                                } else {
+                                    for (PostSortItem item : items) {
+                                        if (item.getDate() >= sortStart)
+                                            posts.response.add(item);
+                                        else
+                                            break;
+                                    }
+                                }
+                            } else if (items.get(0).getDate() > sortEnd) {
+                                for (PostSortItem item : items) {
+                                    if (item.getDate() <= sortEnd)
+                                        posts.response.add(item);
+                                }
+                            }
+                            else
+                                posts.response.addAll(items);
+                        },  e -> {
+                            Log.i("mytag", "JUST GOT ERROR WHILE LOAD IDS IN RANGE LMAO");
+                            post(e.toString());
+                        }, () -> {
+                            Log.i("mytag", "IN THE COMPLETE IDS RANGE CALLBACK");
+                            sortPosts(posts);
+                        }
                 );
     }
 
@@ -426,20 +553,52 @@ public class PostsRepositoryImpl implements PostsRepository {
     }
 
     private void post(ExtendedPosts posts, String error) {
-        ExtendedPostsEvent event = new ExtendedPostsEvent();
+        PostsEvent event = new PostsEvent();
         event.setError(error);
         event.setExtendedPosts(posts);
         eventBus.post(event);
     }
 
-    private class PostsApiResponseDeserializer
-            implements JsonDeserializer<PostsApiResponse> {
+    public class RetryWithDelay implements Function<Observable<? extends Throwable>, Observable<?>> {
+        private final int maxRetries;
+        private final int retryDelayMillis;
+        private int retryCount;
+
+        public RetryWithDelay(final int maxRetries, final int retryDelayMillis) {
+            this.maxRetries = maxRetries;
+            this.retryDelayMillis = retryDelayMillis;
+            this.retryCount = 0;
+        }
 
         @Override
-        public PostsApiResponse deserialize(JsonElement json, Type type,
+        public Observable<?> apply(final Observable<? extends Throwable> attempts) {
+            return attempts
+                    .flatMap(new Function<Throwable, Observable<?>>() {
+                        @Override
+                        public Observable<?> apply(final Throwable throwable) {
+                            post("SKIP BUNCH OF POSTS num: " + retryCount);
+                            Log.i("mytag", "SKIP BUNCH OF POSTS num: " + retryCount);
+                            if (++retryCount < maxRetries) {
+                                // When this Observable calls onNext, the original
+                                // Observable will be retried (i.e. re-subscribed).
+                                return Observable.timer(retryDelayMillis,
+                                        TimeUnit.MILLISECONDS);
+                            }
+                            // Max retries hit. Just pass the error along.
+                            return Observable.error(throwable);
+                        }
+                    });
+        }
+    }
+
+    private class PostsApiResponseDeserializer
+            implements JsonDeserializer<PostsApiResponse<PostSortItem>> {
+
+        @Override
+        public PostsApiResponse<PostSortItem> deserialize(JsonElement json, Type type,
                                             JsonDeserializationContext context) throws JsonParseException {
 
-            Log.i("extendedPosts", json.toString());
+            Log.i("mytag", json.toString());
 
             JsonArray jArray = json.getAsJsonObject().get("response").getAsJsonArray();
 
@@ -453,6 +612,35 @@ public class PostsRepositoryImpl implements PostsRepository {
                         new SocialValue(jObject.getAsJsonObject("likes").get("count").getAsInt()),
                         new SocialValue(jObject.getAsJsonObject("reposts").get("count").getAsInt()),
                         new SocialValue(jObject.getAsJsonObject("comments").get("count").getAsInt()));
+                vkPostItem.response.add(item);
+            }
+
+            return vkPostItem;
+        }
+    }
+
+    private class PostsApiResponseWithDateDeserializer
+            implements JsonDeserializer<PostsApiResponse<PostSortItem>> {
+
+        @Override
+        public PostsApiResponse<PostSortItem> deserialize(JsonElement json, Type type,
+                                            JsonDeserializationContext context) throws JsonParseException {
+
+            Log.i("mytag", json.toString());
+
+            JsonArray jArray = json.getAsJsonObject().get("response").getAsJsonArray();
+
+            PostsApiResponse<PostSortItem> vkPostItem = new PostsApiResponse<>();
+            vkPostItem.response = new ArrayList<>();
+
+            for (int i=1; i < jArray.size(); i++) {
+                JsonObject jObject = (JsonObject) jArray.get(i);
+                //assuming you have the suitable constructor...
+                PostSortItem item = new PostSortItem(jObject.get("id").getAsInt(),
+                        new SocialValue(jObject.getAsJsonObject("likes").get("count").getAsInt()),
+                        new SocialValue(jObject.getAsJsonObject("reposts").get("count").getAsInt()),
+                        new SocialValue(jObject.getAsJsonObject("comments").get("count").getAsInt()),
+                        jObject.get("date").getAsInt());
                 vkPostItem.response.add(item);
             }
 

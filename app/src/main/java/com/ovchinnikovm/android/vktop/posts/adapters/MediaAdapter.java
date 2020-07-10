@@ -43,10 +43,6 @@ public class MediaAdapter extends RecyclerView.Adapter<MediaAdapter.ViewHolder> 
                 holder.icon.setImageResource(R.drawable.ic_song);
                 holder.title.setText(attachment.getAudioArtist());
                 holder.subtitle.setText(attachment.getAudioTitle());
-                minutes = attachment.getAudioDuration() / 60;
-                seconds = attachment.getAudioDuration() % 60;
-                holder.time.setText(minutes + ":" + seconds);
-                holder.time.setVisibility(View.VISIBLE);
                 setOnClickListener(holder.view, null);
                 break;
             case "video":

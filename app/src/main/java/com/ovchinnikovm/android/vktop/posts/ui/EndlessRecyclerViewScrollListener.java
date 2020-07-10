@@ -4,7 +4,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
 
-public abstract  class EndlessRecyclerViewScrollListener extends RecyclerView.OnScrollListener {
+public abstract class EndlessRecyclerViewScrollListener extends RecyclerView.OnScrollListener {
 
     int firstVisibleItem, visibleItemCount, totalItemCount;
     private int previousTotal = 0; // The total number of items in the dataset after the last load
