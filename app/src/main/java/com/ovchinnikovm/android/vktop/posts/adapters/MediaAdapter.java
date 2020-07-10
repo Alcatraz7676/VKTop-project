@@ -35,6 +35,7 @@ public class MediaAdapter extends RecyclerView.Adapter<MediaAdapter.ViewHolder> 
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
+        holder.time.setVisibility(View.GONE);
         Attachment attachment = attachments.get(position);
         int minutes;
         int seconds;

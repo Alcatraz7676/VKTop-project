@@ -6,5 +6,12 @@ import java.util.List;
 
 public interface GroupsView {
     void onError(String error);
+
     void setGroups(List<Group> groups);
+
+    void showDisconnectedView();
+
+    void showGroups();
+
+    void showLoadingIndicator();
 }

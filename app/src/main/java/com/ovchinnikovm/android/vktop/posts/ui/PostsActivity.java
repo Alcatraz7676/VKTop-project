@@ -1,6 +1,8 @@
 package com.ovchinnikovm.android.vktop.posts.ui;
 
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -107,6 +109,7 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
         setupActionBar();
         presenter.onCreate();
         if (itemId == null) {
+            lockOrientation();
             if (sortIntervalType == 0)
                 showDeterminateProgressDialog();
             else
@@ -116,6 +119,25 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
         } else {
             presenter.setSortedItem(itemId);
             presenter.getPosts(0);
+            /*
+            if (savedInstanceState != null) {
+                Parcelable state = savedInstanceState.getParcelable("KeyForLayoutManagerState");
+                adapter = new PostsAdapter(extendedPosts, imageLoader, onItemClickListener, this);
+                setupRecyclerView();
+                if (state != null)
+                    recyclerview.getLayoutManager().onRestoreInstanceState(state);
+            }
+            */
+        }
+    }
+
+    private void lockOrientation() {
+        int currentOrientation = getResources().getConfiguration().orientation;
+        if (currentOrientation == Configuration.ORIENTATION_LANDSCAPE) {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+        }
+        else {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
         }
     }
 
@@ -212,6 +234,13 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        //outState.putInt("position", recyclerview.getAdapterPosition());
+        outState.putParcelable("KeyForLayoutManagerState", recyclerview.getLayoutManager().onSaveInstanceState());
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
     public void incrementDialogNumber(DialogEvent event) {
         if (event.isLast()) {
             dismissDialog();
@@ -279,6 +308,7 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
             groupNameTextView.setText(groupName);
             groupNameTextView.setVisibility(View.VISIBLE);
         }
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
     }
 
     @Override

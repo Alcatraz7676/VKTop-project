@@ -2,9 +2,11 @@ package com.ovchinnikovm.android.vktop.entities;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
+
 
 // This class contains information about the group in it.
-public class Group {
+public class Group implements Serializable {
     private Integer id;
     private String name;
     @SerializedName("activity")

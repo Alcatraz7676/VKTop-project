@@ -1,9 +1,6 @@
 package com.ovchinnikovm.android.vktop.group.ui;
 
-import android.content.Context;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
@@ -40,6 +37,16 @@ import butterknife.OnClick;
 
 public class GroupActivity extends AppCompatActivity implements GroupView {
 
+    private final static String POSTS_COUNT_KEY = "posts_count_key";
+    private final static String TIME_KEY = "time_key";
+    private final static String SORT_START_KEY = "sort_start_key";
+    private final static String SORT_END_KEY = "sort_end_key";
+    private final static String DIALOG_SELECTED_INDEX_KEY = "dialog_selected_index_key";
+    private final static String DIALOG_PRESSED_INDEX_KEY = "dialog_pressed_index_key";
+    private final static String DIALOG_STATE_KEY = "dialog_state_key";
+    private final static int ALL_DIALOGS_CLOSED = 0;
+    private final static int MATERIAL_DIALOG_OPENED = 1;
+    private final static int DATEPICKER_DIALOG_OPENED = 2;
     @Nullable
     @InjectExtra
     String groupTitle;
@@ -55,8 +62,6 @@ public class GroupActivity extends AppCompatActivity implements GroupView {
     @Nullable
     @InjectExtra
     Integer groupId;
-
-
     @BindView(R.id.group_title)
     TextView groupTitleTextView;
     @BindView(R.id.group_description)
@@ -73,136 +78,198 @@ public class GroupActivity extends AppCompatActivity implements GroupView {
     Button sortButton;
     @BindView(R.id.average_time_label)
     TextView averageTimeLabel;
-
     @BindView(R.id.group_info)
     ConstraintLayout group_info;
     @BindView(R.id.loading_indicator)
     ProgressBar loadingIndicator;
     @BindView(R.id.disconnected_view)
     RelativeLayout disconnectedView;
-
-
     @Inject
     GroupPresenter presenter;
-
     MaterialDialog sortIntervalDialog;
+    DatePickerDialog dpd;
     Integer dialogSelectedIndex = 0;
-    Long sortStart;
-    Long sortEnd;
-    private Integer postsCount;
-    private Integer time;
+    Integer dialogPressedIndex = 0;
+    Long sortStart = 0L;
+    Long sortEnd = 0L;
+    private Integer postsCount = 0;
+    private Integer time = 0;
 
     public GroupActivity() {
     }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        setupInjection();
         super.onCreate(savedInstanceState);
         Dart.inject(this);
+        Log.i("mytag", groupTitle + " " + groupDescription + " " + groupIconURL);
         setContentView(R.layout.activity_group);
         ButterKnife.bind(this);
-        setupInjection();
         setupGroupInformation();
+
+        if (savedInstanceState != null) {
+            setPostsAndTime(savedInstanceState.getInt(POSTS_COUNT_KEY), savedInstanceState.getInt(TIME_KEY));
+            sortStart = savedInstanceState.getLong(SORT_START_KEY);
+            sortEnd = savedInstanceState.getLong(SORT_END_KEY);
+            dialogSelectedIndex = savedInstanceState.getInt(DIALOG_SELECTED_INDEX_KEY);
+            dialogPressedIndex = savedInstanceState.getInt(DIALOG_PRESSED_INDEX_KEY);
+            changeText(dialogSelectedIndex);
+        }
 
         sortIntervalDialog = new MaterialDialog.Builder(this)
                 .title(R.string.sort_interval_dialog_title)
                 .items(R.array.time_interval)
                 .itemsCallbackSingleChoice(
-                        dialogSelectedIndex,
+                        dialogPressedIndex,
                         (dialog, view, which, text) -> {
-                            Log.i("mytag", Integer.toString(which));
-                            if (which != 5) {
-                                dialog.dismiss();
-                                changeText(which);
-                                dialogSelectedIndex = which;
-                                sortStart = null;
-                                sortEnd = null;
-                            }
-                            else {
-                                Calendar now = Calendar.getInstance();
-                                now.setTimeInMillis(now.getTimeInMillis() - 86400000L);
-                                DatePickerDialog dpd;
-                                if (sortStart == null && sortEnd == null) {
-                                    dpd = DatePickerDialog.newInstance(
-                                            null,
-                                            now.get(Calendar.YEAR),
-                                            now.get(Calendar.MONTH),
-                                            now.get(Calendar.DAY_OF_MONTH)
-                                    );
-                                } else {
-                                    Calendar from = Calendar.getInstance();
-                                    from.setTimeInMillis(sortStart);
-                                    Calendar to = Calendar.getInstance();
-                                    to.setTimeInMillis(sortEnd);
-                                    dpd = DatePickerDialog.newInstance(
-                                            null,
-                                            from.get(Calendar.YEAR),
-                                            from.get(Calendar.MONTH),
-                                            from.get(Calendar.DAY_OF_MONTH),
-                                            to.get(Calendar.YEAR),
-                                            to.get(Calendar.MONTH),
-                                            to.get(Calendar.DAY_OF_MONTH)
-                                    );
-                                }
-                                Calendar vkBornDate = Calendar.getInstance();
-                                long vkBornMilliseconds = 1160438400000L;
-                                vkBornDate.setTimeInMillis(vkBornMilliseconds);
-                                dpd.setOnDateSetListener((view1, year, monthOfYear, dayOfMonth, yearEnd, monthOfYearEnd, dayOfMonthEnd) -> {
-
-                                    dialog.dismiss();
-
-                                    Calendar sortStartCalendar = Calendar.getInstance();
-                                    sortStartCalendar.set(Calendar.YEAR, year);
-                                    sortStartCalendar.set(Calendar.MONTH, monthOfYear);
-                                    sortStartCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                                    sortStart = sortStartCalendar.getTimeInMillis();
-                                    Calendar sortEndCalendar = Calendar.getInstance();
-                                    sortEndCalendar.set(Calendar.YEAR, yearEnd);
-                                    sortEndCalendar.set(Calendar.MONTH, monthOfYearEnd);
-                                    sortEndCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonthEnd);
-                                    sortEnd = sortEndCalendar.getTimeInMillis();
-                                    changeText(5);
-                                    dialogSelectedIndex = 5;
-
-                                });
-                                dpd.setMinDate(vkBornDate);
-                                dpd.setMaxDate(now);
-                                dpd.show(getFragmentManager(), "Datepickerdialog");
-                            }
+                            dialogPressedIndex = which;
                             return true;
                         })
                 .negativeText(R.string.cancel_label)
                 .onNegative((dialog, which) -> {
                     dialog.dismiss();
                     dialog.setSelectedIndex(dialogSelectedIndex);
+                    dialogPressedIndex = dialogSelectedIndex;
+                })
+                .onPositive((dialog, which) -> {
+                    Log.i("mytag", Integer.toString(dialogSelectedIndex));
+                    if (dialogPressedIndex != 5) {
+                        dialogSelectedIndex = dialogPressedIndex;
+                        dialog.dismiss();
+                        changeText(dialogSelectedIndex);
+                        sortStart = 0L;
+                        sortEnd = 0L;
+                    }
+                    else {
+                        showDatePickerDialog();
+                    }
                 })
                 .cancelListener(dialogInterface -> sortIntervalDialog.setSelectedIndex(dialogSelectedIndex))
                 .positiveText(R.string.choose_label)
                 .canceledOnTouchOutside(false)
+                .alwaysCallSingleChoiceCallback()
                 .autoDismiss(false)
                 .build();
 
-        downloadIfConnected();
-    }
-
-    private void downloadIfConnected() {
-        if (isOnline()) {
-            showLoadingIndicator();
+        if (savedInstanceState == null || savedInstanceState.getInt(POSTS_COUNT_KEY) == 0)
             presenter.getPostsCount(groupId);
-        } else {
-            showDisconnectedView();
+        if (savedInstanceState != null && savedInstanceState.getInt(DIALOG_STATE_KEY, 0) == MATERIAL_DIALOG_OPENED) {
+            sortIntervalDialog.show();
+        }
+        else if (savedInstanceState != null && savedInstanceState.getInt(DIALOG_STATE_KEY, 1) == DATEPICKER_DIALOG_OPENED) {
+            sortIntervalDialog.show();
         }
     }
 
-    private boolean isOnline() {
-        ConnectivityManager cm =
-                (ConnectivityManager) getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo netInfo = cm.getActiveNetworkInfo();
-        return netInfo != null && netInfo.isConnected();
+    private void setupGroupInformation() {
+        groupTitleTextView.setText(groupTitle);
+        groupDescriptionTextView.setText(groupDescription);
+        presenter.loadIcon(groupIconImageView, groupIconURL);
+        memberNumberTextView.setText(Integer.toString(memberNumber));
+    }
+
+    private void setupInjection() {
+        VkTopApp app = (VkTopApp) getApplication();
+        GroupComponent groupComponent = app.getGroupComponent(this, this);
+        groupComponent.inject(this);
+    }
+
+    private void showDatePickerDialog() {
+        Calendar now = Calendar.getInstance();
+        now.setTimeInMillis(now.getTimeInMillis());
+        if (sortStart == 0L && sortEnd == 0L) {
+            dpd = DatePickerDialog.newInstance(
+                    null,
+                    now.get(Calendar.YEAR),
+                    now.get(Calendar.MONTH),
+                    now.get(Calendar.DAY_OF_MONTH)
+            );
+        } else {
+            Calendar from = Calendar.getInstance();
+            from.setTimeInMillis(sortStart);
+            Calendar to = Calendar.getInstance();
+            to.setTimeInMillis(sortEnd);
+            dpd = DatePickerDialog.newInstance(
+                    null,
+                    from.get(Calendar.YEAR),
+                    from.get(Calendar.MONTH),
+                    from.get(Calendar.DAY_OF_MONTH),
+                    to.get(Calendar.YEAR),
+                    to.get(Calendar.MONTH),
+                    to.get(Calendar.DAY_OF_MONTH)
+            );
+        }
+        Calendar vkBornDate = Calendar.getInstance();
+        long vkBornMilliseconds = 1160438400000L;
+        vkBornDate.setTimeInMillis(vkBornMilliseconds);
+        dpd.setOnDateSetListener((view1, year, monthOfYear, dayOfMonth, yearEnd, monthOfYearEnd, dayOfMonthEnd) -> {
+
+            sortIntervalDialog.dismiss();
+
+            Calendar sortStartCalendar = Calendar.getInstance();
+            sortStartCalendar.set(Calendar.YEAR, year);
+            sortStartCalendar.set(Calendar.MONTH, monthOfYear);
+            sortStartCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+            sortStart = sortStartCalendar.getTimeInMillis();
+            Calendar sortEndCalendar = Calendar.getInstance();
+            sortEndCalendar.set(Calendar.YEAR, yearEnd);
+            sortEndCalendar.set(Calendar.MONTH, monthOfYearEnd);
+            sortEndCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonthEnd);
+            sortEnd = sortEndCalendar.getTimeInMillis();
+            changeText(5);
+            dialogSelectedIndex = 5;
+        });
+        dpd.setMinDate(vkBornDate);
+        dpd.setMaxDate(now);
+        dpd.show(getFragmentManager(), "Datepickerdialog");
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putInt(POSTS_COUNT_KEY, postsCount);
+        outState.putInt(TIME_KEY, time);
+        outState.putLong(SORT_START_KEY, sortStart);
+        outState.putLong(SORT_END_KEY, sortEnd);
+        outState.putInt(DIALOG_SELECTED_INDEX_KEY, dialogSelectedIndex);
+        outState.putInt(DIALOG_PRESSED_INDEX_KEY, dialogPressedIndex);
+        if (dpd != null && dpd.isVisible())
+            outState.putInt(DIALOG_STATE_KEY, DATEPICKER_DIALOG_OPENED);
+        else if (sortIntervalDialog.isShowing())
+            outState.putInt(DIALOG_STATE_KEY, MATERIAL_DIALOG_OPENED);
+        else
+            outState.putInt(DIALOG_STATE_KEY, ALL_DIALOGS_CLOSED);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        presenter.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        presenter.onPause();
+        super.onPause();
+    }
+
+    @Override
+    public void onError(String error) {
+        Toast.makeText(this, error, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void setPostsAndTime(Integer postsCount, Integer time) {
+        this.postsCount = postsCount;
+        this.time = time;
+        postsNumberTextView.setText(String.valueOf(postsCount));
+        setTime(time);
+        showGroupInfo();
     }
 
     private void changeText(int newIndex) {
-        if (newIndex == 5 || dialogSelectedIndex != newIndex) {
+        Log.i("mytag", "In changeText method, new index = " + String.valueOf(newIndex) + ", time = " + time);
             switch (newIndex) {
                 case 0:
                     averageTimeLabel.setText(R.string.average_time_label);
@@ -257,47 +324,8 @@ public class GroupActivity extends AppCompatActivity implements GroupView {
                     else
                         setTime(range);
             }
-        }
     }
 
-    private void setupGroupInformation() {
-        groupTitleTextView.setText(groupTitle);
-        groupDescriptionTextView.setText(groupDescription);
-        presenter.loadIcon(groupIconImageView, groupIconURL);
-        memberNumberTextView.setText(Integer.toString(memberNumber));
-    }
-
-    private void setupInjection() {
-        VkTopApp app = (VkTopApp) getApplication();
-        GroupComponent groupComponent = app.getGroupComponent(this, this);
-        groupComponent.inject(this);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        presenter.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        presenter.onPause();
-        super.onPause();
-    }
-
-    @Override
-    public void onError(String error) {
-        Toast.makeText(this, error, Toast.LENGTH_LONG).show();
-    }
-
-    @Override
-    public void setPostsAndTime(Integer postsCount, Integer time) {
-        this.postsCount = postsCount;
-        this.time = time;
-        postsNumberTextView.setText(String.valueOf(postsCount));
-        setTime(time);
-        showGroupInfo();
-    }
 
     private void setTime(Integer time) {
         if (time < 60) {
@@ -308,19 +336,19 @@ public class GroupActivity extends AppCompatActivity implements GroupView {
         }
     }
 
-    private void showDisconnectedView() {
+    public void showDisconnectedView() {
         loadingIndicator.setVisibility(View.GONE);
         group_info.setVisibility(View.GONE);
         disconnectedView.setVisibility(View.VISIBLE);
     }
 
-    private void showGroupInfo() {
+    public void showGroupInfo() {
         loadingIndicator.setVisibility(View.GONE);
         group_info.setVisibility(View.VISIBLE);
         disconnectedView.setVisibility(View.GONE);
     }
 
-    private void showLoadingIndicator() {
+    public void showLoadingIndicator() {
         loadingIndicator.setVisibility(View.VISIBLE);
         group_info.setVisibility(View.GONE);
         disconnectedView.setVisibility(View.GONE);
@@ -358,7 +386,7 @@ public class GroupActivity extends AppCompatActivity implements GroupView {
                 sortIntervalDialog.show();
                 break;
             case R.id.disconnected_button:
-                downloadIfConnected();
+                presenter.getPostsCount(groupId);
                 break;
         }
     }

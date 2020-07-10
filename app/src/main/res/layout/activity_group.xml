@@ -1,249 +1,253 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
-    <android.support.constraint.ConstraintLayout
-        android:id="@+id/group_info"
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone"
-        tools:visibility="visible">
-        <TextView
-            android:id="@+id/group_title"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="48dp"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginTop="0dp"
-            android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            app:layout_constraintBottom_toTopOf="@+id/guideline"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toLeftOf="@+id/group_icon"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.505"
-            tools:text="PLUM"/>
+        android:scrollbars="none">
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/group_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="30dp"
+                android:visibility="gone"
+                tools:visibility="visible">
+                <TextView
+                    android:id="@+id/group_title"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="48dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginTop="0dp"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                    app:layout_constraintBottom_toTopOf="@+id/guideline"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toLeftOf="@+id/group_icon"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.505"
+                    tools:text="PLUM"/>
 
-        <TextView
-            android:id="@+id/group_description"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginBottom="8dp"
-            android:layout_marginLeft="0dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginTop="0dp"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            app:layout_constraintBottom_toTopOf="@+id/guideline"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintLeft_toLeftOf="@+id/group_title"
-            app:layout_constraintRight_toLeftOf="@+id/group_icon"
-            app:layout_constraintTop_toBottomOf="@+id/group_title"
-            app:layout_constraintVertical_bias="0.0"
-            tools:text="Unlimited Market Works"/>
+                <TextView
+                    android:id="@+id/group_description"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginLeft="0dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginTop="0dp"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    app:layout_constraintBottom_toTopOf="@+id/guideline"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintLeft_toLeftOf="@+id/group_title"
+                    app:layout_constraintRight_toLeftOf="@+id/group_icon"
+                    app:layout_constraintTop_toBottomOf="@+id/group_title"
+                    app:layout_constraintVertical_bias="0.0"
+                    tools:text="Unlimited Market Works"/>
 
-        <ImageView
-            android:id="@+id/group_icon"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_gravity="center_vertical"
-            android:layout_marginBottom="8dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginTop="8dp"
-            app:layout_constraintBottom_toTopOf="@+id/guideline"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.5"/>
+                <ImageView
+                    android:id="@+id/group_icon"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginTop="8dp"
+                    app:layout_constraintBottom_toTopOf="@+id/guideline"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.5"/>
 
-        <android.support.constraint.Guideline
-            android:id="@+id/guideline"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_begin="180dp"/>
+                <android.support.constraint.Guideline
+                    android:id="@+id/guideline"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    app:layout_constraintGuide_begin="180dp"/>
 
-        <ImageView
-            android:id="@+id/members_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="0dp"
-            android:layout_marginLeft="@dimen/group_icon_left_margin"
-            android:layout_marginStart="@dimen/group_icon_left_margin"
-            android:layout_marginTop="0dp"
-            app:layout_constraintBottom_toTopOf="@+id/guideline2"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/guideline"
-            app:srcCompat="@drawable/ic_group_members"/>
+                <ImageView
+                    android:id="@+id/members_icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="0dp"
+                    android:layout_marginLeft="@dimen/group_icon_left_margin"
+                    android:layout_marginStart="@dimen/group_icon_left_margin"
+                    android:layout_marginTop="0dp"
+                    app:layout_constraintBottom_toTopOf="@+id/guideline2"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/guideline"
+                    app:srcCompat="@drawable/ic_group_members"/>
 
-        <TextView
-            android:id="@+id/members_count_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="0dp"
-            android:layout_marginLeft="0dp"
-            android:layout_marginTop="0dp"
-            android:paddingLeft="5dp"
-            android:text="@string/members_count_label"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            app:layout_constraintBottom_toTopOf="@+id/guideline2"
-            app:layout_constraintLeft_toRightOf="@+id/members_icon"
-            app:layout_constraintTop_toTopOf="@+id/guideline"
-            app:layout_constraintVertical_bias="0.571"/>
+                <TextView
+                    android:id="@+id/members_count_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="0dp"
+                    android:layout_marginLeft="0dp"
+                    android:layout_marginTop="0dp"
+                    android:paddingLeft="5dp"
+                    android:text="@string/members_count_label"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    app:layout_constraintBottom_toTopOf="@+id/guideline2"
+                    app:layout_constraintLeft_toRightOf="@+id/members_icon"
+                    app:layout_constraintTop_toTopOf="@+id/guideline"
+                    app:layout_constraintVertical_bias="0.571"/>
 
-        <TextView
-            android:id="@+id/member_number"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="0dp"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="0dp"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
-            app:layout_constraintBottom_toBottomOf="@+id/members_count_label"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintLeft_toRightOf="@+id/members_count_label"
-            app:layout_constraintRight_toRightOf="parent"
-            tools:text="123456"/>
+                <TextView
+                    android:id="@+id/member_number"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="0dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="0dp"
+                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+                    app:layout_constraintBottom_toBottomOf="@+id/members_count_label"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintLeft_toRightOf="@+id/members_count_label"
+                    app:layout_constraintRight_toRightOf="parent"
+                    tools:text="123456"/>
 
-        <android.support.constraint.Guideline
-            android:id="@+id/guideline2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_begin="225dp"/>
+                <android.support.constraint.Guideline
+                    android:id="@+id/guideline2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    app:layout_constraintGuide_begin="225dp"/>
 
-        <ImageView
-            android:id="@+id/posts_number_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="0dp"
-            android:layout_marginLeft="0dp"
-            android:layout_marginTop="0dp"
-            app:layout_constraintBottom_toTopOf="@+id/guideline3"
-            app:layout_constraintLeft_toLeftOf="@+id/members_icon"
-            app:layout_constraintTop_toTopOf="@+id/guideline2"
-            app:layout_constraintVertical_bias="0.5"
-            app:srcCompat="@drawable/ic_post_number"/>
+                <ImageView
+                    android:id="@+id/posts_number_icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="0dp"
+                    android:layout_marginLeft="0dp"
+                    android:layout_marginTop="0dp"
+                    app:layout_constraintBottom_toTopOf="@+id/guideline3"
+                    app:layout_constraintLeft_toLeftOf="@+id/members_icon"
+                    app:layout_constraintTop_toTopOf="@+id/guideline2"
+                    app:layout_constraintVertical_bias="0.5"
+                    app:srcCompat="@drawable/ic_post_number"/>
 
-        <TextView
-            android:id="@+id/posts_number_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="0dp"
-            android:layout_marginLeft="0dp"
-            android:layout_marginTop="0dp"
-            android:paddingLeft="5dp"
-            android:text="@string/posts_number_label"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            app:layout_constraintBottom_toTopOf="@+id/guideline3"
-            app:layout_constraintLeft_toRightOf="@+id/posts_number_icon"
-            app:layout_constraintTop_toTopOf="@+id/guideline2"
-            app:layout_constraintVertical_bias="0.533"/>
+                <TextView
+                    android:id="@+id/posts_number_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="0dp"
+                    android:layout_marginLeft="0dp"
+                    android:layout_marginTop="0dp"
+                    android:paddingLeft="5dp"
+                    android:text="@string/posts_number_label"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    app:layout_constraintBottom_toTopOf="@+id/guideline3"
+                    app:layout_constraintLeft_toRightOf="@+id/posts_number_icon"
+                    app:layout_constraintTop_toTopOf="@+id/guideline2"
+                    app:layout_constraintVertical_bias="0.533"/>
 
-        <TextView
-            android:id="@+id/posts_number"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="0dp"
-            android:layout_marginLeft="5dp"
-            android:text="@string/no_information"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
-            app:layout_constraintBottom_toBottomOf="@+id/posts_number_label"
-            app:layout_constraintLeft_toRightOf="@+id/posts_number_label"
-            tools:text="123456"/>
+                <TextView
+                    android:id="@+id/posts_number"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="0dp"
+                    android:layout_marginLeft="5dp"
+                    android:text="@string/no_information"
+                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+                    app:layout_constraintBottom_toBottomOf="@+id/posts_number_label"
+                    app:layout_constraintLeft_toRightOf="@+id/posts_number_label"
+                    tools:text="123456"/>
 
-        <android.support.constraint.Guideline
-            android:id="@+id/guideline3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_begin="270dp"/>
+                <android.support.constraint.Guideline
+                    android:id="@+id/guideline3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    app:layout_constraintGuide_begin="270dp"/>
 
-        <ImageView
-            android:id="@+id/sort_time_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="0dp"
-            android:layout_marginLeft="0dp"
-            android:layout_marginTop="0dp"
-            app:layout_constraintBottom_toTopOf="@+id/guideline4"
-            app:layout_constraintLeft_toLeftOf="@+id/posts_number_icon"
-            app:layout_constraintTop_toTopOf="@+id/guideline3"
-            app:layout_constraintVertical_bias="0.538"
-            app:srcCompat="@drawable/ic_sort_time"/>
+                <ImageView
+                    android:id="@+id/sort_time_icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="0dp"
+                    android:layout_marginLeft="0dp"
+                    android:layout_marginTop="0dp"
+                    app:layout_constraintBottom_toTopOf="@+id/guideline4"
+                    app:layout_constraintLeft_toLeftOf="@+id/posts_number_icon"
+                    app:layout_constraintTop_toTopOf="@+id/guideline3"
+                    app:layout_constraintVertical_bias="0.538"
+                    app:srcCompat="@drawable/ic_sort_time"/>
 
-        <TextView
-            android:id="@+id/average_time_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="0dp"
-            android:layout_marginLeft="0dp"
-            android:layout_marginTop="0dp"
-            android:gravity="center"
-            android:paddingLeft="5dp"
-            android:text="@string/average_time_label"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            app:layout_constraintBottom_toTopOf="@+id/guideline4"
-            app:layout_constraintLeft_toRightOf="@+id/sort_time_icon"
-            app:layout_constraintTop_toTopOf="@+id/guideline3"
-            app:layout_constraintVertical_bias="0.51"
-            tools:text="@string/max_time_label"
-            />
+                <TextView
+                    android:id="@+id/average_time_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="0dp"
+                    android:layout_marginLeft="0dp"
+                    android:layout_marginTop="0dp"
+                    android:gravity="center"
+                    android:paddingLeft="5dp"
+                    android:text="@string/average_time_label"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    app:layout_constraintBottom_toTopOf="@+id/guideline4"
+                    app:layout_constraintLeft_toRightOf="@+id/sort_time_icon"
+                    app:layout_constraintTop_toTopOf="@+id/guideline3"
+                    app:layout_constraintVertical_bias="0.51"
+                    tools:text="@string/max_time_label"
+                    />
 
-        <TextView
-            android:id="@+id/time_number"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:layout_marginBottom="0dp"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="0dp"
-            android:ellipsize="end"
-            android:maxLines="2"
-            android:text="@string/no_information"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
-            app:layout_constraintBottom_toBottomOf="@+id/average_time_label"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintLeft_toRightOf="@+id/average_time_label"
-            app:layout_constraintRight_toRightOf="parent"
-            tools:text="41 секунды"/>
+                <TextView
+                    android:id="@+id/time_number"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:layout_marginBottom="0dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="0dp"
+                    android:ellipsize="end"
+                    android:maxLines="2"
+                    android:text="@string/no_information"
+                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+                    app:layout_constraintBottom_toBottomOf="@+id/average_time_label"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintLeft_toRightOf="@+id/average_time_label"
+                    app:layout_constraintRight_toRightOf="parent"
+                    tools:text="41 секунды"/>
 
-        <android.support.constraint.Guideline
-            android:id="@+id/guideline4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_begin="315dp"/>
+                <android.support.constraint.Guideline
+                    android:id="@+id/guideline4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    app:layout_constraintGuide_begin="315dp"/>
 
-        <Button
-            android:id="@+id/sort_interval_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginTop="20dp"
-            android:text="@string/sort_interval_text"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/guideline4"/>
+                <Button
+                    android:id="@+id/sort_interval_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginTop="20dp"
+                    android:text="@string/sort_interval_text"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/guideline4"/>
 
-        <Button
-            android:id="@+id/sort_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginLeft="0dp"
-            android:layout_marginRight="0dp"
-            android:layout_marginTop="8dp"
-            android:text="@string/new_sort_button_text"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/sort_interval_button"/>
-    </android.support.constraint.ConstraintLayout>
-
+                <Button
+                    android:id="@+id/sort_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginLeft="0dp"
+                    android:layout_marginRight="0dp"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/new_sort_button_text"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/sort_interval_button"/>
+            </android.support.constraint.ConstraintLayout>
+    </ScrollView>
     <ProgressBar
         android:id="@+id/loading_indicator"
         style="@style/Widget.AppCompat.ProgressBar"
@@ -253,11 +257,7 @@
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        android:layout_marginTop="8dp"/>
 
     <RelativeLayout
         android:id="@+id/disconnected_view"
@@ -269,10 +269,6 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
         tools:visibility="visible">
 
         <ImageView
@@ -318,4 +314,4 @@
             android:layout_marginTop="8dp"
             android:text="@string/disconnected_button_text"/>
     </RelativeLayout>
-</android.support.constraint.ConstraintLayout>
+</RelativeLayout>

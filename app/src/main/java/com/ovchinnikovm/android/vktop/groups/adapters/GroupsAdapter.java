@@ -11,6 +11,7 @@ import com.ovchinnikovm.android.vktop.R;
 import com.ovchinnikovm.android.vktop.entities.Group;
 import com.ovchinnikovm.android.vktop.lib.base.ImageLoader;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -49,9 +50,12 @@ public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.ViewHolder
         return position;
     }
 
+    public ArrayList<Group> getItems() {
+        return (ArrayList<Group>) groups;
+    }
+
     public void setItems(List<Group> newGroups) {
-        groups.clear();
-        groups.addAll(newGroups);
+        groups = new ArrayList<>(newGroups);
         notifyDataSetChanged();
     }
 

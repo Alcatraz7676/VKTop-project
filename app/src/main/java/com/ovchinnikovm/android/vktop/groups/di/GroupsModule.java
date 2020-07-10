@@ -1,5 +1,7 @@
 package com.ovchinnikovm.android.vktop.groups.di;
 
+import android.content.Context;
+
 import com.ovchinnikovm.android.vktop.entities.Group;
 import com.ovchinnikovm.android.vktop.groups.GroupsInteractor;
 import com.ovchinnikovm.android.vktop.groups.GroupsInteractorImpl;
@@ -52,8 +54,9 @@ public class GroupsModule {
 
     @Provides
     @Singleton
-    GroupsPresenter provideGroupsPresenter(EventBus eventBus, GroupsView view, GroupsInteractor interactor) {
-        return new GroupsPresenterImpl(eventBus, view, interactor);
+    GroupsPresenter provideGroupsPresenter(EventBus eventBus, GroupsView view,
+                                           GroupsInteractor interactor, Context context) {
+        return new GroupsPresenterImpl(eventBus, view, interactor, context);
     }
 
     @Provides

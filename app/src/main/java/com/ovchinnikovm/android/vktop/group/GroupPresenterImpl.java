@@ -1,5 +1,8 @@
 package com.ovchinnikovm.android.vktop.group;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.widget.ImageView;
 
 import com.ovchinnikovm.android.vktop.group.events.GroupEvent;
@@ -14,13 +17,15 @@ public class GroupPresenterImpl implements GroupPresenter {
     private GroupView view;
     private GroupInteractor interactor;
     private ImageLoader imageLoader;
+    private Context context;
 
     public GroupPresenterImpl(EventBus eventBus, GroupView view, GroupInteractor interactor,
-                              ImageLoader imageLoader) {
+                              ImageLoader imageLoader, Context context) {
         this.eventBus = eventBus;
         this.view = view;
         this.interactor = interactor;
         this.imageLoader = imageLoader;
+        this.context = context;
     }
 
     @Override
@@ -40,7 +45,19 @@ public class GroupPresenterImpl implements GroupPresenter {
 
     @Override
     public void getPostsCount(Integer groupId) {
-        interactor.execute(groupId);
+        if (isOnline()) {
+            view.showLoadingIndicator();
+            interactor.execute(groupId);
+        } else {
+            view.showDisconnectedView();
+        }
+    }
+
+    private boolean isOnline() {
+        ConnectivityManager cm =
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnected();
     }
 
     @Override

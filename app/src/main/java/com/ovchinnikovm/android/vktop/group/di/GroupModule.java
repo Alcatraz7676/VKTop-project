@@ -1,5 +1,7 @@
 package com.ovchinnikovm.android.vktop.group.di;
 
+import android.content.Context;
+
 import com.ovchinnikovm.android.vktop.group.GroupInteractor;
 import com.ovchinnikovm.android.vktop.group.GroupInteractorImpl;
 import com.ovchinnikovm.android.vktop.group.GroupPresenter;
@@ -27,8 +29,9 @@ public class GroupModule {
     @Provides
     @Singleton
     GroupPresenter provideGroupPresenter(EventBus eventBus, GroupView view,
-                                         GroupInteractor interactor, ImageLoader imageLoader) {
-        return new GroupPresenterImpl(eventBus, view, interactor, imageLoader);
+                                         GroupInteractor interactor, ImageLoader imageLoader,
+                                         Context context) {
+        return new GroupPresenterImpl(eventBus, view, interactor, imageLoader, context);
     }
 
     @Provides

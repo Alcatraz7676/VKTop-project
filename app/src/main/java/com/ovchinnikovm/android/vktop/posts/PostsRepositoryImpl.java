@@ -103,7 +103,7 @@ public class PostsRepositoryImpl implements PostsRepository {
                 downloadIdsForLastPeriod(posts, 86400);
                 break;
             case 5:
-                setSortRange(sortStart / 1000, sortEnd / 1000);
+                setSortRange(sortStart, sortEnd);
                 downloadIdsInRange(posts, sortStart / 1000, sortEnd / 1000);
                 break;
             default:
@@ -628,7 +628,7 @@ public class PostsRepositoryImpl implements PostsRepository {
 
             Log.i("mytag", json.toString());
 
-            JsonArray jArray = json.getAsJsonObject().get("response").getAsJsonArray();
+            JsonArray jArray = json.getAsJsonObject().getAsJsonObject("response").getAsJsonArray("items");
 
             PostsApiResponse<PostSortItem> vkPostItem = new PostsApiResponse<>();
             vkPostItem.response = new ArrayList<>();

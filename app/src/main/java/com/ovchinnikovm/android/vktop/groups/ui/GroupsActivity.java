@@ -1,9 +1,6 @@
 package com.ovchinnikovm.android.vktop.groups.ui;
 
-import android.content.Context;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NavUtils;
@@ -26,6 +23,7 @@ import com.ovchinnikovm.android.vktop.groups.adapters.OnItemClickListener;
 import com.ovchinnikovm.android.vktop.groups.di.GroupsComponent;
 import com.squareup.leakcanary.RefWatcher;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -36,13 +34,13 @@ import butterknife.OnClick;
 
 public class GroupsActivity extends AppCompatActivity implements GroupsView, OnItemClickListener {
 
+    private final static String LIST_ITEMS_KEY = "recycler_list_items";
     @BindView(R.id.recyclerview)
     RecyclerView recyclerView;
     @BindView(R.id.loading_indicator)
     ProgressBar loadingIndicator;
     @BindView(R.id.disconnected_view)
     RelativeLayout disconnectedView;
-
     @Inject
     GroupsAdapter adapter;
     @Inject
@@ -52,30 +50,21 @@ public class GroupsActivity extends AppCompatActivity implements GroupsView, OnI
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        setupInjection();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_groups);
         ButterKnife.bind(this);
-        setupInjection();
         setupRecyclerView();
         presenter.onStart();
-        downloadIfConnected();
-    }
+        if (savedInstanceState != null &&
+                !((ArrayList<Group>) savedInstanceState.getSerializable(LIST_ITEMS_KEY)).isEmpty()) {
 
-    private void downloadIfConnected() {
-        if (isOnline()) {
-            showLoadingIndicator();
+            setGroups((ArrayList<Group>) savedInstanceState.getSerializable(LIST_ITEMS_KEY));
+            showGroups();
+        } else
             presenter.getGroups();
-        } else {
-            showDisconnectedView();
-        }
-    }
-
-    private boolean isOnline() {
-        ConnectivityManager cm =
-                (ConnectivityManager) getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo netInfo = cm.getActiveNetworkInfo();
-        return netInfo != null && netInfo.isConnected();
     }
 
     private void setupInjection() {
@@ -91,6 +80,12 @@ public class GroupsActivity extends AppCompatActivity implements GroupsView, OnI
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable(LIST_ITEMS_KEY, adapter.getItems());
+    }
+
+    @Override
     public void onError(String error) {
         Toast.makeText(this, error, Toast.LENGTH_LONG).show();
     }
@@ -98,22 +93,24 @@ public class GroupsActivity extends AppCompatActivity implements GroupsView, OnI
     @Override
     public void setGroups(List<Group> groups) {
         adapter.setItems(groups);
-        showGroups();
     }
 
-    private void showDisconnectedView() {
+    @Override
+    public void showDisconnectedView() {
         loadingIndicator.setVisibility(View.GONE);
         recyclerView.setVisibility(View.GONE);
         disconnectedView.setVisibility(View.VISIBLE);
     }
 
-    private void showGroups() {
+    @Override
+    public void showGroups() {
         loadingIndicator.setVisibility(View.GONE);
         recyclerView.setVisibility(View.VISIBLE);
         disconnectedView.setVisibility(View.GONE);
     }
 
-    private void showLoadingIndicator() {
+    @Override
+    public void showLoadingIndicator() {
         loadingIndicator.setVisibility(View.VISIBLE);
         recyclerView.setVisibility(View.GONE);
         disconnectedView.setVisibility(View.GONE);
@@ -138,7 +135,7 @@ public class GroupsActivity extends AppCompatActivity implements GroupsView, OnI
 
     @OnClick(R.id.disconnected_button)
     public void onViewClicked(View view) {
-        downloadIfConnected();
+        presenter.getGroups();
     }
 
     @Override
