@@ -1,5 +1,4 @@
 <resources>
-    <string name="app_name">VkTop</string>
     <integer name="com_vk_sdk_AppId">5851095</integer>
     
     <!-- Login dialog -->
@@ -14,10 +13,18 @@
 
     <!-- Group Screen -->
     <string name="new_sort_button_text">ОТСОРТИРОВАТЬ ПОСТЫ</string>
-    <string name="average_time_label">Среднее время сортировки:</string>
     <string name="posts_number_label">Количество постов:</string>
-    <string name="members_count_label">Количество участников:</string>
-    <string name="no_information">\???</string>
+    <string name="no_information" translatable="false">\???</string>
+    <string name="sort_interval_text">ВЫБРАТЬ ВРЕМЕННОЙ ПРОМЕЖУТОК</string>
+    <string name="sort_interval_dialog_title">Выберете временной промежуток сортировки постов</string>
+    <string name="choose_label">Выбрать</string>
+    <string-array name="time_interval">
+        <item>За все время</item>
+        <item>За последний год</item>
+        <item>За последний месяц</item>
+        <item>За последнюю неделю</item>
+        <item>Выбрать свою</item>
+    </string-array>
     <plurals name="seconds">
         <item quantity="zero">%1$d секунд</item>
         <item quantity="one">%1$d секунда</item>
@@ -35,8 +42,14 @@
         <item quantity="other">%1$d минута</item>
     </plurals>
 
-    <!-- ExtendedPosts Screen -->
+    <!-- Posts Screen -->
     <string name="sort_progress_dialog_title">Идет получение постов</string>
     <string name="please_wait">Пожалуйста, подождите&#8230;</string>
+    <string name="app_name" translatable="false">VkTop</string>
+    <string-array name="sort_items">
+        <item>По лайкам</item>
+        <item>По репостам</item>
+        <item>По комментариям</item>
+    </string-array>
 
 </resources>

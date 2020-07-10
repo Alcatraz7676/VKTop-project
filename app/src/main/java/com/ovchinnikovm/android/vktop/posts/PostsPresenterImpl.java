@@ -35,13 +35,18 @@ public class PostsPresenterImpl implements PostsPresenter {
     }
 
     @Override
-    public void downloadPostsIds(Integer groupId, Integer postsCount) {
-        interactor.execute(groupId, postsCount);
+    public void downloadPostsIds(Integer groupId, Integer postsCount, Integer sortIntervalType) {
+        interactor.execute(groupId, postsCount, sortIntervalType);
     }
 
     @Override
     public void getPosts(int page) {
         interactor.execute(page);
+    }
+
+    @Override
+    public void setSortType(String type) {
+        interactor.setSortType(type);
     }
 
     @Override

@@ -8,8 +8,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.GravityEnum;
@@ -48,6 +50,9 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
     @Nullable
     @InjectExtra
     String groupIconUrl;
+    @Nullable
+    @InjectExtra
+    Integer sortIntervalType;
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -55,8 +60,8 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
     RecyclerView recyclerview;
     @BindView(R.id.group_icon)
     ImageView groupIconImageView;
-    @BindView(R.id.groupName)
-    TextView groupNameTextView;
+    @BindView(R.id.spinner)
+    Spinner spinner;
 
     @Inject
     ImageLoader imageLoader;
@@ -65,9 +70,10 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
     @Inject
     PostsPresenter presenter;
 
-    PostsAdapter adapter;
-
     private MaterialDialog dialog;
+
+    private PreCachingLayoutManager preCachingLayoutManager;
+    private PostsAdapter adapter;
 
     public PostsActivity() {
     }
@@ -81,7 +87,7 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
         setupInjection();
         setupActionBar();
         showProgressDeterminateDialog();
-        presenter.downloadPostsIds(groupId, postsCount);
+        presenter.downloadPostsIds(groupId, postsCount, sortIntervalType);
     }
 
     private void setupActionBar() {
@@ -89,7 +95,45 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-        groupNameTextView.setText(groupName);
+
+        ArrayAdapter<?> spinnerAdapter = ArrayAdapter.createFromResource(this, R.array.sort_items, R.layout.spinner_item);
+        spinnerAdapter.setDropDownViewResource(R.layout.spinner_item_dropdown);
+        spinner.setAdapter(spinnerAdapter);
+        spinner.setSelection(0, false);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String sortType;
+                switch (position) {
+                    case 0:
+                        sortType = "likes";
+                        break;
+                    case 1:
+                        sortType = "shares";
+                        break;
+                    case 2:
+                        sortType = "comments";
+                        break;
+                    default:
+                        sortType = "likes";
+                }
+                presenter.setSortType(sortType);
+
+                recyclerview.clearOnScrollListeners();
+                adapter.removeItems();
+                adapter.notifyDataSetChanged();
+                recyclerview.getRecycledViewPool().clear();
+                addScrollListener();
+
+                presenter.getPosts(0);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
         imageLoader.loadIcon(groupIconImageView, groupIconUrl);
     }
 
@@ -131,22 +175,27 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
     }
 
     private void setupRecyclerView() {
-        PreCachingLayoutManager preCachingLayoutManager = new PreCachingLayoutManager(getApplicationContext(), PreCachingLayoutManager.VERTICAL, false);
+        preCachingLayoutManager = new PreCachingLayoutManager(getApplicationContext(), PreCachingLayoutManager.VERTICAL, false);
         recyclerview.setLayoutManager(preCachingLayoutManager);
-        recyclerview.addOnScrollListener(new EndlessRecyclerViewScrollListener(preCachingLayoutManager) {
-            @Override
-            public void onLoadMore(int page) {
-                // Triggered only when new data needs to be appended to the list
-                // Add whatever code is needed to append new items to the bottom of the list
-                presenter.getPosts(page);
-            }
-        });
+        addScrollListener();
+
         adapter.setHasStableIds(true);
         recyclerview.setAdapter(adapter);
         recyclerview.setItemViewCacheSize(5);
         recyclerview.setDrawingCacheEnabled(true);
         recyclerview.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
         recyclerview.setHasFixedSize(true);
+    }
+
+    private void addScrollListener() {
+        recyclerview.addOnScrollListener(new EndlessRecyclerViewScrollListener(preCachingLayoutManager) {
+            @Override
+            public void onLoadMore(int page) {
+                // Triggered only when new data needs to be appended to the list
+                // Add whatever code is needed to append new item to the bottom of the list
+                presenter.getPosts(page);
+            }
+        });
     }
 
     @Override
@@ -174,8 +223,7 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
         } else {
             int before = adapter.getItemCount();
             adapter.setItems(extendedPosts);
-            int after = adapter.getItemCount();
-            adapter.notifyItemRangeInserted(before, after-before);
+            adapter.notifyItemRangeInserted(before, adapter.getItemCount() - 1);
         }
     }
 
@@ -217,7 +265,4 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
         RefWatcher refWatcher = VkTopApp.getRefWatcher();
         refWatcher.watch(this);
     }
-
-
-
 }

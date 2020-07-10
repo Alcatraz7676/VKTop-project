@@ -15,9 +15,9 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_marginBottom="8dp"
         android:layout_marginLeft="16dp"
-        android:layout_marginStart="16dp"/>
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"/>
 
     <ImageView
         android:id="@+id/reply_icon"
@@ -65,6 +65,7 @@
         android:layout_below="@id/group_icon"
         android:layout_marginEnd="24dp"
         android:layout_marginRight="24dp"
+        android:layout_marginTop="16dp"
         android:visibility="gone"
         expandableTextView:maxCollapsedLines="8"
         tools:visibility="visible">

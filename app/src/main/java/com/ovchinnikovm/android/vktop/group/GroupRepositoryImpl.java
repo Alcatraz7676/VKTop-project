@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.ovchinnikovm.android.vktop.entities.PostsQuantity;
-import com.ovchinnikovm.android.vktop.entities.PostsResponse;
+import com.ovchinnikovm.android.vktop.entities.PostsSdkResponse;
 import com.ovchinnikovm.android.vktop.group.events.GroupEvent;
 import com.vk.sdk.api.VKApiConst;
 import com.vk.sdk.api.VKError;
@@ -35,8 +35,8 @@ public class GroupRepositoryImpl implements GroupRepository{
 
                 Gson gson = new GsonBuilder()
                         .create();
-                PostsResponse<PostsQuantity> postsResponse = gson
-                        .fromJson(response.responseString, new TypeToken<PostsResponse<PostsQuantity>>(){}.getType());
+                PostsSdkResponse<PostsQuantity> postsResponse = gson
+                        .fromJson(response.responseString, new TypeToken<PostsSdkResponse<PostsQuantity>>(){}.getType());
                 post(postsResponse.response.count);
             }
 

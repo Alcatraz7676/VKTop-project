@@ -8,12 +8,15 @@ public class PostSortItem {
     private SocialValue reposts;
     private SocialValue comments;
 
-    public Integer getId() {
-        return id;
+    public PostSortItem(Integer id, SocialValue likes, SocialValue reposts, SocialValue comments) {
+        this.id = id;
+        this.likes = likes;
+        this.reposts = reposts;
+        this.comments = comments;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public Integer getId() {
+        return id;
     }
 
     public Integer getLikes() {

@@ -156,7 +156,12 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
         extendedPosts.items.addAll(newExtendedPosts.items);
     }
 
-    // Two methods below used to fix a bug with repetitive items in the post after scroll back
+    public void removeItems() {
+        extendedPosts.items.clear();
+        togglePositions = new SparseBooleanArray();
+    }
+
+    // Two methods below used to fix a bug with repetitive item in the post after scroll back
     @Override
     public long getItemId(int position) {
         return extendedPosts.items.get(position).getId();
@@ -266,6 +271,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
         TextView comments;
         @BindView(R.id.replies)
         TextView reposts;
+
         private PhotosAdapter photosAdapter;
         private List<String> photosURL;
         private MediaAdapter mediaAdapter;

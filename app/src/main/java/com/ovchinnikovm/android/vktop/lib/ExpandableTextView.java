@@ -161,7 +161,6 @@ public class ExpandableTextView extends LinearLayout implements View.OnClickList
                     mListener.onExpandStateChanged(mTv, !mCollapsed);
                 }
                 mTv.setOnClickListener(l -> clickListener.onItemClick(url));
-                mButton.setOnClickListener(null);
                 mButton.setVisibility(View.GONE);
 
             }
@@ -198,6 +197,7 @@ public class ExpandableTextView extends LinearLayout implements View.OnClickList
         // i.e. Everything fits. No button needed
         mButton.setVisibility(View.GONE);
         mTv.setMaxLines(Integer.MAX_VALUE);
+        mTv.setOnClickListener(l -> clickListener.onItemClick(url));
 
         // Measure
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);

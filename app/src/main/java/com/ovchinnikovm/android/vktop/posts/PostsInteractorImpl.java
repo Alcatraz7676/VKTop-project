@@ -8,8 +8,8 @@ public class PostsInteractorImpl implements PostsInteractor{
     }
 
     @Override
-    public void execute(Integer groupId, Integer postsCount) {
-        repository.getIds(groupId, postsCount);
+    public void execute(Integer groupId, Integer postsCount, Integer sortIntervalType) {
+        repository.getIds(groupId, postsCount, sortIntervalType);
     }
 
     @Override
@@ -20,5 +20,10 @@ public class PostsInteractorImpl implements PostsInteractor{
     @Override
     public void stopRequest() {
         repository.clearRequest();
+    }
+
+    @Override
+    public void setSortType(String type) {
+        repository.setSortType(type);
     }
 }

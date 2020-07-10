@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="average_time_label">Среднее время\n сортировки:</string>
+    <string name="members_count_label">Количество\n участников:</string>
+    <string name="max_time_label">Максимальное время\n сортировки:</string>
+</resources>

@@ -8,6 +8,10 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="AppbarTheme" parent="ThemeOverlay.AppCompat.Light">
+        <item name="colorControlNormal">@android:color/white</item>
+    </style>
+
     <style name="LoginActivityTheme" parent="AppTheme"/>
 
     <style name="AppTheme.NoActionBar" parent="AppTheme">

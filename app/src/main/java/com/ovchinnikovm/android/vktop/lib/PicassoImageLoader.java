@@ -2,14 +2,15 @@ package com.ovchinnikovm.android.vktop.lib;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapShader;
-import android.graphics.Canvas;
-import android.graphics.Paint;
+import android.graphics.drawable.BitmapDrawable;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.widget.ImageView;
 
 import com.ovchinnikovm.android.vktop.R;
 import com.ovchinnikovm.android.vktop.lib.base.ImageLoader;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Transformation;
 
@@ -30,41 +31,21 @@ public class PicassoImageLoader implements ImageLoader {
                 .load(URL)
                 .placeholder(ContextCompat.getDrawable(context, R.drawable.group_oval))
                 .error(ContextCompat.getDrawable(context, R.drawable.group_oval))
-                .transform(new Transformation() {
+                .into(imageView, new Callback() {
                     @Override
-                    public Bitmap transform(Bitmap source) {
-                        int size = Math.min(source.getWidth(), source.getHeight());
-
-                        int x = (source.getWidth() - size) / 2;
-                        int y = (source.getHeight() - size) / 2;
-
-                        Bitmap squaredBitmap = Bitmap.createBitmap(source, x, y, size, size);
-                        if (squaredBitmap != source) {
-                            source.recycle();
-                        }
-
-                        Bitmap bitmap = Bitmap.createBitmap(size, size, source.getConfig());
-
-                        Canvas canvas = new Canvas(bitmap);
-                        Paint paint = new Paint();
-                        BitmapShader shader = new BitmapShader(squaredBitmap,
-                                BitmapShader.TileMode.CLAMP, BitmapShader.TileMode.CLAMP);
-                        paint.setShader(shader);
-                        paint.setAntiAlias(true);
-
-                        float r = size / 2f;
-                        canvas.drawCircle(r, r, r, paint);
-
-                        squaredBitmap.recycle();
-                        return bitmap;
+                    public void onSuccess() {
+                        Bitmap imageBitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
+                        RoundedBitmapDrawable imageDrawable = RoundedBitmapDrawableFactory.create(context.getResources(), imageBitmap);
+                        imageDrawable.setCircular(true);
+                        imageDrawable.setCornerRadius(Math.max(imageBitmap.getWidth(), imageBitmap.getHeight()) / 2.0f);
+                        imageView.setImageDrawable(imageDrawable);
                     }
 
                     @Override
-                    public String key() {
-                        return "circle";
+                    public void onError() {
+                        imageView.setImageResource(R.drawable.group_oval);
                     }
-                })
-                .into(imageView);
+                });
     }
 
     @Override
