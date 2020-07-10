@@ -3,6 +3,10 @@ package com.ovchinnikovm.android.vktop;
 import android.app.Activity;
 import android.content.Intent;
 
+import com.ovchinnikovm.android.vktop.group.di.DaggerGroupComponent;
+import com.ovchinnikovm.android.vktop.group.di.GroupComponent;
+import com.ovchinnikovm.android.vktop.group.di.GroupModule;
+import com.ovchinnikovm.android.vktop.group.ui.GroupView;
 import com.ovchinnikovm.android.vktop.groups.adapters.OnItemClickListener;
 import com.ovchinnikovm.android.vktop.groups.di.DaggerGroupsComponent;
 import com.ovchinnikovm.android.vktop.groups.di.GroupsComponent;
@@ -62,6 +66,14 @@ public class VkTopApp extends android.app.Application {
                 .builder()
                 .libsModule(new LibsModule(activity))
                 .groupsModule(new GroupsModule(view, clickListener))
+                .build();
+    }
+
+    public GroupComponent getGroupComponent(Activity activity, GroupView view) {
+        return DaggerGroupComponent
+                .builder()
+                .libsModule(new LibsModule(activity))
+                .groupModule(new GroupModule(view))
                 .build();
     }
 

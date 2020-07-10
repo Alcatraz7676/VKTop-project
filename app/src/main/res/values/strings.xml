@@ -10,5 +10,27 @@
 
     <!-- Main Screen -->
     <string name="logout_menu_item">ВЫЙТИ</string>
-    <string name="new_sort_button_text">Отсортировать посты</string>
+    <string name="open_groups_list_button_text">ПОКАЗАТЬ ГРУППЫ</string>
+
+    <!-- Group Screen -->
+    <string name="new_sort_button_text">ОТСОРТИРОВАТЬ ПОСТЫ</string>
+    <string name="average_time_label">Среднее время сортировки:</string>
+    <string name="posts_number_label">Количество постов:</string>
+    <string name="members_count_label">Количество участников:</string>
+    <plurals name="seconds">
+        <item quantity="zero">%1$d секунд</item>
+        <item quantity="one">%1$d секунда</item>
+        <item quantity="two">%1$d секунды</item>
+        <item quantity="few">%1$d секунды</item>
+        <item quantity="many">%1$d секунд</item>
+        <item quantity="other">%1$d секунда</item>
+    </plurals>
+    <plurals name="minutes">
+        <item quantity="zero">%1$d минут</item>
+        <item quantity="one">%1$d минута</item>
+        <item quantity="two">%1$d минуты</item>
+        <item quantity="few">%1$d минуты</item>
+        <item quantity="many">%1$d минут</item>
+        <item quantity="other">%1$d минута</item>
+    </plurals>
 </resources>

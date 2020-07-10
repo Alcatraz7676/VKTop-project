@@ -20,11 +20,11 @@
             </intent-filter>
         </activity>
         <activity android:name=".LoginActivity"
-            android:theme="@style/LoginActivityTheme">
-        </activity>
+            android:theme="@style/LoginActivityTheme"/>
         <activity android:name=".groups.ui.GroupsActivity"
-            android:parentActivityName=".MainActivity">
-        </activity>
+            android:parentActivityName=".MainActivity"/>
+        <activity android:name=".group.ui.GroupActivity"
+                  android:parentActivityName=".groups.ui.GroupsActivity"/>
         <activity android:name="com.vk.sdk.VKServiceActivity"
             android:label="ServiceActivity"
             android:theme="@style/VK.Transparent" />

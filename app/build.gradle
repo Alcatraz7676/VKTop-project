@@ -71,6 +71,13 @@ dependencies {
 
     // EventBus
     compile "org.greenrobot:eventbus:$rootProject.ext.eventbusVersion"
+
+    // Dart-Henson
+    compile "com.f2prateek.dart:dart:$rootProject.ext.darthensonVersion"
+    provided "com.f2prateek.dart:dart-processor:$rootProject.ext.darthensonVersion"
+    compile "com.f2prateek.dart:henson:$rootProject.ext.darthensonVersion"
+    provided "com.f2prateek.dart:henson-processor:$rootProject.ext.darthensonVersion"
+
 }
 
 configurations.all {

@@ -41,6 +41,7 @@ ext {
     materialDialogsVersion = '0.9.4.5'
     glideVersion = '4.0.0-RC1'
     leakCanaryVersion = '1.5.1'
+    darthensonVersion = '2.0.2'
 
     // vksdk
     vksdkVersion = '1.6.9'

@@ -8,6 +8,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:text="@string/new_sort_button_text"/>
+        android:text="@string/open_groups_list_button_text"/>
 
 </RelativeLayout>

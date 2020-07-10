@@ -1,5 +1,6 @@
 package com.ovchinnikovm.android.vktop.groups.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NavUtils;
@@ -7,11 +8,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.ovchinnikovm.android.vktop.R;
 import com.ovchinnikovm.android.vktop.VkTopApp;
 import com.ovchinnikovm.android.vktop.entities.Group;
+import com.ovchinnikovm.android.vktop.group.ui.Henson;
 import com.ovchinnikovm.android.vktop.groups.GroupsPresenter;
 import com.ovchinnikovm.android.vktop.groups.adapters.GroupsAdapter;
 import com.ovchinnikovm.android.vktop.groups.adapters.OnItemClickListener;
@@ -25,7 +26,7 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class GroupsActivity extends AppCompatActivity implements GroupsView, OnItemClickListener{
+public class GroupsActivity extends AppCompatActivity implements GroupsView, OnItemClickListener {
 
     @BindView(R.id.rv_groups)
     RecyclerView recyclerView;
@@ -55,8 +56,8 @@ public class GroupsActivity extends AppCompatActivity implements GroupsView, OnI
 
     private void setupInjection() {
         VkTopApp app = (VkTopApp) getApplication();
-        GroupsComponent imagesComponent = app.getGroupsComponent(this, this, this);
-        imagesComponent.inject(this);
+        GroupsComponent groupsComponent = app.getGroupsComponent(this, this, this);
+        groupsComponent.inject(this);
     }
 
     @Override
@@ -100,7 +101,17 @@ public class GroupsActivity extends AppCompatActivity implements GroupsView, OnI
 
     @Override
     public void onItemClick(Group group) {
-        Toast.makeText(this, group.toString(), Toast.LENGTH_LONG).show();
+        Intent intent = Henson.with(this)
+                .gotoGroupActivity()
+                .groupTitle(group.getName())
+                .groupDescription(group.getStatus())
+                .groupIconURL(group.getPhotoURL())
+                .memberNumber(group.getMembers())
+                .groupId(group.getId())
+                .build();
+
+        startActivity(intent);
+        overridePendingTransition( 0, R.anim.screen_splash_fade_out );
     }
 
     @Override

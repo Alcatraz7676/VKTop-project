@@ -31,7 +31,7 @@ public class GroupsRepositoryImpl implements GroupsRepository {
                 .get(VKParameters
                         .from(VKApiConst.USER_ID, VKAccessToken.currentToken().userId,
                                 VKApiConst.EXTENDED, 1,
-                                VKApiConst.FIELDS, "activity"));
+                                VKApiConst.FIELDS, "activity,members_count,status"));
         vkRequest.executeWithListener(new VKRequest.VKRequestListener() {
             @Override
             public void onComplete(VKResponse response) {

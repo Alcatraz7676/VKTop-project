@@ -8,7 +8,7 @@ public class PostsResponse {
 
     public class Response {
 
-        //public int count;
+        public int count;
         public List<Post> items;
     }
 }
