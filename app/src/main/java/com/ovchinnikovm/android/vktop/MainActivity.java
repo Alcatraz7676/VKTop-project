@@ -3,46 +3,28 @@ package com.ovchinnikovm.android.vktop;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
+import android.widget.Button;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.ovchinnikovm.android.vktop.model.PostItem;
-import com.ovchinnikovm.android.vktop.model.PostsResponse;
+import com.ovchinnikovm.android.vktop.groups.ui.GroupsActivity;
 import com.squareup.leakcanary.RefWatcher;
 import com.vk.sdk.VKSdk;
-import com.vk.sdk.api.VKApiConst;
-import com.vk.sdk.api.VKParameters;
-import com.vk.sdk.api.VKRequest;
-import com.vk.sdk.api.VKResponse;
-import com.vk.sdk.api.methods.VKApiGroups;
-import com.vk.sdk.api.methods.VKApiWall;
-import com.vk.sdk.api.model.VKList;
-
-import org.json.JSONException;
-
-import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class MainActivity extends AppCompatActivity {
 
-    @BindView(R.id.rv_posts)
-    RecyclerView rvPosts;
-
-    ArrayList<PostItem> mItems = new ArrayList<>();
+    @BindView(R.id.new_sort_button)
+    Button newSortButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        rvPosts.setLayoutManager(new LinearLayoutManager(this));
         if (getSharedPreferences("com.ovchinnikovm.android.vktop", MODE_PRIVATE).getBoolean("firstrun", true)) {
             Intent intent = new Intent(this, LoginActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
@@ -51,48 +33,13 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
             overridePendingTransition(0, 0);
         }
-        downloadPosts();
     }
 
-    public void downloadPosts() {
-        VKRequest vkRequest = new VKApiGroups().getById(VKParameters.from("group_ids", "ru2ch"));
-        vkRequest.executeWithListener(new VKRequest.VKRequestListener() {
-            @Override
-            public void onComplete(VKResponse response) {
-                super.onComplete(response);
-
-                VKList vkList = (VKList) response.parsedModel;
-
-                try {
-                    VKRequest vkRequest1 = new VKApiWall()
-                            .get(VKParameters.from(VKApiConst.OWNER_ID, "-" + vkList.get(0).fields.getInt("id"),
-                                    VKApiConst.COUNT, 100));
-                    vkRequest1.executeWithListener(new VKRequest.VKRequestListener() {
-                        @Override
-                        public void onComplete(VKResponse vkResponse) {
-                            super.onComplete(vkResponse);
-
-                            Gson gson = new GsonBuilder().create();
-                            PostsResponse postsResponse = gson
-                                    .fromJson(vkResponse.responseString, PostsResponse.class);
-                            for (PostsResponse.Response.Post post : postsResponse.response.items) {
-                                PostItem item = new PostItem();
-                                if (post.text.equals(""))
-                                    continue;
-                                item.setText(post.text);
-                                mItems.add(item);
-                            }
-                            rvPosts.setAdapter(new PostsAdapter(mItems));
-                        }
-                    });
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    Toast.makeText(MainActivity.this, e.getLocalizedMessage(), Toast.LENGTH_LONG)
-                            .show();
-                }
-            }
-        });
+    @OnClick(R.id.new_sort_button)
+    public void onViewClicked() {
+        Intent intent = new Intent(MainActivity.this, GroupsActivity.class);
+        startActivity(intent);
+        overridePendingTransition( 0, R.anim.screen_splash_fade_out );
     }
 
     @Override
@@ -110,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
                     | Intent.FLAG_ACTIVITY_NEW_TASK
                     | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
-            overridePendingTransition(0, 0);
+            overridePendingTransition( 0, R.anim.screen_splash_fade_out );
             return true;
         }
         return super.onOptionsItemSelected(item);

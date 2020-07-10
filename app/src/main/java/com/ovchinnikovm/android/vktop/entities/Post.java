@@ -1,7 +1,6 @@
-package com.ovchinnikovm.android.vktop.model;
+package com.ovchinnikovm.android.vktop.entities;
 
-public class PostItem {
-
+public class Post {
     private String text;
 
     public String getText() {

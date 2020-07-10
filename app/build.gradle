@@ -36,18 +36,19 @@ dependencies {
     compile "com.android.support.constraint:constraint-layout:$rootProject.constraintLayoutVersion"
     compile "com.android.support:recyclerview-v7:$rootProject.supportLibraryVersion"
     compile "com.android.support:cardview-v7:$rootProject.supportLibraryVersion"
+    compile "com.android.support:design:$rootProject.ext.supportLibraryVersion"
 
     // code generator for view
     compile "com.jakewharton:butterknife:$rootProject.butterKnifeVersion"
-    compile "com.jakewharton:butterknife-compiler:$rootProject.butterKnifeVersion"
+    annotationProcessor "com.jakewharton:butterknife-compiler:$rootProject.butterKnifeVersion"
 
     // parser
     compile "com.google.code.gson:gson:$rootProject.gsonVersion"
 
-    //compile 'com.vk:androidsdk:1.6.9'
+    // compile 'com.vk:androidsdk:1.6.9'
     compile project(':vksdk_library')
 
-    // dependencies for local unit tests
+    // Dependencies for local unit tests
     testCompile "junit:junit:$rootProject.junitVersion"
 
     // UI Testing
@@ -56,8 +57,20 @@ dependencies {
     // Material dialogs
     compile "com.afollestad.material-dialogs:core:$rootProject.materialDialogsVersion"
 
+    // LeakCanary
     debugCompile "com.squareup.leakcanary:leakcanary-android:$rootProject.leakCanaryVersion"
     releaseCompile "com.squareup.leakcanary:leakcanary-android-no-op:$rootProject.leakCanaryVersion"
+
+    // Dagger
+    annotationProcessor "com.google.dagger:dagger-compiler:$rootProject.ext.dagger2Version"
+    compile "javax.annotation:jsr250-api:$rootProject.ext.jsr250Version"
+    compile "com.google.dagger:dagger:$rootProject.ext.dagger2Version"
+
+    // Glide
+    compile "com.github.bumptech.glide:glide:$rootProject.ext.glideVersion"
+
+    // EventBus
+    compile "org.greenrobot:eventbus:$rootProject.ext.eventbusVersion"
 }
 
 configurations.all {

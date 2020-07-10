@@ -1,7 +1,14 @@
 package com.ovchinnikovm.android.vktop;
 
+import android.app.Activity;
 import android.content.Intent;
 
+import com.ovchinnikovm.android.vktop.groups.adapters.OnItemClickListener;
+import com.ovchinnikovm.android.vktop.groups.di.DaggerGroupsComponent;
+import com.ovchinnikovm.android.vktop.groups.di.GroupsComponent;
+import com.ovchinnikovm.android.vktop.groups.di.GroupsModule;
+import com.ovchinnikovm.android.vktop.groups.ui.GroupsView;
+import com.ovchinnikovm.android.vktop.lib.di.LibsModule;
 import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;
 import com.vk.sdk.VKAccessToken;
@@ -47,6 +54,15 @@ public class VkTopApp extends android.app.Application {
 
         vkAccessTokenTracker.startTracking();
         VKSdk.initialize(this);
+    }
+
+    public GroupsComponent getGroupsComponent(Activity activity, GroupsView view,
+                                              OnItemClickListener clickListener) {
+        return DaggerGroupsComponent
+                .builder()
+                .libsModule(new LibsModule(activity))
+                .groupsModule(new GroupsModule(view, clickListener))
+                .build();
     }
 
 }

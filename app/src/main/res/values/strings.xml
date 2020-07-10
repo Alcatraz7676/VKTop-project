@@ -10,4 +10,5 @@
 
     <!-- Main Screen -->
     <string name="logout_menu_item">ВЫЙТИ</string>
+    <string name="new_sort_button_text">Отсортировать посты</string>
 </resources>

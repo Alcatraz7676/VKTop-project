@@ -68,7 +68,7 @@ public class LoginActivity extends AppCompatActivity {
                 | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         dialog.dismiss();
         startActivity(intent);
-        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+        overridePendingTransition( 0, R.anim.screen_splash_fade_out );
     }
 
     @Override
