@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.StrictMode;
 import android.support.multidex.MultiDexApplication;
-import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 import com.ovchinnikovm.android.vktop.group.di.DaggerGroupComponent;
@@ -30,8 +29,6 @@ import com.squareup.leakcanary.RefWatcher;
 import com.vk.sdk.VKAccessToken;
 import com.vk.sdk.VKAccessTokenTracker;
 import com.vk.sdk.VKSdk;
-
-import java.util.concurrent.atomic.AtomicLong;
 
 import io.fabric.sdk.android.Fabric;
 import io.realm.Realm;

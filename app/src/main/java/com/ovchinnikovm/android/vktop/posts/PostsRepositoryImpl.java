@@ -1,7 +1,5 @@
 package com.ovchinnikovm.android.vktop.posts;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.support.v4.util.ArraySet;
 import android.util.Log;
 
@@ -14,7 +12,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
-import com.ovchinnikovm.android.vktop.LoginActivity;
 import com.ovchinnikovm.android.vktop.entities.Attachment;
 import com.ovchinnikovm.android.vktop.entities.ExtendedPost;
 import com.ovchinnikovm.android.vktop.entities.ExtendedPosts;
@@ -46,7 +43,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;

@@ -84,8 +84,23 @@
     <string name="month_dec">декабря</string>
     <string name="month_some">какого-то месяца</string>
     <string name="date">в</string>
-    <string name="poll_size">голосов</string>
+    <plurals name="poll_size">
+        <item quantity="zero">%1$d голосов</item>
+        <item quantity="one">%1$d голос</item>
+        <item quantity="two">%1$d голоса</item>
+        <item quantity="few">%1$d голоса</item>
+        <item quantity="many">%1$d голосов</item>
+        <item quantity="other">%1$d голос</item>
+    </plurals>
     <string name="doc_size">Мб</string>
+    <plurals name="views">
+        <item quantity="zero">%1$d просмотров</item>
+        <item quantity="one">%1$d просмотр</item>
+        <item quantity="two">%1$d просмотра</item>
+        <item quantity="few">%1$d просмотра</item>
+        <item quantity="many">%1$d просмотров</item>
+        <item quantity="other">%1$d просмотр</item>
+    </plurals>
     
     <!-- Notification -->
     <string name="notification_title">Записи отсортированы</string>

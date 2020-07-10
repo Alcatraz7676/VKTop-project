@@ -97,6 +97,14 @@ public class Attachment implements Parcelable {
         this.video.duration = duration;
     }
 
+    public Integer getVideoViews() {
+        return video.views;
+    }
+
+    public void setVideoViews(Integer views) {
+        this.video.views = views;
+    }
+
     public String getAudioArtist() {
         return audio.artist;
     }
@@ -190,6 +198,7 @@ public class Attachment implements Parcelable {
         private String title;
         private String description;
         private Integer duration;
+        private Integer views;
     }
 
     private class Audio implements Serializable {

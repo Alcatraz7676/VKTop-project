@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.ovchinnikovm.android.vktop.R;
 import com.ovchinnikovm.android.vktop.entities.Attachment;
 
+import java.text.DecimalFormat;
 import java.util.List;
 
 import butterknife.BindView;
@@ -50,7 +51,12 @@ public class MediaAdapter extends RecyclerView.Adapter<MediaAdapter.ViewHolder> 
             case "video":
                 holder.icon.setImageResource(R.drawable.ic_video);
                 holder.title.setText(attachment.getVideoTitle());
-                holder.subtitle.setText(attachment.getVideoDescription());
+                if (attachment.getVideoDescription().equals("")) {
+                    Integer views = attachment.getVideoViews();
+                    holder.subtitle.setText(context.getResources().getQuantityString(R.plurals.views, views, views));
+                }
+                else
+                    holder.subtitle.setText(attachment.getVideoDescription());
                 int minutes = attachment.getVideoDuration() / 60;
                 int seconds = attachment.getVideoDuration() % 60;
                 if (seconds >= 0 && seconds < 10) {
@@ -72,9 +78,10 @@ public class MediaAdapter extends RecyclerView.Adapter<MediaAdapter.ViewHolder> 
                 setOnClickListener(holder.view);
                 break;
             case "poll":
+                Integer votes = attachment.getVotes();
                 holder.icon.setImageResource(R.drawable.ic_poll);
                 holder.title.setText(attachment.getQuestion());
-                holder.subtitle.setText(attachment.getVotes().toString() + " " + context.getString(R.string.poll_size));
+                holder.subtitle.setText(context.getResources().getQuantityString(R.plurals.poll_size, votes, votes));
                 setOnClickListener(holder.view);
                 break;
             case "doc":

@@ -2,9 +2,7 @@ package com.ovchinnikovm.android.vktop.lib;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
@@ -16,8 +14,6 @@ import com.ovchinnikovm.android.vktop.lib.base.ImageLoader;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Transformation;
-
-import static com.vk.sdk.VKUIHelper.getApplicationContext;
 
 public class PicassoImageLoader implements ImageLoader {
 

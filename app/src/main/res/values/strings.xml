@@ -86,8 +86,23 @@
     <string name="month_dec">December</string>
     <string name="month_some">Some month</string>
     <string name="date">at</string>
-    <string name="poll_size">people voted</string>
+    <plurals name="poll_size">
+        <item quantity="zero">%1$d people voted</item>
+        <item quantity="one">%1$d people voted</item>
+        <item quantity="two">%1$d people voted</item>
+        <item quantity="few">%1$d people voted</item>
+        <item quantity="many">%1$d people voted</item>
+        <item quantity="other">%1$d people voted</item>
+    </plurals>
     <string name="doc_size">Mb</string>
+    <plurals name="views">
+        <item quantity="zero">%1$d views</item>
+        <item quantity="one">%1$d view</item>
+        <item quantity="two">%1$d views</item>
+        <item quantity="few">%1$d views</item>
+        <item quantity="many">%1$d views</item>
+        <item quantity="other">%1$d view</item>
+    </plurals>
 
     <!-- Notification -->
     <string name="notification_title">Posts are sorted</string>
