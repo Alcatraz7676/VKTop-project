@@ -14,6 +14,6 @@ public class PostsInteractorImpl implements PostsInteractor{
 
     @Override
     public void stopRequest() {
-        repository.stopRequest();
+        repository.clearRequest();
     }
 }

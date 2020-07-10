@@ -8,7 +8,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,6 +26,7 @@ import com.ovchinnikovm.android.vktop.posts.PostsPresenter;
 import com.ovchinnikovm.android.vktop.posts.adapters.OnItemClickListener;
 import com.ovchinnikovm.android.vktop.posts.adapters.PostsAdapter;
 import com.ovchinnikovm.android.vktop.posts.di.PostsComponent;
+import com.ovchinnikovm.android.vktop.posts.events.DialogEvent;
 import com.squareup.leakcanary.RefWatcher;
 
 import javax.inject.Inject;
@@ -106,9 +106,9 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
     }
 
     @Override
-    public void incrementDialogNumber() {
+    public void incrementDialogNumber(DialogEvent event) {
         dialog.incrementProgress(1);
-        if (dialog.getCurrentProgress() == ((postsCount / 100) + 1))
+        if (event.isLast())
             dialog.dismiss();
     }
 
@@ -120,7 +120,6 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
 
     private void setupRecyclerView() {
         recyclerview.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false));
-        Log.i("mytag", "It just works");
         recyclerview.setAdapter(adapter);
     }
 
@@ -138,7 +137,7 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
 
     @Override
     public void onError(String error) {
-        Toast.makeText(this, error, Toast.LENGTH_LONG).show();
+        Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
     }
 
     @Override

@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginTop="8dp"
-    tools:layout_marginTop="-1500dp">
+    tools:layout_marginTop="-300dp">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -69,6 +69,7 @@
             android:layout_below="@id/text"
             android:layout_marginTop="16dp"
             android:adjustViewBounds="true"
+            android:maxHeight="600dp"
             android:visibility="gone"
             tools:src="@drawable/test_image"
             tools:visibility="visible"/>

@@ -55,6 +55,6 @@ public class PostsPresenterImpl implements PostsPresenter {
     @Override
     @Subscribe
     public void onEventMainThread(DialogEvent event) {
-        view.incrementDialogNumber();
+        view.incrementDialogNumber(event);
     }
 }
