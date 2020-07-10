@@ -69,7 +69,15 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 import static android.support.v7.preference.PreferenceManager.getDefaultSharedPreferences;
+import static com.ovchinnikovm.android.vktop.group.ui.GroupActivity.GROUP_ICON_URL_INTENT_KEY;
+import static com.ovchinnikovm.android.vktop.group.ui.GroupActivity.GROUP_ID_INTENT_KEY;
+import static com.ovchinnikovm.android.vktop.group.ui.GroupActivity.GROUP_NAME_INTENT_KEY;
+import static com.ovchinnikovm.android.vktop.group.ui.GroupActivity.POSTS_COUNT_INTENT_KEY;
+import static com.ovchinnikovm.android.vktop.group.ui.GroupActivity.SORT_END_INTENT_KEY;
+import static com.ovchinnikovm.android.vktop.group.ui.GroupActivity.SORT_INTERVAL_TYPE_INTENT_KEY;
+import static com.ovchinnikovm.android.vktop.group.ui.GroupActivity.SORT_START_INTENT_KEY;
 import static com.ovchinnikovm.android.vktop.lib.PicassoImageLoader.POST_IMAGE_TAG;
+import static com.ovchinnikovm.android.vktop.main.MainActivity.ITEM_ID_INTENT_KEY;
 
 public class PostsActivity extends AppCompatActivity implements PostsView, OnItemClickListener {
 
@@ -133,14 +141,14 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
         super.onCreate(savedInstanceState);
 
         Intent intent = getIntent();
-        int groupId = intent.getIntExtra("groupId", -1);
-        postsCount = intent.getIntExtra("postsCount", -1);
-        groupName = intent.getStringExtra("groupName");
-        groupIconUrl = intent.getStringExtra("groupIconURL");
-        int sortIntervalType = intent.getIntExtra("sortIntervalType", 0);
-        long sortStart = intent.getLongExtra("sortStart", 0);
-        long sortEnd = intent.getLongExtra("sortEnd", 0);
-        itemId = intent.getIntExtra("itemId", -1);
+        int groupId = intent.getIntExtra(GROUP_ID_INTENT_KEY, -1);
+        postsCount = intent.getIntExtra(POSTS_COUNT_INTENT_KEY, -1);
+        groupName = intent.getStringExtra(GROUP_NAME_INTENT_KEY);
+        groupIconUrl = intent.getStringExtra(GROUP_ICON_URL_INTENT_KEY);
+        int sortIntervalType = intent.getIntExtra(SORT_INTERVAL_TYPE_INTENT_KEY, 0);
+        long sortStart = intent.getLongExtra(SORT_START_INTENT_KEY, 0);
+        long sortEnd = intent.getLongExtra(SORT_END_INTENT_KEY, 0);
+        itemId = intent.getIntExtra(ITEM_ID_INTENT_KEY, -1);
 
         setContentView(R.layout.activity_posts);
         ButterKnife.bind(this);
@@ -172,8 +180,10 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
                 currentPage = savedInstanceState.getInt(CURRENT_PAGE_KEY, 0);
                 sortedPostsCount = savedInstanceState.getInt(NUMBER_OF_SORTED_POSTS_KEY, 0);
                 setFirstPage(items, sortedPostsCount);
-                SparseBooleanArray sbarray = savedInstanceState.getParcelable(TOGGLE_EXPANDABLE_TV_KEY);
-                adapter.setTogglePositions(sbarray);
+                if (adapter != null) {
+                    SparseBooleanArray sbarray = savedInstanceState.getParcelable(TOGGLE_EXPANDABLE_TV_KEY);
+                    adapter.setTogglePositions(sbarray);
+                }
             } else {
                 presenter.getPosts(0);
             }

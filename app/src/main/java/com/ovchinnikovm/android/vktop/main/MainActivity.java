@@ -52,10 +52,12 @@ import io.realm.Realm;
 import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt;
 
 import static android.support.v7.preference.PreferenceManager.getDefaultSharedPreferences;
+import static com.ovchinnikovm.android.vktop.group.ui.GroupActivity.GROUP_ICON_URL_INTENT_KEY;
 
 public class MainActivity extends AppCompatActivity implements OnItemClickListener, OnItemLongClickListener {
 
     public static final String KEY_PREF_FIRST_ENTER = "first_enter_key";
+    public static final String ITEM_ID_INTENT_KEY = "itemId";
 
     @BindView(R.id.recycler_view)
     RecyclerViewEmptySupport recyclerView;
@@ -284,8 +286,8 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
                 .equalTo("sortId", itemId).findFirst();
         String iconUrl = item.getGroupIconUrl();
         Intent intent = new Intent(this, PostsActivity.class);
-        intent.putExtra("itemId", itemId);
-        intent.putExtra("groupIconURL", iconUrl);
+        intent.putExtra(ITEM_ID_INTENT_KEY, itemId);
+        intent.putExtra(GROUP_ICON_URL_INTENT_KEY, iconUrl);
         startActivity(intent);
         overridePendingTransition(0, R.anim.screen_splash_fade_out);
     }

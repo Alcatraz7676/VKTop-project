@@ -169,6 +169,9 @@ public class PostsRepositoryImpl implements PostsRepository {
                     post2.getComments().compareTo(post1.getComments()));
             realmSortedItem.addByComments(byComments);
 
+
+            // Если были получены посты за все время то устанавливаем промежуток между первым
+            // постом и сегодняшней датой.
             if (realmSortedItem.getSortRange() == null) {
                 realmSortedItem.setSortRange(
                     formatSortRange(
@@ -296,7 +299,8 @@ public class PostsRepositoryImpl implements PostsRepository {
                         // Single photo
                         if (numberOfPhotos == 1) {
                             for (Attachment attachment : post.attachments) {
-                                if (attachment.getType().equals("photo")) {
+                                if (attachment.getType().equals("photo") &&
+                                        (attachment.getPhotoHeight() != null && attachment.getPhotoWidth() != null)) {
                                     post.photos.add(new Photo(attachment.getPhoto(),
                                             (attachment.getPhotoHeight() * 1.00) / attachment.getPhotoWidth()));
                                     break;
@@ -424,13 +428,7 @@ public class PostsRepositoryImpl implements PostsRepository {
 
         a = System.currentTimeMillis();
 
-        int postsCount;
-        if (realmSortedItem.getPostsCount() < 100)
-            postsCount = 1;
-        else if (realmSortedItem.getPostsCount() % 100 == 0)
-            postsCount = realmSortedItem.getPostsCount() / 100;
-        else
-            postsCount = (realmSortedItem.getPostsCount() / 100) + 1;
+        int postsCount = getPageSize(realmSortedItem.getPostsCount());
 
         disposable = Observable
                 .intervalRange(0, postsCount, 400, 400, TimeUnit.MILLISECONDS)
@@ -444,17 +442,17 @@ public class PostsRepositoryImpl implements PostsRepository {
                 .subscribe(
                         items -> {
                             long b = System.currentTimeMillis();
-                            Log.i("tmpTag", "Ids: Get that post in " + ((b - a) / 1000.0)
+                            Log.i("mytag", "Ids: Get that post in " + ((b - a) / 1000.0)
                                     + " seconds. First id = " + items.get(0).getId());
                             a = System.currentTimeMillis();
                             posts.response.addAll(items);
                             eventBus.post(new DialogEvent(false));
                         },  e -> {
-                            Log.i("tmpTag", "JUST GOT ERROR WHILE LOAD IDS \nError text: " +
+                            Log.i("mytag", "JUST GOT ERROR WHILE LOAD IDS \nError text: " +
                             e.toString());
                             post(e.toString());
                         }, () -> {
-                            Log.i("tmpTag", "IN THE COMPLETE CALLBACK");
+                            Log.i("mytag", "IN THE COMPLETE CALLBACK");
                             sortPosts(posts);
                         }
                 );
@@ -479,13 +477,7 @@ public class PostsRepositoryImpl implements PostsRepository {
         int currentTimeInSeconds = (int) (System.currentTimeMillis() / 1000);
         a = System.currentTimeMillis();
 
-        int postsCount;
-        if (realmSortedItem.getPostsCount() < 100)
-            postsCount = 1;
-        else if (realmSortedItem.getPostsCount() % 100 == 0)
-            postsCount = realmSortedItem.getPostsCount() / 100;
-        else
-            postsCount = (realmSortedItem.getPostsCount() / 100) + 1;
+        int postsCount = getPageSize(realmSortedItem.getPostsCount());
 
         disposable = Observable
                 .intervalRange(0, postsCount, 400, 400, TimeUnit.MILLISECONDS)
@@ -568,13 +560,7 @@ public class PostsRepositoryImpl implements PostsRepository {
 
         a = System.currentTimeMillis();
 
-        int postsCount;
-        if (realmSortedItem.getPostsCount() < 100)
-            postsCount = 1;
-        else if (realmSortedItem.getPostsCount() % 100 == 0)
-            postsCount = realmSortedItem.getPostsCount() / 100;
-        else
-            postsCount = (realmSortedItem.getPostsCount() / 100) + 1;
+        int postsCount = getPageSize(realmSortedItem.getPostsCount());
 
         disposable = Observable
                 .intervalRange(0, postsCount, 400, 400, TimeUnit.MILLISECONDS)
@@ -649,6 +635,15 @@ public class PostsRepositoryImpl implements PostsRepository {
                 );
     }
 
+    private int getPageSize(int postsCount) {
+        if (postsCount < 100)
+            return 1;
+        else if (postsCount % 100 == 0)
+            return realmSortedItem.getPostsCount() / 100;
+        else
+            return (realmSortedItem.getPostsCount() / 100) + 1;
+    }
+
     @Override
     public void cancelVkRequest() {
         if (vkRequest != null) {
@@ -702,7 +697,7 @@ public class PostsRepositoryImpl implements PostsRepository {
             return attempts
                     .flatMap((Function<Throwable, Observable<?>>) throwable -> {
                         post("SKIP BUNCH OF POSTS num: " + retryCount);
-                        Log.i("tmpTag", "SKIP BUNCH OF POSTS num: " + retryCount);
+                        Log.i("mytag", "SKIP BUNCH OF POSTS num: " + retryCount);
                         ++retryCount;
                         // When this Observable calls onNext, the original
                         // Observable will be retried (i.e. re-subscribed).

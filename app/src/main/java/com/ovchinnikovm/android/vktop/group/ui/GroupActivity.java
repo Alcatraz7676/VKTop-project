@@ -43,11 +43,19 @@ public class GroupActivity extends AppCompatActivity implements GroupView {
     private final static String DIALOG_SELECTED_INDEX_KEY = "dialog_selected_index_key";
     private final static String DIALOG_PRESSED_INDEX_KEY = "dialog_pressed_index_key";
     private final static String DIALOG_STATE_KEY = "dialog_state_key";
+
+    public final static String GROUP_ID_INTENT_KEY = "groupId";
+    public final static String POSTS_COUNT_INTENT_KEY = "postsCount";
+    public final static String GROUP_NAME_INTENT_KEY = "groupName";
+    public final static String GROUP_ICON_URL_INTENT_KEY = "groupIconURL";
+    public final static String SORT_INTERVAL_TYPE_INTENT_KEY = "sortIntervalType";
+    public final static String SORT_START_INTENT_KEY = "sortStart";
+    public final static String SORT_END_INTENT_KEY = "sortEnd";
+
     private final static int ALL_DIALOGS_CLOSED = 0;
     private final static int MATERIAL_DIALOG_OPENED = 1;
     private final static int DATEPICKER_DIALOG_OPENED = 2;
 
-    //
     private String groupTitle;
     private String groupDescription;
     private String groupIconURL;
@@ -372,13 +380,13 @@ public class GroupActivity extends AppCompatActivity implements GroupView {
         switch (view.getId()) {
             case R.id.sort_button:
                 Intent intent = new Intent(this, PostsActivity.class);
-                intent.putExtra("groupId", groupId);
-                intent.putExtra("postsCount", postsCount);
-                intent.putExtra("groupName", groupTitle);
-                intent.putExtra("groupIconURL", groupIconURL);
-                intent.putExtra("sortIntervalType", dialogSelectedIndex);
-                intent.putExtra("sortStart", sortStart);
-                intent.putExtra("sortEnd", sortEnd);
+                intent.putExtra(GROUP_ID_INTENT_KEY, groupId);
+                intent.putExtra(POSTS_COUNT_INTENT_KEY, postsCount);
+                intent.putExtra(GROUP_NAME_INTENT_KEY, groupTitle);
+                intent.putExtra(GROUP_ICON_URL_INTENT_KEY, groupIconURL);
+                intent.putExtra(SORT_INTERVAL_TYPE_INTENT_KEY, dialogSelectedIndex);
+                intent.putExtra(SORT_START_INTENT_KEY, sortStart);
+                intent.putExtra(SORT_END_INTENT_KEY, sortEnd);
                 startActivity(intent);
                 overridePendingTransition(0, R.anim.screen_splash_fade_out);
                 break;
