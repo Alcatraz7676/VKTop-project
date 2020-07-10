@@ -19,6 +19,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,6 +27,10 @@ import android.widget.RelativeLayout;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.crashlytics.android.Crashlytics;
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.MobileAds;
 import com.ovchinnikovm.android.vktop.LoginActivity;
 import com.ovchinnikovm.android.vktop.R;
 import com.ovchinnikovm.android.vktop.lib.RecyclerViewEmptySupport;
@@ -51,6 +56,7 @@ import io.realm.Realm;
 import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt;
 
 import static android.support.v7.preference.PreferenceManager.getDefaultSharedPreferences;
+import static com.ovchinnikovm.android.vktop.posts.ui.PostsActivity.RETURN_FROM_ACTIVITY_KEY;
 
 public class MainActivity extends AppCompatActivity implements OnItemClickListener, OnItemLongClickListener {
 
@@ -70,6 +76,17 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
+        setupInjection();
+        setupAdapter();
+        PreferenceManager.setDefaultValues(this, R.xml.pref_notifications, false);
+
+        InterstitialAd interstitialAd = new InterstitialAd (this);
+        interstitialAd.setAdUnitId("ca-app-pub-5717076824212218/7203549240");
+        interstitialAd.loadAd(new AdRequest
+                .Builder()
+                .build());
+
         if (!VKSdk.isLoggedIn()) {
             Intent intent = new Intent(this, LoginActivity.class);
             //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
@@ -78,25 +95,34 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
             startActivity(intent);
             //overridePendingTransition(0, 0);
             finish();
-        }
-        ButterKnife.bind(this);
-        setupInjection();
-        setupAdapter();
-        PreferenceManager.setDefaultValues(this, R.xml.pref_notifications, false);
-        SharedPreferences sharedPreferences = getDefaultSharedPreferences(getApplicationContext());
-        boolean firstEnter = sharedPreferences.getBoolean(KEY_PREF_FIRST_ENTER, true);
-        if (firstEnter) {
-            new MaterialTapTargetPrompt.Builder(this)
-                    .setTarget(fab)
-                    .setPrimaryText(R.string.fab_title)
-                    .setSecondaryText(R.string.fab_subtitle)
-                    .setBackgroundColour(ContextCompat.getColor(this, R.color.colorPrimaryTransparent))
-                    .setAnimationInterpolator(new FastOutSlowInInterpolator())
-                    .setPromptStateChangeListener((prompt, state) -> {
-                        SharedPreferences.Editor editor = sharedPreferences.edit();
-                        editor.putBoolean(KEY_PREF_FIRST_ENTER, false);
-                        editor.apply();
-                    }).show();
+        } else {
+            SharedPreferences sharedPreferences = getDefaultSharedPreferences(getApplicationContext());
+            boolean firstEnter = sharedPreferences.getBoolean(KEY_PREF_FIRST_ENTER, true);
+            boolean returnFromActivity = sharedPreferences.getBoolean(RETURN_FROM_ACTIVITY_KEY, false);
+            if (firstEnter) {
+                new MaterialTapTargetPrompt.Builder(this)
+                        .setTarget(fab)
+                        .setPrimaryText(R.string.fab_title)
+                        .setSecondaryText(R.string.fab_subtitle)
+                        .setBackgroundColour(ContextCompat.getColor(this, R.color.colorPrimaryTransparent))
+                        .setAnimationInterpolator(new FastOutSlowInInterpolator())
+                        .setPromptStateChangeListener((prompt, state) -> {
+                            SharedPreferences.Editor editor = sharedPreferences.edit();
+                            editor.putBoolean(KEY_PREF_FIRST_ENTER, false);
+                            editor.apply();
+                        }).show();
+            }
+            if (returnFromActivity) {
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putBoolean(RETURN_FROM_ACTIVITY_KEY, false);
+                editor.apply();
+                interstitialAd.setAdListener(new AdListener() {
+                    @Override
+                    public void onAdLoaded() {
+                        interstitialAd.show();
+                    }
+                });
+            }
         }
     }
 

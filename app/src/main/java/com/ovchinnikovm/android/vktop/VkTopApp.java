@@ -1,11 +1,12 @@
 package com.ovchinnikovm.android.vktop;
 
 import android.app.Activity;
+import android.app.Application;
 import android.content.Intent;
 import android.os.StrictMode;
-import android.support.multidex.MultiDexApplication;
 
 import com.crashlytics.android.Crashlytics;
+import com.google.android.gms.ads.MobileAds;
 import com.ovchinnikovm.android.vktop.group.di.DaggerGroupComponent;
 import com.ovchinnikovm.android.vktop.group.di.GroupComponent;
 import com.ovchinnikovm.android.vktop.group.di.GroupModule;
@@ -33,7 +34,7 @@ import com.vk.sdk.VKSdk;
 import io.fabric.sdk.android.Fabric;
 import io.realm.Realm;
 
-public class VkTopApp extends MultiDexApplication {
+public class VkTopApp extends Application {
 
     private static VkTopApp instance;
 
@@ -82,6 +83,8 @@ public class VkTopApp extends MultiDexApplication {
 
         vkAccessTokenTracker.startTracking();
         VKSdk.initialize(this);
+
+        MobileAds.initialize(this, "ca-app-pub-5717076824212218~7622351649");
     }
 
     public GroupsComponent getGroupsComponent(Activity activity, GroupsView view,

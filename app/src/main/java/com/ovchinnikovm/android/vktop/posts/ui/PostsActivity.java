@@ -35,6 +35,12 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.GravityEnum;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.doubleclick.PublisherAdRequest;
+import com.google.android.gms.ads.doubleclick.PublisherInterstitialAd;
 import com.ovchinnikovm.android.vktop.LoginActivity;
 import com.ovchinnikovm.android.vktop.lib.PreCachingLayoutManager;
 import com.ovchinnikovm.android.vktop.R;
@@ -61,6 +67,7 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static android.support.v7.preference.PreferenceManager.getDefaultSharedPreferences;
 import static com.ovchinnikovm.android.vktop.lib.PicassoImageLoader.POST_IMAGE_TAG;
 
 public class PostsActivity extends AppCompatActivity implements PostsView, OnItemClickListener {
@@ -70,6 +77,7 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
     private final static String TOGGLE_EXPANDABLE_TV_KEY = "toggle_tv";
     private final static String SORT_ITEMS_TYPE_KEY = "sort_type";
     private final static String CURRENT_PAGE_KEY = "current_page";
+    public final static String RETURN_FROM_ACTIVITY_KEY = "return_from_activity";
 
     private int postsCount;
     private String groupName;
@@ -90,6 +98,8 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
     RelativeLayout emptyView;
     @BindView(R.id.group_name)
     TextView groupNameTextView;
+    @BindView(R.id.adView)
+    AdView adView;
 
     @Inject
     ImageLoader imageLoader;
@@ -131,6 +141,9 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
         setupInjection();
         setupActionBar();
         presenter.onCreate();
+
+        AdRequest adRequest = new AdRequest.Builder().build();
+        adView.loadAd(adRequest);
 
         if (savedInstanceState != null)
             itemId = savedInstanceState.getInt(REALM_ID_KEY);
@@ -452,6 +465,7 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
 
     @Override
     public boolean onSupportNavigateUp() {
+        showAdWhenBackToActivity();
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
                 | Intent.FLAG_ACTIVITY_NEW_TASK
@@ -463,12 +477,20 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
 
     @Override
     public void onBackPressed() {
+        showAdWhenBackToActivity();
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
                 | Intent.FLAG_ACTIVITY_NEW_TASK
                 | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         overridePendingTransition(0, R.anim.screen_splash_fade_out);
+    }
+
+    private void showAdWhenBackToActivity() {
+        SharedPreferences sharedPreferences = getDefaultSharedPreferences(getApplicationContext());
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(RETURN_FROM_ACTIVITY_KEY, true);
+        editor.apply();
     }
 
     @Override
