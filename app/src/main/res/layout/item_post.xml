@@ -5,8 +5,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="15dp"
-    tools:layout_marginTop="-0dp">
+    android:layout_marginBottom="16dp"
+    tools:layout_marginTop="-1500dp">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -19,13 +19,13 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
-            android:layout_marginLeft="20dp"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="15dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
             android:background="@drawable/position_oval"
             android:gravity="center"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
             android:textColor="@android:color/white"
             android:textSize="16sp"
             tools:text="#228"/>
@@ -36,13 +36,13 @@
             android:layout_height="wrap_content"
             android:layout_alignBaseline="@+id/position"
             android:layout_alignBottom="@+id/position"
-            android:layout_marginLeft="23dp"
-            android:layout_marginStart="23dp"
+            android:layout_marginLeft="24dp"
+            android:layout_marginStart="24dp"
             android:layout_toEndOf="@id/position"
             android:layout_toRightOf="@id/position"
             android:ellipsize="end"
             android:maxLines="1"
-            android:paddingRight="30dp"
+            android:paddingRight="32dp"
             android:textSize="18sp"
             tools:text="8 июня 2015 года в 19:26"/>
 
@@ -53,9 +53,9 @@
             android:layout_alignLeft="@+id/position"
             android:layout_alignStart="@+id/position"
             android:layout_below="@id/position"
-            android:layout_marginEnd="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginTop="15dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginTop="16dp"
             android:lineSpacingExtra="1sp"
             android:textColor="@android:color/black"
             android:visibility="gone"
@@ -67,7 +67,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/text"
-            android:layout_marginTop="18dp"
+            android:layout_marginTop="16dp"
             android:adjustViewBounds="true"
             android:visibility="gone"
             tools:src="@drawable/test_image"
@@ -78,6 +78,7 @@
             android:layout_width="match_parent"
             android:layout_height="165dp"
             android:layout_below="@id/single_photo"
+            android:layout_marginTop="16dp"
             android:visibility="gone"
             tools:visibility="gone"/>
 
@@ -122,7 +123,7 @@
             android:layout_toRightOf="@+id/post_author_icon"
             android:ellipsize="end"
             android:maxLines="1"
-            android:paddingRight="30dp"
+            android:paddingRight="32dp"
             android:textColor="@color/colorPrimaryDark"
             android:textStyle="bold"
             android:visibility="gone"
@@ -139,7 +140,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_height="56dp"
             android:layout_below="@id/post_author_icon"
             android:layout_marginTop="8dp">
 
@@ -163,7 +164,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
+                    android:layout_centerInParent="true"
                     android:layout_marginEnd="40dp"
                     android:layout_marginRight="40dp"
                     android:text="0"
@@ -195,7 +196,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
+                    android:layout_centerInParent="true"
                     android:layout_marginEnd="40dp"
                     android:layout_marginRight="40dp"
                     android:text="0"
@@ -227,7 +228,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
+                    android:layout_centerInParent="true"
                     android:layout_marginEnd="40dp"
                     android:layout_marginRight="40dp"
                     android:text="0"

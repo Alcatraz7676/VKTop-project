@@ -29,6 +29,10 @@ public class GlideImageLoader implements ImageLoader{
     public void loadImage(ImageView imageView, String URL) {
         glideRequestManager
                 .load(URL)
+                .apply(RequestOptions
+                        .noTransformation()
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .override(600))
                 .into(imageView);
     }
 }
