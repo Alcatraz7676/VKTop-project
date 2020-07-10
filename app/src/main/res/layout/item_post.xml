@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="16dp"
+    android:layout_marginTop="8dp"
     tools:layout_marginTop="-1500dp">
 
     <RelativeLayout
@@ -125,6 +125,7 @@
             android:maxLines="1"
             android:paddingRight="32dp"
             android:textColor="@color/colorPrimaryDark"
+            android:textSize="16sp"
             android:textStyle="bold"
             android:visibility="gone"
             tools:text="Степан Дерюгин"

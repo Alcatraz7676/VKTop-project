@@ -22,10 +22,8 @@ import com.ovchinnikovm.android.vktop.lib.base.ImageLoader;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
-import java.util.TimeZone;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -35,8 +33,13 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
     private ImageLoader imageLoader;
     private OnItemClickListener clickListener;
 
+    private Set<Profile> profiles;
+    private Set<Group> groups;
+
     public PostsAdapter(Posts posts, ImageLoader imageLoader, OnItemClickListener clickListener) {
         this.posts = posts;
+        this.profiles = posts.profiles;
+        this.groups = posts.groups;
         this.imageLoader = imageLoader;
         this.clickListener = clickListener;
     }
@@ -51,16 +54,12 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         PostItem item = posts.items.get(position);
-        Set<Profile> profiles = posts.profiles;
-        Set<Group> groups = posts.groups;
         // Set clicklistener
         holder.setOnClickListener(item, clickListener);
         // Position in the top
         holder.position.setText(String.valueOf(position + 1));
         // Date of the post
-        Date now = new Date();
-        long time = item.getDate() + TimeZone.getDefault().getOffset(now.getTime());
-        holder.date.setText(getPostDate(time));
+        holder.date.setText(getPostDate(item.getDate()));
         // Text of the post
         if (!item.getText().equals("")) {
             holder.text.setText(item.getText());
@@ -134,8 +133,8 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
             // Group name
             holder.attGroupName.setText(getGroupName(groupId, groups, profiles));
             // Date of nested post
-            long nestedTime = nestedItem.getDate() + TimeZone.getDefault().getOffset(now.getTime());
-            holder.attPostTime.setText(getPostDate(nestedTime));
+            //long nestedTime = nestedItem.getDate() + TimeZone.getDefault().getOffset(now.getTime());
+            holder.attPostTime.setText(getPostDate(nestedItem.getDate()));
             // Text of nested post
             if (!nestedItem.getText().equals("")) {
                 holder.attText.setText(nestedItem.getText());
@@ -157,7 +156,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
                     }
                     // Multiple photos
                 } else if (isAnyPhoto(nestedItem.attachments)) {
-                    holder.photosRecyclerview.setVisibility(View.VISIBLE);
+                    holder.attPhotosRecyclerview.setVisibility(View.VISIBLE);
                     List<String> attPhotos = new ArrayList<>();
                     for (Attachment attachment : nestedItem.attachments) {
                         if (attachment.getType().equals("photo")) {
@@ -178,7 +177,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
                     }
                 }
                 if (!attMediaAttachments.isEmpty()) {
-                    holder.mediaRecyclerview.setVisibility(View.VISIBLE);
+                    holder.attMediaRecyclerview.setVisibility(View.VISIBLE);
                     holder.setAttMediaAttachments(attMediaAttachments);
                 }
             }
@@ -189,8 +188,8 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
 
     public void setItems(Posts newPosts) {
         posts.items.addAll(newPosts.items);
-        posts.profiles.addAll(newPosts.profiles);
-        posts.groups.addAll(newPosts.groups);
+        profiles.addAll(newPosts.profiles);
+        groups.addAll(newPosts.groups);
         notifyDataSetChanged();
     }
 

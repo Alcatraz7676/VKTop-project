@@ -96,6 +96,7 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
             setupRecyclerView();
         } else {
             adapter.setItems(posts);
+            adapter.notifyDataSetChanged();
         }
     }
 

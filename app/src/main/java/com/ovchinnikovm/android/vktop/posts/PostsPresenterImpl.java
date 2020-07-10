@@ -30,6 +30,7 @@ public class PostsPresenterImpl implements PostsPresenter {
     @Override
     public void onDestroy() {
         view = null;
+        interactor.stopRequest();
     }
 
     @Override

@@ -14,8 +14,8 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_marginLeft="24dp"
-        android:layout_marginStart="24dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"/>
 
     <ImageView
@@ -23,8 +23,8 @@
         android:layout_width="16dp"
         android:layout_height="16dp"
         android:layout_alignTop="@id/group_icon"
-        android:layout_marginLeft="16dp"
-        android:layout_marginStart="16dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
         android:layout_toEndOf="@id/group_icon"
         android:layout_toRightOf="@id/group_icon"
         app:srcCompat="@drawable/ic_reply"/>
@@ -41,15 +41,16 @@
         android:paddingRight="32dp"
         android:textColor="@color/colorPrimaryDark"
         android:textSize="16sp"
+        android:textStyle="bold"
         tools:text="BLUR"/>
 
     <TextView
         android:id="@+id/att_post_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@id/group_icon"
-        android:layout_alignLeft="@id/reply_icon"
-        android:layout_alignStart="@id/reply_icon"
+        android:layout_alignLeft="@+id/reply_icon"
+        android:layout_alignStart="@+id/reply_icon"
+        android:layout_below="@+id/att_group_name"
         android:paddingRight="32dp"
         android:textSize="14sp"
         tools:text="21 июня в 21:15"/>
@@ -62,7 +63,7 @@
         android:layout_alignStart="@id/group_icon"
         android:layout_below="@id/group_icon"
         android:layout_marginRight="24dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:lineSpacingExtra="1sp"
         android:textColor="@android:color/black"
         android:visibility="gone"
@@ -85,6 +86,8 @@
         android:layout_width="match_parent"
         android:layout_height="165dp"
         android:layout_below="@id/att_single_photo"
+        android:layout_marginTop="16dp"
+        android:visibility="gone"
         tools:visibility="visible"/>
 
     <android.support.v7.widget.RecyclerView
@@ -92,5 +95,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/att_photos_recyclerview"
+        android:visibility="gone"
         tools:visibility="visible"/>
 </RelativeLayout>

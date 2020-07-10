@@ -11,4 +11,9 @@ public class PostsInteractorImpl implements PostsInteractor{
     public void execute(Integer groupId, Integer postsCount) {
         repository.getPosts(groupId, postsCount);
     }
+
+    @Override
+    public void stopRequest() {
+        repository.stopRequest();
+    }
 }
