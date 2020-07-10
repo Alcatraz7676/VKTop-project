@@ -70,7 +70,6 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
     private void setupRecyclerView() {
         recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false));
         recyclerView.setAdapter(adapter);
-        recyclerView.setHasFixedSize(true);
     }
 
     @Override
