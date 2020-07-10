@@ -7,7 +7,6 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 
@@ -18,6 +17,7 @@ import com.ovchinnikovm.android.vktop.R;
 import com.ovchinnikovm.android.vktop.VkTopApp;
 import com.ovchinnikovm.android.vktop.entities.PostItem;
 import com.ovchinnikovm.android.vktop.entities.Posts;
+import com.ovchinnikovm.android.vktop.lib.base.ImageLoader;
 import com.ovchinnikovm.android.vktop.posts.PostsPresenter;
 import com.ovchinnikovm.android.vktop.posts.adapters.OnItemClickListener;
 import com.ovchinnikovm.android.vktop.posts.adapters.PostsAdapter;
@@ -40,9 +40,13 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
     RecyclerView recyclerView;
 
     @Inject
-    PostsAdapter adapter;
+    ImageLoader imageLoader;
+    @Inject
+    OnItemClickListener onItemClickListener;
     @Inject
     PostsPresenter presenter;
+
+    PostsAdapter adapter;
 
     public PostsActivity() {
     }
@@ -54,7 +58,6 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
         setContentView(R.layout.recyclerview_container);
         ButterKnife.bind(this);
         setupInjection();
-        setupRecyclerView();
         presenter.getPosts(groupId, postsCount);
     }
 
@@ -67,6 +70,7 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
     private void setupRecyclerView() {
         recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false));
         recyclerView.setAdapter(adapter);
+        recyclerView.setHasFixedSize(true);
     }
 
     @Override
@@ -84,12 +88,16 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
     @Override
     public void onError(String error) {
         Toast.makeText(this, error, Toast.LENGTH_LONG).show();
-        Log.e("My error", error);
     }
 
     @Override
     public void setPosts(Posts posts) {
-        adapter.setItems(posts);
+        if (adapter == null) {
+            adapter = new PostsAdapter(posts, imageLoader, onItemClickListener);
+            setupRecyclerView();
+        } else {
+            adapter.setItems(posts);
+        }
     }
 
     @Override
@@ -120,6 +128,7 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
     @Override
     public void onItemClick(PostItem postItem) {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(postItem.getPostUrl()));
+        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         startActivity(intent);
     }
 

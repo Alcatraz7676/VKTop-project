@@ -8,6 +8,16 @@ public class Profile {
     private String firstName;
     @SerializedName("last_name")
     private String lastName;
+    @SerializedName("photo_100")
+    private String smallPhotoUrl;
+
+    public String getSmallPhotoUrl() {
+        return smallPhotoUrl;
+    }
+
+    public void setSmallPhotoUrl(String smallPhotoUrl) {
+        this.smallPhotoUrl = smallPhotoUrl;
+    }
 
     public Integer getId() {
         return id;

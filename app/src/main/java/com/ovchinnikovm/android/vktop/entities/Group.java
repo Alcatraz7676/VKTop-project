@@ -7,11 +7,21 @@ public class Group {
     private String name;
     @SerializedName("activity")
     private String subName;
+    @SerializedName("photo_100")
+    private String smallPhotoUrl;
     @SerializedName("photo_200")
     private String photoURL;
     @SerializedName("members_count")
     private Integer members;
     private String status;
+
+    public String getSmallPhotoUrl() {
+        return smallPhotoUrl;
+    }
+
+    public void setSmallPhotoUrl(String smallPhotoUrl) {
+        this.smallPhotoUrl = smallPhotoUrl;
+    }
 
     public Integer getId() {
         return id;

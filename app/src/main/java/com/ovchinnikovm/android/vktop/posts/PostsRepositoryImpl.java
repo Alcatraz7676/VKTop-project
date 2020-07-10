@@ -27,7 +27,9 @@ public class PostsRepositoryImpl implements PostsRepository {
     public void getPosts(Integer groupId, Integer postsCount) {
         VKRequest vkRequest = new VKApiWall()
                 .get(VKParameters.from(VKApiConst.OWNER_ID, "-" + groupId,
-                        VKApiConst.COUNT, 20));
+                        VKApiConst.COUNT, 20,
+                        VKApiConst.FILTERS, "owner",
+                        VKApiConst.EXTENDED, 1));
         vkRequest.executeWithListener(new VKRequest.VKRequestListener() {
             @Override
             public void onComplete(VKResponse response) {

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -57,124 +56,131 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
         // Set clicklistener
         holder.setOnClickListener(item, clickListener);
         // Position in the top
-        holder.position.setText(position);
+        holder.position.setText(String.valueOf(position + 1));
         // Date of the post
         Date now = new Date();
         long time = item.getDate() + TimeZone.getDefault().getOffset(now.getTime());
         holder.date.setText(getPostDate(time));
         // Text of the post
-        if (item.getText().equals("")) {
+        if (!item.getText().equals("")) {
             holder.text.setText(item.getText());
             holder.text.setVisibility(View.VISIBLE);
         }
         // Likes of the post
-        holder.likes.setText(item.getLikes());
+        holder.likes.setText(String.valueOf(item.getLikes()));
         // Reposts of the post
-        holder.reposts.setText(item.getReposts());
+        holder.reposts.setText(String.valueOf(item.getReposts()));
         // Comments of the post
-        holder.comments.setText(item.getComments());
+        holder.comments.setText(String.valueOf(item.getComments()));
         // Author's full name of the post
         if (profiles != null && item.getAuthorId() != null) {
             for(Profile profile : profiles) {
-                if (profile.getId() == item.getAuthorId()) {
+                if (profile.getId().equals(item.getAuthorId())) {
                     holder.postAuthorName.setText(profile.getFullName());
                     holder.postAuthorIcon.setVisibility(View.VISIBLE);
                     holder.postAuthorName.setVisibility(View.VISIBLE);
                 }
             }
         }
-        // Single photo
-        if (isOnlyOnePhoto(item.attachments)) {
-            holder.singlePhoto.setVisibility(View.VISIBLE);
-            for(Attachment attachment : item.attachments) {
-                if (attachment.getType() == "photo") {
-                    imageLoader.loadImage(holder.singlePhoto, attachment.getPhoto());
-                    break;
-                } else if (attachment.getType() == "posted_photo") {
-                    imageLoader.loadImage(holder.singlePhoto, attachment.getPostedPhoto());
-                    break;
+        if (item.attachments != null) {
+            // Single photo
+            if (isOnlyOnePhoto(item.attachments)) {
+                holder.singlePhoto.setVisibility(View.VISIBLE);
+                for (Attachment attachment : item.attachments) {
+                    if (attachment.getType().equals("photo")) {
+                        imageLoader.loadImage(holder.singlePhoto, attachment.getPhoto());
+                        break;
+                    } else if (attachment.getType().equals("posted_photo")) {
+                        imageLoader.loadImage(holder.singlePhoto, attachment.getPostedPhoto());
+                        break;
+                    }
                 }
-            }
-            // Multiple photos
-        } else if (isAnyPhoto(item.attachments)) {
-            holder.photosRecyclerview.setVisibility(View.VISIBLE);
-            List<String> photos = new ArrayList<>();
-            for (Attachment attachment : item.attachments) {
-                if (attachment.getType() == "photo") {
-                    photos.add(attachment.getPhoto());
-                } else if (attachment.getType() == "posted_photo") {
-                    photos.add(attachment.getPostedPhoto());
+                // Multiple photos
+            } else if (isAnyPhoto(item.attachments)) {
+                holder.photosRecyclerview.setVisibility(View.VISIBLE);
+                List<String> photos = new ArrayList<>();
+                for (Attachment attachment : item.attachments) {
+                    if (attachment.getType().equals("photo")) {
+                        photos.add(attachment.getPhoto());
+                    } else if (attachment.getType().equals("posted_photo")) {
+                        photos.add(attachment.getPostedPhoto());
+                    }
                 }
+                holder.setPhotos(photos);
             }
-            holder.setPhotos(photos);
-        }
 
-        // Media attachments
-        List<Attachment> mediaAttachments = new ArrayList<>();
-        for (Attachment attachment : item.attachments) {
-            if (attachment.getType() == "audio" || attachment.getType() == "video" || attachment.getType() == "link") {
-                mediaAttachments.add(attachment);
+            // Media attachments
+            List<Attachment> mediaAttachments = new ArrayList<>();
+            for (Attachment attachment : item.attachments) {
+                if (attachment.getType().equals("audio") || attachment.getType().equals("video")
+                        || attachment.getType().equals("link")) {
+                    mediaAttachments.add(attachment);
+                }
             }
-        }
-        if (!mediaAttachments.isEmpty()) {
-            holder.mediaRecyclerview.setVisibility(View.VISIBLE);
-            holder.setMediaAttachments(mediaAttachments);
+            if (!mediaAttachments.isEmpty()) {
+                holder.mediaRecyclerview.setVisibility(View.VISIBLE);
+                holder.setMediaAttachments(mediaAttachments);
+            }
         }
 
         // Nested post
         if (item.nestedPost != null) {
             NestedPost nestedItem = item.nestedPost.get(0);
+            Integer groupId = nestedItem.getGroupId() * (-1);
             // Whole nested post
             holder.attachment.setVisibility(View.VISIBLE);
             // Group icon
-            imageLoader.loadIcon(holder.groupIcon, getGroupIconURL(nestedItem.getGroupId(), groups));
+            imageLoader.loadIcon(holder.groupIcon, getOwnerIconURL(groupId, groups, profiles));
             // Group name
-            holder.attGroupName.setText(getGroupName(nestedItem.getGroupId(), groups));
+            holder.attGroupName.setText(getGroupName(groupId, groups, profiles));
             // Date of nested post
             long nestedTime = nestedItem.getDate() + TimeZone.getDefault().getOffset(now.getTime());
             holder.attPostTime.setText(getPostDate(nestedTime));
             // Text of nested post
-            if (nestedItem.getText() != null) {
+            if (!nestedItem.getText().equals("")) {
                 holder.attText.setText(nestedItem.getText());
                 holder.attText.setVisibility(View.VISIBLE);
             }
 
-            // Single photo
-            if (isOnlyOnePhoto(nestedItem.attachments)) {
-                holder.attSinglePhoto.setVisibility(View.VISIBLE);
-                for(Attachment attachment : nestedItem.attachments) {
-                    if (attachment.getType() == "photo") {
-                        imageLoader.loadImage(holder.attSinglePhoto, attachment.getPhoto());
-                        break;
-                    } else if (attachment.getType() == "posted_photo") {
-                        imageLoader.loadImage(holder.attSinglePhoto, attachment.getPostedPhoto());
-                        break;
+            if (nestedItem.attachments != null) {
+                // Single photo
+                if (isOnlyOnePhoto(nestedItem.attachments)) {
+                    holder.attSinglePhoto.setVisibility(View.VISIBLE);
+                    for (Attachment attachment : nestedItem.attachments) {
+                        if (attachment.getType().equals("photo")) {
+                            imageLoader.loadImage(holder.attSinglePhoto, attachment.getPhoto());
+                            break;
+                        } else if (attachment.getType().equals("posted_photo")) {
+                            imageLoader.loadImage(holder.attSinglePhoto, attachment.getPostedPhoto());
+                            break;
+                        }
                     }
-                }
-                // Multiple photos
-            } else if (isAnyPhoto(nestedItem.attachments)) {
-                holder.photosRecyclerview.setVisibility(View.VISIBLE);
-                List<String> attPhotos = new ArrayList<>();
-                for (Attachment attachment : nestedItem.attachments) {
-                    if (attachment.getType() == "photo") {
-                        attPhotos.add(attachment.getPhoto());
-                    } else if (attachment.getType() == "posted_photo") {
-                        attPhotos.add(attachment.getPostedPhoto());
+                    // Multiple photos
+                } else if (isAnyPhoto(nestedItem.attachments)) {
+                    holder.photosRecyclerview.setVisibility(View.VISIBLE);
+                    List<String> attPhotos = new ArrayList<>();
+                    for (Attachment attachment : nestedItem.attachments) {
+                        if (attachment.getType().equals("photo")) {
+                            attPhotos.add(attachment.getPhoto());
+                        } else if (attachment.getType().equals("posted_photo")) {
+                            attPhotos.add(attachment.getPostedPhoto());
+                        }
                     }
+                    holder.setAttPhotos(attPhotos);
                 }
-                holder.setAttPhotos(attPhotos);
-            }
 
-            // Media attachments
-            List<Attachment> attMediaAttachments = new ArrayList<>();
-            for (Attachment attachment : nestedItem.attachments) {
-                if (attachment.getType() == "audio" || attachment.getType() == "video" || attachment.getType() == "link") {
-                    attMediaAttachments.add(attachment);
+                // Media attachments
+                List<Attachment> attMediaAttachments = new ArrayList<>();
+                for (Attachment attachment : nestedItem.attachments) {
+                    if (attachment.getType().equals("audio") || attachment.getType().equals("video")
+                            || attachment.getType().equals("link")) {
+                        attMediaAttachments.add(attachment);
+                    }
                 }
-            }
-            if (!attMediaAttachments.isEmpty()) {
-                holder.mediaRecyclerview.setVisibility(View.VISIBLE);
-                holder.setAttMediaAttachments(attMediaAttachments);
+                if (!attMediaAttachments.isEmpty()) {
+                    holder.mediaRecyclerview.setVisibility(View.VISIBLE);
+                    holder.setAttMediaAttachments(attMediaAttachments);
+                }
             }
 
         }
@@ -182,26 +188,36 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
     }
 
     public void setItems(Posts newPosts) {
-
-        Log.i("mytag", "NewPosts items number in the setItems method: " + Integer.toString(newPosts.items.size()));
         posts.items.addAll(newPosts.items);
-        Log.i("mytag", "Posts items number in the setItems method: " + Integer.toString(posts.items.size()));
         posts.profiles.addAll(newPosts.profiles);
         posts.groups.addAll(newPosts.groups);
         notifyDataSetChanged();
     }
 
     @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return position;
+    }
+
+    @Override
     public int getItemCount() {
-        Log.i("mytag", "Posts items number in the getitemcount method: " + Integer.toString(posts.items.size()));
         return posts.items.size();
     }
 
     private String getPostDate(long time) {
         Calendar postDate = Calendar.getInstance();
-        postDate.setTimeInMillis(time);
-        int minute = postDate.get(Calendar.MINUTE);
-        int hour = postDate.get(Calendar.HOUR_OF_DAY);
+        postDate.setTimeInMillis(time * 1000);
+        String minute = String.valueOf(postDate.get(Calendar.MINUTE));
+        if (minute.length() == 1)
+            minute = "0" + minute;
+        String hour = String.valueOf(postDate.get(Calendar.HOUR_OF_DAY));
+        if (hour.length() == 1)
+            hour = "0" + hour;
         int day = postDate.get(Calendar.DAY_OF_MONTH);
         int monthNumber = postDate.get(Calendar.MONTH);
         String month;
@@ -253,7 +269,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
     private boolean isOnlyOnePhoto(List<Attachment> attachments) {
         int quantity = 0;
         for (Attachment attachment : attachments) {
-            if (attachment.getType() == "photo" || attachment.getType() == "posted_photo") {
+            if (attachment.getType().equals("photo") || attachment.getType().equals("posted_photo")) {
                 quantity++;
                 if (quantity == 2)
                     return false;
@@ -264,26 +280,34 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
 
     private boolean isAnyPhoto(List<Attachment> attachments) {
         for (Attachment attachment : attachments) {
-            if (attachment.getType() == "photo" || attachment.getType() == "posted_photo")
+            if (attachment.getType().equals("photo") || attachment.getType().equals("posted_photo"))
                 return true;
         }
         return false;
     }
 
     @Nullable
-    private String getGroupIconURL(Integer groupId, Set<Group> groups) {
+    private String getOwnerIconURL(Integer ownerId, Set<Group> groups, Set<Profile> profiles) {
         for (Group group : groups) {
-            if (group.getId() == groupId)
-                return group.getPhotoURL();
+            if (group.getId().equals(ownerId))
+                return group.getSmallPhotoUrl();
+        }
+        for (Profile profile : profiles) {
+            if (profile.getId().equals(ownerId))
+                return profile.getSmallPhotoUrl();
         }
         return null;
     }
 
     @Nullable
-    private String getGroupName(Integer groupId, Set<Group> groups) {
+    private String getGroupName(Integer ownerId, Set<Group> groups, Set<Profile> profiles) {
         for (Group group : groups) {
-            if (group.getId() == groupId)
+            if (group.getId().equals(ownerId))
                 return group.getName();
+        }
+        for (Profile profile : profiles) {
+            if (profile.getId().equals(ownerId))
+                return profile.getFullName();
         }
         return null;
     }
