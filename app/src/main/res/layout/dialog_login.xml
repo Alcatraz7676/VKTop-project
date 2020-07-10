@@ -6,7 +6,7 @@
 
     <Button
         android:id="@+id/login_by_yourself_button"
-        style="@style/Widget.AppCompat.Button.Borderless.Colored"
+        style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -14,10 +14,18 @@
 
     <Button
         android:id="@+id/login_through_app_button"
-        style="@style/Widget.AppCompat.Button.Borderless.Colored"
+        style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:text="@string/enter_through_app"/>
+
+    <TextView
+        android:id="@+id/policy_link"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/policy_link_text"
+        android:layout_marginTop="8dp"
+        android:layout_gravity="center"/>
 
 </LinearLayout>

@@ -6,6 +6,7 @@
     <string name="enter_through_app">ВОЙТИ ЧЕРЕЗ ПРИЛОЖЕНИЕ ВКОНТАКТЕ</string>
     <string name="skip_login">ПРОПУСТИТЬ</string>
     <string name="login_title">Выберете способ авторизации</string>
+    <string name="policy_link_text"><a href="http://vktoppolicy.std-226.ist.mospolytech.ru/">Политика конфиденциальности</a></string>
 
     <!-- Main Screen -->
     <string name="logout_menu_item">Выйти</string>

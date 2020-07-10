@@ -6,7 +6,10 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.PreferenceManager;
+import android.text.method.LinkMovementMethod;
+import android.util.Log;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.crashlytics.android.Crashlytics;
@@ -41,6 +44,8 @@ public class LoginActivity extends AppCompatActivity {
                 .setOnClickListener( view -> VKSdk.login(this, false, VKScope.GROUPS));
 
         Button loginThroughAppButton = dialog.getCustomView().findViewById(R.id.login_through_app_button);
+        TextView policyLink = dialog.getCustomView().findViewById(R.id.policy_link);
+        policyLink.setMovementMethod(LinkMovementMethod.getInstance());
         if (VKUtil.isAppInstalled(getApplicationContext(), "com.vkontakte.android")) {
             loginThroughAppButton.setOnClickListener(view -> VKSdk.login(this, true, VKScope.GROUPS));
         } else {

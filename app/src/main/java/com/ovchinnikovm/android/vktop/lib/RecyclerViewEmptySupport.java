@@ -4,6 +4,10 @@ import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.View;
+import android.widget.Adapter;
+
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 
 public class RecyclerViewEmptySupport extends RecyclerView {
     private View emptyView;

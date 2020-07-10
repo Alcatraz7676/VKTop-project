@@ -7,6 +7,7 @@
     <string name="enter_through_app">ENTER THROUGH APP</string>
     <string name="login_title">Choose an authorization method</string>
     <string name="skip_login">SKIP</string>
+    <string name="policy_link_text"><a href="http://vktoppolicy.std-226.ist.mospolytech.ru/">Privacy Policy</a></string>
 
     <!-- Main Screen -->
     <string name="logout_menu_item">Log out</string>

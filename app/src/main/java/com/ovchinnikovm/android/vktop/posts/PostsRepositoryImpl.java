@@ -47,6 +47,7 @@ import java.util.concurrent.TimeUnit;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import io.realm.Realm;
@@ -436,6 +437,7 @@ public class PostsRepositoryImpl implements PostsRepository {
                         .getPosts(realmSortedItem.getGroupId(), offset * 100,
                                 VKAccessToken.currentToken().accessToken)
                         .map(postsApiResponse -> postsApiResponse.response)
+                        .filter(postSortItems -> postSortItems.size() != 0)
                         .retryWhen(new RetryWithDelay(400))
                         .subscribeOn(Schedulers.computation()))
                 .observeOn(AndroidSchedulers.mainThread())
@@ -485,6 +487,7 @@ public class PostsRepositoryImpl implements PostsRepository {
                         .getPosts(realmSortedItem.getGroupId(), offset * 100,
                                 VKAccessToken.currentToken().accessToken)
                         .map(postsApiResponse -> postsApiResponse.response)
+                        .filter(postSortItems -> postSortItems.size() != 0)
                         .retryWhen(new RetryWithDelay(400))
                         .subscribeOn(Schedulers.computation()))
                 .takeUntil(items -> currentTimeInSeconds - items.get(items.size() - 1).getDate() > time)
@@ -533,7 +536,7 @@ public class PostsRepositoryImpl implements PostsRepository {
                                 posts.response.addAll(items);
                             } else
                                 posts.response.addAll(items);
-                        },  e -> {
+                        }, e -> {
                             Log.i("mytag", "JUST GOT ERROR WHILE LOAD IDS \nError text: " +
                             e.toString());
                             post(e.toString());
@@ -568,6 +571,7 @@ public class PostsRepositoryImpl implements PostsRepository {
                         .getPosts(realmSortedItem.getGroupId(), offset * 100,
                                 VKAccessToken.currentToken().accessToken)
                         .map(postsApiResponse -> postsApiResponse.response)
+                        .filter(postSortItems -> postSortItems.size() != 0)
                         .retryWhen(new RetryWithDelay(400))
                         .subscribeOn(Schedulers.computation()))
                 .takeUntil(items -> items.get(items.size() - 1).getDate() < sortStart)

@@ -1,7 +1,5 @@
 package com.ovchinnikovm.android.vktop.posts.di;
 
-import android.content.Context;
-
 import com.ovchinnikovm.android.vktop.posts.PostsInteractor;
 import com.ovchinnikovm.android.vktop.posts.PostsInteractorImpl;
 import com.ovchinnikovm.android.vktop.posts.PostsPresenter;
