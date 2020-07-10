@@ -1,6 +1,7 @@
 package com.ovchinnikovm.android.vktop.main;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -11,6 +12,9 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -42,13 +46,20 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.realm.Realm;
+import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt;
+
+import static android.support.v7.preference.PreferenceManager.getDefaultSharedPreferences;
 
 public class MainActivity extends AppCompatActivity implements OnItemClickListener, OnItemLongClickListener {
+
+    public static final String KEY_PREF_FIRST_ENTER = "first_enter_key";
 
     @BindView(R.id.recycler_view)
     RecyclerViewEmptySupport recyclerView;
     @BindView(R.id.empty_view)
     RelativeLayout emptyView;
+    @BindView(R.id.fab)
+    FloatingActionButton fab;
 
     @Inject
     SortDataAdapter adapter;
@@ -70,6 +81,21 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
         setupInjection();
         setupAdapter();
         PreferenceManager.setDefaultValues(this, R.xml.pref_notifications, false);
+        SharedPreferences sharedPreferences = getDefaultSharedPreferences(getApplicationContext());
+        boolean firstEnter = sharedPreferences.getBoolean(KEY_PREF_FIRST_ENTER, true);
+        if (firstEnter) {
+            new MaterialTapTargetPrompt.Builder(this)
+                    .setTarget(fab)
+                    .setPrimaryText(R.string.fab_title)
+                    .setSecondaryText(R.string.fab_subtitle)
+                    .setBackgroundColour(ContextCompat.getColor(this, R.color.colorPrimaryTransparent))
+                    .setAnimationInterpolator(new FastOutSlowInInterpolator())
+                    .setPromptStateChangeListener((prompt, state) -> {
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putBoolean(KEY_PREF_FIRST_ENTER, false);
+                        editor.apply();
+                    }).show();
+        }
     }
 
     @Override

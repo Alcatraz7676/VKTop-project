@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorPrimary">#2B3D4D</color>
+    <color name="colorPrimaryTransparent">#eb2b3d4d</color>
     <color name="colorPrimaryDark">#23303D</color>
     <color name="colorAccent">#5b7aa8</color>
     <color name="postsBackground">#e5e9ea</color>

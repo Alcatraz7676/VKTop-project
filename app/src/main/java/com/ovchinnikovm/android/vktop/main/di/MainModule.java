@@ -1,7 +1,5 @@
 package com.ovchinnikovm.android.vktop.main.di;
 
-import android.util.Log;
-
 import com.ovchinnikovm.android.vktop.entities.RealmSortedItem;
 import com.ovchinnikovm.android.vktop.lib.base.ImageLoader;
 import com.ovchinnikovm.android.vktop.main.adapters.OnItemClickListener;

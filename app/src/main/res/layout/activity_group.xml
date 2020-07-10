@@ -230,6 +230,7 @@
                     android:layout_marginRight="8dp"
                     android:layout_marginTop="20dp"
                     android:text="@string/sort_interval_text"
+                    style="@style/Widget.AppCompat.Button.Colored"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/guideline4"/>
@@ -243,6 +244,7 @@
                     android:layout_marginRight="0dp"
                     android:layout_marginTop="8dp"
                     android:text="@string/new_sort_button_text"
+                    style="@style/Widget.AppCompat.Button.Colored"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/sort_interval_button"/>
@@ -312,6 +314,7 @@
             android:layout_below="@id/disconnected_subtitle_text"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="8dp"
+            style="@style/Widget.AppCompat.Button.Colored"
             android:text="@string/disconnected_button_text"/>
     </RelativeLayout>
 </RelativeLayout>

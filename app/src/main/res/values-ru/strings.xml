@@ -15,7 +15,8 @@
     <string-array name="delete_array">
         <item>Удалить</item>
     </string-array>
-
+    <string name="fab_title">Нажмите на кнопку чтобы отсортировать посты</string>
+    <string name="fab_subtitle">Из-за того что сортировка может занять много времени, все когда-либо отсортированные посты будут сохранены здесь</string>
 
     <!-- Group Screen -->
     <string name="new_sort_button_text">ОТСОРТИРОВАТЬ ПОСТЫ</string>

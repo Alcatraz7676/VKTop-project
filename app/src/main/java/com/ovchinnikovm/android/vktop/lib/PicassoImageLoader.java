@@ -81,10 +81,10 @@ public class PicassoImageLoader implements ImageLoader {
                 .transform(new Transformation() {
                     @Override
                     public Bitmap transform(Bitmap source) {
-                        int targetWidth = (int) getApplicationContext().getResources().getDimension(R.dimen.photos_recyclerview_height);
+                        int targetHeight = (int) context.getResources().getDimension(R.dimen.photos_recyclerview_height);
 
-                        double aspectRatio = (double) source.getHeight() / (double) source.getWidth();
-                        int targetHeight = (int) (targetWidth * aspectRatio);
+                        double aspectRatio = (double) source.getWidth() / (double) source.getHeight();
+                        int targetWidth = (int) (targetHeight * aspectRatio);
                         Bitmap result = Bitmap.createScaledBitmap(source, targetWidth, targetHeight, false);
                         if (result != source) {
                             // Same bitmap is returned if sizes are the same

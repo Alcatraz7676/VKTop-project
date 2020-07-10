@@ -16,6 +16,8 @@
     <string-array name="delete_array">
         <item>Delete</item>
     </string-array>
+    <string name="fab_title">Click here to sort posts</string>
+    <string name="fab_subtitle">Due to the fact that sorting can take a long time, all sorted posts will be saved here</string>
 
     <!-- Group Screen -->
     <string name="new_sort_button_text">SORT POSTS</string>
