@@ -22,12 +22,14 @@ public class SortDataAdapter extends RecyclerViewEmptySupport.Adapter<SortDataAd
     private RealmResults<RealmSortedItem> data;
     private ImageLoader imageLoader;
     private OnItemClickListener clickListener;
+    private OnItemLongClickListener longClickListener;
 
     public SortDataAdapter(RealmResults<RealmSortedItem> data, ImageLoader imageLoader,
-                           OnItemClickListener clickListener) {
+                           OnItemClickListener clickListener, OnItemLongClickListener longClickListener) {
         this.data = data;
         this.imageLoader = imageLoader;
         this.clickListener = clickListener;
+        this.longClickListener = longClickListener;
     }
 
     @Override
@@ -43,6 +45,7 @@ public class SortDataAdapter extends RecyclerViewEmptySupport.Adapter<SortDataAd
         holder.groupTitle.setText(item.getGroupName());
         holder.sortRange.setText(item.getSortRange());
         holder.setOnClickListener(position, clickListener);
+        holder.setOnLongClickListener(position, longClickListener);
     }
 
     @Override
@@ -81,7 +84,11 @@ public class SortDataAdapter extends RecyclerViewEmptySupport.Adapter<SortDataAd
         }
 
         public void setOnClickListener(final int position, final OnItemClickListener listener) {
-            view.setOnClickListener( view -> listener.onItemClick(position));
+            view.setOnClickListener(view -> listener.onItemClick(position));
+        }
+
+        public void setOnLongClickListener(final int position, final OnItemLongClickListener listener) {
+            view.setOnLongClickListener(view -> listener.onItemLongClick(position));
         }
     }
 

@@ -1,5 +1,7 @@
 package com.ovchinnikovm.android.vktop.posts;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.v4.util.ArraySet;
 import android.util.Log;
 
@@ -12,6 +14,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
+import com.ovchinnikovm.android.vktop.LoginActivity;
 import com.ovchinnikovm.android.vktop.entities.Attachment;
 import com.ovchinnikovm.android.vktop.entities.ExtendedPost;
 import com.ovchinnikovm.android.vktop.entities.ExtendedPosts;
@@ -61,6 +64,7 @@ public class PostsRepositoryImpl implements PostsRepository {
     private Gson gson = new GsonBuilder().create();
 
     private RealmSortedItem realmSortedItem;
+    private Integer userId;
 
     private SortType sortType = SortType.LIKES;
 
@@ -77,9 +81,10 @@ public class PostsRepositoryImpl implements PostsRepository {
 
     @Override
     public void getIds(Integer sortIntervalType, Long sortStart, Long sortEnd,
-                       RealmSortedItem realmSortedItem) {
+                       RealmSortedItem realmSortedItem, Integer userId) {
 
         this.realmSortedItem = realmSortedItem;
+        this.userId = userId;
 
         PostsApiResponse<PostSortItem> posts = new PostsApiResponse<>();
         posts.response = new ArrayList<>();
@@ -173,6 +178,8 @@ public class PostsRepositoryImpl implements PostsRepository {
                     nextId = currentIdNum.intValue() + 1;
                 }
                 realmSortedItem.setSortId(nextId);
+                Log.i("test", String.valueOf(userId) + " in repository");
+                realmSortedItem.setUserId(userId);
                 realm1.copyToRealm(realmSortedItem);
 
                 long b = System.currentTimeMillis();

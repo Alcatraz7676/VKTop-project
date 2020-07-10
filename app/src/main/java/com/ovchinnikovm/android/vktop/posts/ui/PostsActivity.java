@@ -5,9 +5,11 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
+import android.media.AudioAttributes;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -16,6 +18,7 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -29,11 +32,13 @@ import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.media.AudioAttributes;
 
 import com.afollestad.materialdialogs.GravityEnum;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.f2prateek.dart.Dart;
 import com.f2prateek.dart.InjectExtra;
+import com.ovchinnikovm.android.vktop.LoginActivity;
 import com.ovchinnikovm.android.vktop.lib.PreCachingLayoutManager;
 import com.ovchinnikovm.android.vktop.R;
 import com.ovchinnikovm.android.vktop.VkTopApp;
@@ -48,6 +53,7 @@ import com.ovchinnikovm.android.vktop.posts.adapters.OnItemClickListener;
 import com.ovchinnikovm.android.vktop.posts.adapters.PostsAdapter;
 import com.ovchinnikovm.android.vktop.posts.di.PostsComponent;
 import com.ovchinnikovm.android.vktop.posts.events.DialogEvent;
+import com.ovchinnikovm.android.vktop.settings.SettingsActivity;
 import com.squareup.leakcanary.RefWatcher;
 import com.squareup.picasso.Picasso;
 
@@ -57,6 +63,8 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+import static com.ovchinnikovm.android.vktop.lib.PicassoImageLoader.POST_IMAGE_TAG;
 
 public class PostsActivity extends AppCompatActivity implements PostsView, OnItemClickListener {
 
@@ -147,7 +155,9 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
             else
                 showIndeterminateProgressDialog();
             RealmSortedItem realmItem = new RealmSortedItem("-" + groupId, postsCount, groupIconUrl, groupName);
-            presenter.downloadPostsIds(sortIntervalType, sortStart, sortEnd, realmItem);
+            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+            int userId = sharedPreferences.getInt(LoginActivity.KEY_PREF_CURRENT_USER, 0);
+            presenter.downloadPostsIds(sortIntervalType, sortStart, sortEnd, realmItem, userId);
         } else {
             presenter.setSortedItem(itemId);
             if (savedInstanceState != null) {
@@ -317,7 +327,9 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
 
     private void dismissDialog() {
         dialog.dismiss();
-        if (activityStoped) {
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        Boolean enableNotificationsPref = sharedPref.getBoolean(SettingsActivity.KEY_PREF_NOTIFICATION_SWITCH, true);
+        if (activityStoped && enableNotificationsPref) {
             showNotification();
         }
         presenter.getPosts(0);
@@ -327,6 +339,11 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         String NOTIFICATION_CHANNEL_ID = "my_channel_id";
 
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        Boolean vibrationPref = sharedPref.getBoolean(SettingsActivity.KEY_PREF_NOTIFICATION_VIBRATE, false);
+        Uri soundPref = Uri.parse(sharedPref.getString(SettingsActivity.KEY_PREF_NOTIFICATION_SOUND,
+                "content://settings/system/notification_sound"));
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel notificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID,
                     "Sort end notification", NotificationManager.IMPORTANCE_HIGH);
@@ -335,7 +352,13 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
             notificationChannel.setDescription("This notification pop up when sorting ends and app is hidden");
             notificationChannel.enableLights(true);
             notificationChannel.setLightColor(ContextCompat.getColor(this, R.color.colorPrimary));
-            notificationChannel.enableVibration(false);
+            notificationChannel.enableVibration(vibrationPref);
+            notificationChannel.setVibrationPattern(new long[] { 500, 500});
+            AudioAttributes att = new AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+                    .build();
+            notificationChannel.setSound(soundPref, att);
             notificationManager.createNotificationChannel(notificationChannel);
         }
         NotificationCompat.Builder notificationBuilder =
@@ -356,7 +379,11 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
                 .setTicker(getResources().getString(R.string.notification_title))
                 .setContentTitle(getResources().getString(R.string.notification_title))
                 .setContentText(getResources().getString(R.string.notification_text))
+                .setSound(soundPref)
                 .setContentIntent(pendingIntent);
+
+        if (vibrationPref)
+            notificationBuilder.setVibrate(new long[] { 500, 500});
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             notificationBuilder.setSmallIcon(R.drawable.ic_lolipop_notification);
@@ -461,7 +488,7 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
     @Override
     protected void onDestroy() {
         presenter.onDestroy();
-        Picasso.with(this).cancelTag("PostImage");
+        Picasso.with(this).cancelTag(POST_IMAGE_TAG);
         recyclerview.getRecycledViewPool().clear();
         super.onDestroy();
         RefWatcher refWatcher = VkTopApp.getRefWatcher();

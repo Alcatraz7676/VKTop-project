@@ -8,9 +8,14 @@
     <string name="login_title">Выберете способ авторизации</string>
 
     <!-- Main Screen -->
-    <string name="logout_menu_item">ВЫЙТИ</string>
+    <string name="logout_menu_item">Выйти</string>
+    <string name="settings_menu_item">Настройки</string>
     <string name="empty_title">Ничего пока не отсортировано :(</string>
     <string name="empty_subtitle">Чтобы начать нажмите кнопку в нижнем правом углу</string>
+    <string-array name="delete_array">
+        <item>Удалить</item>
+    </string-array>
+
 
     <!-- Group Screen -->
     <string name="new_sort_button_text">ОТСОРТИРОВАТЬ ПОСТЫ</string>
@@ -55,7 +60,7 @@
     <string name="groups_title_text">Выберите группу</string>
 
     <!-- Posts Screen -->
-    <string name="sort_progress_dialog_title">Идет получение постов</string>
+    <string name="sort_progress_dialog_title">Идет получение постов\n(приложение можно свернуть)</string>
     <string name="please_wait">Пожалуйста, подождите&#8230;</string>
     <string-array name="sort_items">
         <item>По лайкам</item>
@@ -84,5 +89,14 @@
     <!-- Notification -->
     <string name="notification_title">Записи отсортированы</string>
     <string name="notification_text">Нажмите чтобы перейти в приложение</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_label">Настройки</string>
+    <string name="notifications_title">Уведомления</string>
+    <string name="enable_notification_summary">Уведомления сообщают о конце сортировки когда приложение свернуто</string>
+    <string name="pref_tone">Мелодия уведомления</string>
+    <string name="pref_vibrate">Вибрация</string>
+    <string name="pref_tone_silent">Без звука</string>
+
 
 </resources>

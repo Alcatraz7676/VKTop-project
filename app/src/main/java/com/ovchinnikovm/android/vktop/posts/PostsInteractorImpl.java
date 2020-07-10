@@ -12,8 +12,8 @@ public class PostsInteractorImpl implements PostsInteractor{
 
     @Override
     public void sortPosts(Integer sortIntervalType, Long sortStart, Long sortEnd,
-                        RealmSortedItem realmSortedItem) {
-        repository.getIds(sortIntervalType, sortStart, sortEnd, realmSortedItem);
+                        RealmSortedItem realmSortedItem, Integer userId) {
+        repository.getIds(sortIntervalType, sortStart, sortEnd, realmSortedItem, userId);
     }
 
     @Override

@@ -9,7 +9,7 @@ public interface PostsPresenter {
     void onCreate();
     void onDestroy();
     void downloadPostsIds(Integer sortIntervalType, Long sortStart, Long sortEnd,
-                          RealmSortedItem realmSortedItem);
+                          RealmSortedItem realmSortedItem, Integer userId);
     void setSortedItem(Integer itemId);
     void onEventMainThread(PostsEvent event);
     void onEventMainThread(DialogEvent event);

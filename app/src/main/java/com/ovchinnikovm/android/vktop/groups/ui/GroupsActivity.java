@@ -25,6 +25,7 @@ import com.ovchinnikovm.android.vktop.groups.adapters.GroupsAdapter;
 import com.ovchinnikovm.android.vktop.groups.adapters.OnItemClickListener;
 import com.ovchinnikovm.android.vktop.groups.di.GroupsComponent;
 import com.squareup.leakcanary.RefWatcher;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +35,8 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+
+import static com.ovchinnikovm.android.vktop.lib.PicassoImageLoader.POST_IMAGE_TAG;
 
 public class GroupsActivity extends AppCompatActivity implements GroupsView, OnItemClickListener {
 
@@ -206,6 +209,7 @@ public class GroupsActivity extends AppCompatActivity implements GroupsView, OnI
     @Override
     protected void onDestroy() {
         presenter.onDestroy();
+        Picasso.with(this).cancelTag(POST_IMAGE_TAG);
         super.onDestroy();
         RefWatcher refWatcher = VkTopApp.getRefWatcher();
         refWatcher.watch(this);

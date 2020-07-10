@@ -40,8 +40,6 @@ public class MediaAdapter extends RecyclerView.Adapter<MediaAdapter.ViewHolder> 
     public void onBindViewHolder(ViewHolder holder, int position) {
         holder.time.setVisibility(View.GONE);
         Attachment attachment = attachments.get(position);
-        int minutes;
-        int seconds;
         switch (attachment.getType()) {
             case "audio":
                 holder.icon.setImageResource(R.drawable.ic_song);
@@ -53,8 +51,8 @@ public class MediaAdapter extends RecyclerView.Adapter<MediaAdapter.ViewHolder> 
                 holder.icon.setImageResource(R.drawable.ic_video);
                 holder.title.setText(attachment.getVideoTitle());
                 holder.subtitle.setText(attachment.getVideoDescription());
-                minutes = attachment.getVideoDuration() / 60;
-                seconds = attachment.getVideoDuration() % 60;
+                int minutes = attachment.getVideoDuration() / 60;
+                int seconds = attachment.getVideoDuration() % 60;
                 if (seconds >= 0 && seconds < 10) {
                     String secStr = "0" + seconds;
                     holder.time.setText(minutes + ":" + secStr);
@@ -86,7 +84,7 @@ public class MediaAdapter extends RecyclerView.Adapter<MediaAdapter.ViewHolder> 
                     holder.icon.setImageResource(R.drawable.ic_document);
                 holder.title.setText(attachment.getDocTitle());
                 double docSize = attachment.getDocSize() * 1.0 / (1024 * 1024);
-                holder.subtitle.setText(String.format("%.2f", docSize) + " " + context.getString(R.string.doc_size));
+                holder.subtitle.setText(String.format("%.2f", docSize).replace(",",".") + " " + context.getString(R.string.doc_size));
                 setOnClickListener(holder.view);
                 break;
         }

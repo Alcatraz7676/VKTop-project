@@ -1,9 +1,13 @@
 package com.ovchinnikovm.android.vktop;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.preference.PreferenceManager;
+import android.util.Log;
 import android.widget.Button;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -17,6 +21,8 @@ import com.vk.sdk.api.VKError;
 import com.vk.sdk.util.VKUtil;
 
 public class LoginActivity extends AppCompatActivity {
+
+    public static final String KEY_PREF_CURRENT_USER = "current_user_key";
 
     MaterialDialog dialog;
 
@@ -50,6 +56,10 @@ public class LoginActivity extends AppCompatActivity {
         if (!VKSdk.onActivityResult(requestCode, resultCode, data, new VKCallback<VKAccessToken>() {
             @Override
             public void onResult(VKAccessToken token) {
+                SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putInt(KEY_PREF_CURRENT_USER, Integer.valueOf(token.userId));
+                editor.apply();
                 navigateToMainScreen();
             }
             @Override

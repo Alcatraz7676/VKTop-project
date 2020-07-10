@@ -10,6 +10,7 @@ import android.graphics.RectF;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -19,6 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.RelativeLayout;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.ovchinnikovm.android.vktop.Henson;
 import com.ovchinnikovm.android.vktop.LoginActivity;
 import com.ovchinnikovm.android.vktop.R;
@@ -27,8 +29,10 @@ import com.ovchinnikovm.android.vktop.VkTopApp;
 import com.ovchinnikovm.android.vktop.entities.RealmSortedItem;
 import com.ovchinnikovm.android.vktop.groups.ui.GroupsActivity;
 import com.ovchinnikovm.android.vktop.main.adapters.OnItemClickListener;
+import com.ovchinnikovm.android.vktop.main.adapters.OnItemLongClickListener;
 import com.ovchinnikovm.android.vktop.main.adapters.SortDataAdapter;
 import com.ovchinnikovm.android.vktop.main.di.MainComponent;
+import com.ovchinnikovm.android.vktop.settings.SettingsActivity;
 import com.squareup.leakcanary.RefWatcher;
 import com.vk.sdk.VKSdk;
 
@@ -39,7 +43,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.realm.Realm;
 
-public class MainActivity extends AppCompatActivity implements OnItemClickListener {
+public class MainActivity extends AppCompatActivity implements OnItemClickListener, OnItemLongClickListener {
 
     @BindView(R.id.recycler_view)
     RecyclerViewEmptySupport recyclerView;
@@ -65,6 +69,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
         ButterKnife.bind(this);
         setupInjection();
         setupAdapter();
+        PreferenceManager.setDefaultValues(this, R.xml.pref_notifications, false);
     }
 
     @Override
@@ -75,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
 
     private void setupInjection() {
         VkTopApp app = (VkTopApp) getApplication();
-        MainComponent mainComponent = app.getMainComponent(this, this);
+        MainComponent mainComponent = app.getMainComponent(this, this, this);
         mainComponent.inject(this);
     }
 
@@ -234,6 +239,17 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
         overridePendingTransition(0, R.anim.screen_splash_fade_out);
     }
 
+    @Override
+    public boolean onItemLongClick(int position) {
+        new MaterialDialog.Builder(this)
+                .items(R.array.delete_array)
+                .itemsCallback((dialog, view, which, text) -> {
+                    adapter.removeItem(position);
+                })
+                .show();
+        return true;
+    }
+
     @OnClick(R.id.fab)
     public void onViewClicked() {
         Intent intent = new Intent(MainActivity.this, GroupsActivity.class);
@@ -257,6 +273,10 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
                     | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
             overridePendingTransition(0, R.anim.screen_splash_fade_out);
+            return true;
+        } else if (item.getItemId() == R.id.settings) {
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
             return true;
         }
         return super.onOptionsItemSelected(item);

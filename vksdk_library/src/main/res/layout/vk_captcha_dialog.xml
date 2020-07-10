@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:background="@color/vk_grey_color"
     android:padding="20dp"
-    tools:context=".VKCaptchaActivity$PlaceholderFragment">
+    tools:activityContext=".VKCaptchaActivity$PlaceholderFragment">
 
     <RelativeLayout
         android:id="@+id/captcha_container"

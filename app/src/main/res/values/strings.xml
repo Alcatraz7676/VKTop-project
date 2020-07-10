@@ -9,9 +9,13 @@
     <string name="skip_login">SKIP</string>
 
     <!-- Main Screen -->
-    <string name="logout_menu_item">LOG OUT</string>
+    <string name="logout_menu_item">Log out</string>
+    <string name="settings_menu_item">Settings</string>
     <string name="empty_title">Nothing sorted yet :(</string>
     <string name="empty_subtitle">Click the button in the lower right corner</string>
+    <string-array name="delete_array">
+        <item>Delete</item>
+    </string-array>
 
     <!-- Group Screen -->
     <string name="new_sort_button_text">SORT POSTS</string>
@@ -56,7 +60,7 @@
     <string name="groups_title_text">Choose a Group</string>
 
     <!-- Posts Screen -->
-    <string name="sort_progress_dialog_title">Receiving posts</string>
+    <string name="sort_progress_dialog_title">Receiving posts\n(app may be minimized)</string>
     <string name="please_wait">Please, wait&#8230;</string>
     <string name="app_name" translatable="false">VkTop</string>
     <string-array name="sort_items">
@@ -86,5 +90,13 @@
     <!-- Notification -->
     <string name="notification_title">Posts are sorted</string>
     <string name="notification_text">Click to open the app</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_label">Settings</string>
+    <string name="notifications_title">Notifications</string>
+    <string name="enable_notification_summary">Notifications report the end of the sorting when app is minimized</string>
+    <string name="pref_tone">Notification ringtone</string>
+    <string name="pref_vibrate">Vibrate</string>
+    <string name="pref_tone_silent">Silent</string>
 
 </resources>

@@ -14,6 +14,7 @@ public class RealmSortedItem extends RealmObject {
     @Required
     private Integer sortId;
     private String groupId;
+    private Integer userId;
     private Integer postsCount;
     private String groupIconUrl;
     private String groupName;
@@ -52,6 +53,14 @@ public class RealmSortedItem extends RealmObject {
 
     public String getGroupId() {
         return groupId;
+    }
+
+    public Integer getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
     }
 
     public Integer getPostsCount() {

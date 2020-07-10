@@ -20,6 +20,10 @@ import com.squareup.picasso.Transformation;
 import static com.vk.sdk.VKUIHelper.getApplicationContext;
 
 public class PicassoImageLoader implements ImageLoader {
+
+    public static final String POST_IMAGE_TAG = "post_image_tag";
+    public static final String GROUP_ICON_TAG = "group_icon_tag";
+
     private Picasso picasso;
     private Context context;
 
@@ -34,6 +38,7 @@ public class PicassoImageLoader implements ImageLoader {
                 .load(URL)
                 .placeholder(ContextCompat.getDrawable(context, R.drawable.group_oval))
                 .error(ContextCompat.getDrawable(context, R.drawable.group_oval))
+                .tag(GROUP_ICON_TAG)
                 .into(imageView, new Callback() {
                     @Override
                     public void onSuccess() {
@@ -62,7 +67,7 @@ public class PicassoImageLoader implements ImageLoader {
                 .load(URL)
                 .placeholder(gd)
                 .error(R.drawable.image_placeholder)
-                .tag("PostImage")
+                .tag(POST_IMAGE_TAG)
                 .into(imageView);
     }
 

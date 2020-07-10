@@ -15,7 +15,7 @@ android {
         multiDexEnabled true
         javaCompileOptions {
             annotationProcessorOptions {
-                arguments = [ 'dart.henson.package' : 'com.ovchinnikovm.android.vktop' ]
+                arguments = ['dart.henson.package': 'com.ovchinnikovm.android.vktop']
             }
         }
     }
@@ -45,9 +45,11 @@ dependencies {
     implementation "com.android.support:recyclerview-v7:27.1.1"
     implementation "com.android.support:cardview-v7:27.1.1"
     implementation "com.android.support:design:27.1.1"
+    implementation "com.android.support:preference-v7:27.1.1"
 
     // code generator for view
     implementation "com.jakewharton:butterknife:8.8.1"
+    implementation 'com.android.support:support-v4:27.1.1'
     annotationProcessor "com.jakewharton:butterknife-compiler:8.8.1"
 
     // parser
@@ -102,6 +104,12 @@ dependencies {
 
     // Range date picker
     implementation 'com.borax12.materialdaterangepicker:library:1.9'
+
+    // Preferences
+    implementation 'net.xpece.android:support-preference:2.2.0'
+
+    // Debug Database
+    debugImplementation 'com.amitshekhar.android:debug-db:1.0.4'
 }
 
 configurations.all {

@@ -43,8 +43,8 @@ public class PostsPresenterImpl implements PostsPresenter {
 
     @Override
     public void downloadPostsIds(Integer sortIntervalType, Long sortStart, Long sortEnd,
-                                 RealmSortedItem realmSortedItem) {
-        interactor.sortPosts(sortIntervalType, sortStart, sortEnd, realmSortedItem);
+                                 RealmSortedItem realmSortedItem, Integer userId) {
+        interactor.sortPosts(sortIntervalType, sortStart, sortEnd, realmSortedItem, userId);
     }
 
     @Override

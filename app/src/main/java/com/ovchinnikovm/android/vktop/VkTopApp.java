@@ -2,8 +2,11 @@ package com.ovchinnikovm.android.vktop;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.StrictMode;
 import android.support.multidex.MultiDexApplication;
+import android.util.Log;
 
+import com.amitshekhar.DebugDB;
 import com.ovchinnikovm.android.vktop.entities.RealmSortedItem;
 import com.ovchinnikovm.android.vktop.group.di.DaggerGroupComponent;
 import com.ovchinnikovm.android.vktop.group.di.GroupComponent;
@@ -15,6 +18,7 @@ import com.ovchinnikovm.android.vktop.groups.di.GroupsModule;
 import com.ovchinnikovm.android.vktop.groups.ui.GroupsView;
 import com.ovchinnikovm.android.vktop.lib.di.LibsModule;
 import com.ovchinnikovm.android.vktop.main.adapters.OnItemClickListener;
+import com.ovchinnikovm.android.vktop.main.adapters.OnItemLongClickListener;
 import com.ovchinnikovm.android.vktop.main.di.DaggerMainComponent;
 import com.ovchinnikovm.android.vktop.main.di.MainComponent;
 import com.ovchinnikovm.android.vktop.main.di.MainModule;
@@ -62,6 +66,14 @@ public class VkTopApp extends MultiDexApplication {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        Log.i("DebugDB address", DebugDB.getAddressLog());
+
+        StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
+                .detectAll()
+                .penaltyLog()
+                .build());
+
         Realm.init(this);
         if (LeakCanary.isInAnalyzerProcess(this)) {
             // This process is dedicated to LeakCanary for heap analysis.
@@ -102,11 +114,12 @@ public class VkTopApp extends MultiDexApplication {
                 .build();
     }
 
-    public MainComponent getMainComponent(Activity activity, OnItemClickListener clickListener) {
+    public MainComponent getMainComponent(Activity activity, OnItemClickListener clickListener,
+                                          OnItemLongClickListener longClickListener) {
         return DaggerMainComponent
                 .builder()
                 .libsModule(new LibsModule(activity))
-                .mainModule(new MainModule(clickListener))
+                .mainModule(new MainModule(clickListener, longClickListener))
                 .build();
     }
 }
