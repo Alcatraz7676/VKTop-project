@@ -1,11 +1,10 @@
 package com.ovchinnikovm.android.vktop.lib.di;
 
-import android.app.Activity;
+import android.content.Context;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.RequestManager;
 import com.ovchinnikovm.android.vktop.lib.GlideImageLoader;
 import com.ovchinnikovm.android.vktop.lib.base.ImageLoader;
+import com.squareup.picasso.Picasso;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -16,28 +15,28 @@ import dagger.Provides;
 
 @Module
 public class LibsModule {
-    private Activity activity;
+    private Context context;
 
-    public LibsModule(Activity activity) {
-        this.activity = activity;
+    public LibsModule(Context context) {
+        this.context = context;
     }
 
     @Provides
     @Singleton
-    Activity providesActivity() {
-        return this.activity;
+    Context providesActivity() {
+        return this.context;
     }
 
     @Provides
     @Singleton
-    ImageLoader providesImageLoader(RequestManager glideRequestManager) {
-        return new GlideImageLoader(glideRequestManager);
+    ImageLoader providesImageLoader(Picasso picasso) {
+        return new GlideImageLoader(picasso);
     }
 
     @Provides
     @Singleton
-    RequestManager providesLibraryImageLoader(Activity activity) {
-        return Glide.with(activity);
+    Picasso providesLibraryImageLoader(Context context) {
+        return Picasso.with(context);
     }
 
     @Provides

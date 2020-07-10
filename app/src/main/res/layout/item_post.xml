@@ -68,7 +68,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/text"
             android:layout_marginTop="16dp"
-            android:adjustViewBounds="true"
+
             android:maxHeight="600dp"
             android:visibility="gone"
             tools:src="@drawable/test_image"

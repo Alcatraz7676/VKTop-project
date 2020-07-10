@@ -76,7 +76,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/att_text"
         android:layout_marginTop="16dp"
-        android:adjustViewBounds="true"
+
         android:visibility="gone"
         tools:src="@drawable/test_image"
         tools:visibility="visible"/>
