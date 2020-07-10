@@ -1,6 +1,9 @@
 package com.ovchinnikovm.android.vktop.groups.ui;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NavUtils;
@@ -8,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.ovchinnikovm.android.vktop.Henson;
 import com.ovchinnikovm.android.vktop.R;
@@ -42,11 +46,21 @@ public class GroupsActivity extends AppCompatActivity implements GroupsView, OnI
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.recyclerview_container);
+        setContentView(R.layout.activity_groups);
         ButterKnife.bind(this);
         setupInjection();
         setupRecyclerView();
-        presenter.getGroups();
+        presenter.onStart();
+        if (isOnline()) {
+            presenter.getGroups();
+        }
+    }
+
+    private boolean isOnline() {
+        ConnectivityManager cm =
+                (ConnectivityManager) getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnected();
     }
 
     private void setupInjection() {
@@ -61,21 +75,8 @@ public class GroupsActivity extends AppCompatActivity implements GroupsView, OnI
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        presenter.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        presenter.onPause();
-        super.onPause();
-    }
-
-    @Override
     public void onError(String error) {
-
-
+        Toast.makeText(this, error, Toast.LENGTH_LONG).show();
     }
 
     @Override

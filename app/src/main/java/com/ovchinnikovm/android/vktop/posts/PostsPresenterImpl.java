@@ -1,5 +1,6 @@
 package com.ovchinnikovm.android.vktop.posts;
 
+import com.ovchinnikovm.android.vktop.posts.events.DialogEvent;
 import com.ovchinnikovm.android.vktop.posts.events.PostsEvent;
 import com.ovchinnikovm.android.vktop.posts.ui.PostsView;
 
@@ -49,5 +50,11 @@ public class PostsPresenterImpl implements PostsPresenter {
                 view.setPosts(event.getPosts());
             }
         }
+    }
+
+    @Override
+    @Subscribe
+    public void onEventMainThread(DialogEvent event) {
+        view.incrementDialogNumber();
     }
 }

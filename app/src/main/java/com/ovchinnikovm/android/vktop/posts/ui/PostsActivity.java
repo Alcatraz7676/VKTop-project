@@ -7,9 +7,14 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.MenuItem;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.GravityEnum;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.f2prateek.dart.Dart;
 import com.f2prateek.dart.InjectExtra;
 import com.ovchinnikovm.android.vktop.MainActivity;
@@ -31,13 +36,27 @@ import butterknife.ButterKnife;
 
 public class PostsActivity extends AppCompatActivity implements PostsView, OnItemClickListener {
 
-    @Nullable @InjectExtra
+    @Nullable
+    @InjectExtra
     Integer groupId;
-    @Nullable @InjectExtra
+    @Nullable
+    @InjectExtra
     Integer postsCount;
+    @Nullable
+    @InjectExtra
+    String groupName;
+    @Nullable
+    @InjectExtra
+    String groupIconUrl;
 
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
     @BindView(R.id.recyclerview)
-    RecyclerView recyclerView;
+    RecyclerView recyclerview;
+    @BindView(R.id.group_icon)
+    ImageView groupIconImageView;
+    @BindView(R.id.groupName)
+    TextView groupNameTextView;
 
     @Inject
     ImageLoader imageLoader;
@@ -48,6 +67,8 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
 
     PostsAdapter adapter;
 
+    private MaterialDialog dialog;
+
     public PostsActivity() {
     }
 
@@ -55,10 +76,40 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Dart.inject(this);
-        setContentView(R.layout.recyclerview_container);
+        setContentView(R.layout.activity_posts);
         ButterKnife.bind(this);
         setupInjection();
+        setupActionBar();
+        showProgressDeterminateDialog();
         presenter.getPosts(groupId, postsCount);
+    }
+
+    private void setupActionBar() {
+        toolbar.setTitle("");
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        groupNameTextView.setText(groupName);
+        imageLoader.loadIcon(groupIconImageView, groupIconUrl);
+    }
+
+    public void showProgressDeterminateDialog() {
+        new MaterialDialog.Builder(this)
+                .title(R.string.sort_progress_dialog_title)
+                .content(R.string.please_wait)
+                .contentGravity(GravityEnum.CENTER)
+                .progress(false, ((postsCount / 100) + 1), true)
+                .cancelable(false)
+                .showListener(
+                        dialogInterface -> dialog = (MaterialDialog) dialogInterface)
+                .show();
+    }
+
+    @Override
+    public void incrementDialogNumber() {
+        dialog.incrementProgress(1);
+        if (dialog.getCurrentProgress() == ((postsCount / 100) + 1))
+            dialog.dismiss();
     }
 
     private void setupInjection() {
@@ -68,8 +119,9 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
     }
 
     private void setupRecyclerView() {
-        recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false));
-        recyclerView.setAdapter(adapter);
+        recyclerview.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false));
+        Log.i("mytag", "It just works");
+        recyclerview.setAdapter(adapter);
     }
 
     @Override
@@ -101,18 +153,14 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                Intent intent = new Intent(this, MainActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
-                        | Intent.FLAG_ACTIVITY_NEW_TASK
-                        | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
-                overridePendingTransition( 0, R.anim.screen_splash_fade_out );
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
+    public boolean onSupportNavigateUp() {
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
+                | Intent.FLAG_ACTIVITY_NEW_TASK
+                | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        overridePendingTransition(0, R.anim.screen_splash_fade_out);
+        return true;
     }
 
     @Override
@@ -122,7 +170,7 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
                 | Intent.FLAG_ACTIVITY_NEW_TASK
                 | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
-        overridePendingTransition( 0, R.anim.screen_splash_fade_out );
+        overridePendingTransition(0, R.anim.screen_splash_fade_out);
     }
 
     @Override

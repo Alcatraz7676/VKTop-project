@@ -5,6 +5,7 @@ import com.ovchinnikovm.android.vktop.groups.ui.GroupsView;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 public class GroupsPresenterImpl implements GroupsPresenter {
     private EventBus eventBus;
@@ -18,17 +19,13 @@ public class GroupsPresenterImpl implements GroupsPresenter {
     }
 
     @Override
-    public void onResume() {
+    public void onStart() {
         eventBus.register(this);
     }
 
     @Override
-    public void onPause() {
-        eventBus.unregister(this);
-    }
-
-    @Override
     public void onDestroy() {
+        eventBus.unregister(this);
         view = null;
     }
 
@@ -38,7 +35,7 @@ public class GroupsPresenterImpl implements GroupsPresenter {
     }
 
     @Override
-    @Subscribe
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     public void onEventMainThread(GroupsEvent event) {
         String errorMsg = event.getError();
         if (view != null) {

@@ -17,6 +17,7 @@
     <string name="average_time_label">Среднее время сортировки:</string>
     <string name="posts_number_label">Количество постов:</string>
     <string name="members_count_label">Количество участников:</string>
+    <string name="no_information">\???</string>
     <plurals name="seconds">
         <item quantity="zero">%1$d секунд</item>
         <item quantity="one">%1$d секунда</item>
@@ -33,4 +34,9 @@
         <item quantity="many">%1$d минут</item>
         <item quantity="other">%1$d минута</item>
     </plurals>
+
+    <!-- Posts Screen -->
+    <string name="sort_progress_dialog_title">Идет получение постов</string>
+    <string name="please_wait">Пожалуйста, подождите&#8230;</string>
+
 </resources>

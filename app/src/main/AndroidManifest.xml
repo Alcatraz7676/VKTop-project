@@ -3,7 +3,7 @@
           package="com.ovchinnikovm.android.vktop">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:name=".VkTopApp"
@@ -26,7 +26,8 @@
         <activity android:name=".group.ui.GroupActivity"
                   android:parentActivityName=".groups.ui.GroupsActivity"/>
         <activity android:name=".posts.ui.PostsActivity"
-                  android:parentActivityName=".group.ui.GroupActivity" />
+                  android:parentActivityName=".group.ui.GroupActivity"
+                  android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name="com.vk.sdk.VKServiceActivity"
             android:label="ServiceActivity"
             android:theme="@style/VK.Transparent" />

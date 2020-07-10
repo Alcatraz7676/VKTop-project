@@ -1,5 +1,6 @@
 package com.ovchinnikovm.android.vktop.posts;
 
+import com.ovchinnikovm.android.vktop.posts.events.DialogEvent;
 import com.ovchinnikovm.android.vktop.posts.events.PostsEvent;
 
 public interface PostsPresenter {
@@ -8,4 +9,5 @@ public interface PostsPresenter {
     void onDestroy();
     void getPosts(Integer groupId, Integer postsCount);
     void onEventMainThread(PostsEvent event);
+    void onEventMainThread(DialogEvent event);
 }

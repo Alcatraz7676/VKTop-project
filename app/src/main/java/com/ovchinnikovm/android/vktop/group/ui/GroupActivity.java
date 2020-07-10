@@ -38,6 +38,7 @@ public class GroupActivity extends AppCompatActivity implements GroupView {
     Integer memberNumber;
     @Nullable @InjectExtra
     Integer groupId;
+
     @BindView(R.id.group_title)
     TextView groupTitleTextView;
     @BindView(R.id.group_description)
@@ -52,8 +53,10 @@ public class GroupActivity extends AppCompatActivity implements GroupView {
     TextView timeNumberTextView;
     @BindView(R.id.sort_button)
     Button sortButton;
+
     @Inject
     GroupPresenter presenter;
+
     private Integer postsCount;
 
     public GroupActivity() {
@@ -133,6 +136,8 @@ public class GroupActivity extends AppCompatActivity implements GroupView {
                 .gotoPostsActivity()
                 .groupId(groupId)
                 .postsCount(postsCount)
+                .groupName(groupTitle)
+                .groupIconUrl(groupIconURL)
                 .build();
 
         startActivity(intent);

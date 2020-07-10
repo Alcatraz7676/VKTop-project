@@ -42,6 +42,9 @@ ext {
     glideVersion = '4.0.0-RC1'
     leakCanaryVersion = '1.5.1'
     darthensonVersion = '2.0.2'
+    multidexVersion = '1.0.1'
+    rxjava2Version = '2.1.1'
+    rxandroidVersion = '2.0.1'
 
     // vksdk
     vksdkVersion = '1.6.9'

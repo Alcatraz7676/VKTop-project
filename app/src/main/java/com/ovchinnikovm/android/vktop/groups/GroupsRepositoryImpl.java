@@ -66,6 +66,6 @@ public class GroupsRepositoryImpl implements GroupsRepository {
         GroupsEvent event = new GroupsEvent();
         event.setError(error);
         event.setGroups(items);
-        eventBus.post(event);
+        eventBus.postSticky(event);
     }
 }

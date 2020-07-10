@@ -45,6 +45,7 @@ public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.ViewHolder
     }
 
     public void setItems(List<Group> newGroups) {
+        groups.clear();
         groups.addAll(newGroups);
         notifyDataSetChanged();
     }

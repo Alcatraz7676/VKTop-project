@@ -2,6 +2,7 @@ package com.ovchinnikovm.android.vktop;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.support.multidex.MultiDexApplication;
 
 import com.ovchinnikovm.android.vktop.group.di.DaggerGroupComponent;
 import com.ovchinnikovm.android.vktop.group.di.GroupComponent;
@@ -22,7 +23,7 @@ import com.vk.sdk.VKAccessToken;
 import com.vk.sdk.VKAccessTokenTracker;
 import com.vk.sdk.VKSdk;
 
-public class VkTopApp extends android.app.Application {
+public class VkTopApp extends MultiDexApplication {
 
     private static VkTopApp instance;
     VKAccessTokenTracker vkAccessTokenTracker = new VKAccessTokenTracker() {
