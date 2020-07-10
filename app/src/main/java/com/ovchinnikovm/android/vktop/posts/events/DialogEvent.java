@@ -11,8 +11,4 @@ public class DialogEvent {
     public boolean isLast() {
         return last;
     }
-
-    public void setLast(boolean last) {
-        this.last = last;
-    }
 }

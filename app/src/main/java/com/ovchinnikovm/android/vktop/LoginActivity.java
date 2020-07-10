@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.Button;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.ovchinnikovm.android.vktop.main.MainActivity;
 import com.squareup.leakcanary.RefWatcher;
 import com.vk.sdk.VKAccessToken;
 import com.vk.sdk.VKCallback;
@@ -34,7 +35,7 @@ public class LoginActivity extends AppCompatActivity {
                 .findViewById(R.id.login_by_yourself_button)
                 .setOnClickListener( view -> VKSdk.login(this, false, VKScope.GROUPS));
 
-        Button loginThroughAppButton = (Button) dialog.getCustomView().findViewById(R.id.login_through_app_button);
+        Button loginThroughAppButton = dialog.getCustomView().findViewById(R.id.login_through_app_button);
         if (VKUtil.isAppInstalled(getApplicationContext(), "com.vkontakte.android")) {
             loginThroughAppButton.setOnClickListener(view -> VKSdk.login(this, true, VKScope.GROUPS));
         } else {
@@ -61,14 +62,14 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void navigateToMainScreen() {
-        getSharedPreferences("com.ovchinnikovm.android.vktop", MODE_PRIVATE).edit().putBoolean("firstrun", false).apply();
         Intent intent = new Intent(this, MainActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
-                | Intent.FLAG_ACTIVITY_NEW_TASK
-                | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
+        //        | Intent.FLAG_ACTIVITY_NEW_TASK
+        //        | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         dialog.dismiss();
         startActivity(intent);
-        overridePendingTransition( 0, R.anim.screen_splash_fade_out );
+        //overridePendingTransition( 0, R.anim.screen_splash_fade_out );
+        finish();
     }
 
     @Override

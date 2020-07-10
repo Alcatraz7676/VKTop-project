@@ -1,20 +1,27 @@
 package com.ovchinnikovm.android.vktop.entities;
 
 
+import io.realm.RealmObject;
+
 // This class is used in sorting
-public class PostSortItem {
+public class PostSortItem extends RealmObject {
     private Integer id;
     private SocialValue likes;
     private SocialValue reposts;
     private SocialValue comments;
     private Integer date;
 
+    public PostSortItem() {
+    }
+
+    /*
     public PostSortItem(Integer id, SocialValue likes, SocialValue reposts, SocialValue comments) {
         this.id = id;
         this.likes = likes;
         this.reposts = reposts;
         this.comments = comments;
     }
+    */
 
     public PostSortItem(Integer id, SocialValue likes, SocialValue reposts,
                             SocialValue comments, Integer date) {
@@ -52,6 +59,7 @@ public class PostSortItem {
                 ", likes=" + likes +
                 ", reposts=" + reposts +
                 ", comments=" + comments +
+                ", date=" + date +
                 '}';
     }
 }

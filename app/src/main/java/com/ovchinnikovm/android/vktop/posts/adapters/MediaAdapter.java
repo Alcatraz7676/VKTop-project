@@ -51,7 +51,12 @@ public class MediaAdapter extends RecyclerView.Adapter<MediaAdapter.ViewHolder> 
                 holder.subtitle.setText(attachment.getVideoDescription());
                 minutes = attachment.getVideoDuration() / 60;
                 seconds = attachment.getVideoDuration() % 60;
-                holder.time.setText(minutes + ":" + seconds);
+                if (seconds >= 0 && seconds < 10) {
+                    String secStr = "0" + seconds;
+                    holder.time.setText(minutes + ":" + secStr);
+                } else {
+                    holder.time.setText(minutes + ":" + seconds);
+                }
                 holder.time.setVisibility(View.VISIBLE);
                 setOnClickListener(holder.view, null);
                 break;

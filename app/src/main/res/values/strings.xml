@@ -1,55 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <integer name="com_vk_sdk_AppId">5851095</integer>
-    
+
     <!-- Login dialog -->
-    <string name="enter_by_yourself">ВВЕСТИ ЛОГИН/ПАРОЛЬ</string>
-    <string name="enter_through_app">ВОЙТИ ЧЕРЕЗ ПРИЛОЖЕНИЕ ВКОНТАКТЕ</string>
-    <string name="skip_login">ПРОПУСТИТЬ</string>
-    <string name="login_title">Выберете способ авторизации</string>
+    <string name="enter_by_yourself">ENTER LOGIN/PASSWORD</string>
+    <string name="enter_through_app">ENTER THROUGH APP</string>
+    <string name="login_title">Choose an authorization method</string>
+    <string name="skip_login">SKIP</string>
 
     <!-- Main Screen -->
-    <string name="logout_menu_item">ВЫЙТИ</string>
-    <string name="open_groups_list_button_text">ПОКАЗАТЬ ГРУППЫ</string>
+    <string name="logout_menu_item">LOG OUT</string>
+    <string name="empty_title">Nothing sorted yet :(</string>
+    <string name="empty_subtitle">Click the button in the lower right corner</string>
 
     <!-- Group Screen -->
-    <string name="new_sort_button_text">ОТСОРТИРОВАТЬ ПОСТЫ</string>
-    <string name="posts_number_label">Количество постов:</string>
+    <string name="new_sort_button_text">SORT POSTS</string>
+    <string name="posts_number_label">Number of posts:</string>
+    <string name="average_time_label">Average sort time:</string>
+    <string name="max_time_label">Maximum sort time:</string>
     <string name="no_information" translatable="false">\???</string>
-    <string name="sort_interval_text">ВЫБРАТЬ ВРЕМЕННОЙ ПРОМЕЖУТОК</string>
-    <string name="sort_interval_dialog_title">Выберете временной промежуток сортировки постов</string>
-    <string name="choose_label">Выбрать</string>
+    <string name="members_count_label">Member count:</string>
+    <string name="sort_interval_text">CHOOSE TIME INTERVAL</string>
+    <string name="sort_interval_dialog_title">Choose time interval posts sorting.</string>
+    <string name="choose_label">Choose</string>
+    <string name="cancel_label">Cancel</string>
     <string-array name="time_interval">
-        <item>За все время</item>
-        <item>За последний год</item>
-        <item>За последний месяц</item>
-        <item>За последнюю неделю</item>
-        <item>Выбрать свой</item>
+        <item>For all time</item>
+        <item>For last year</item>
+        <item>For last month</item>
+        <item>For last week</item>
+        <item>For last day</item>
+        <item>Choose by yourself</item>
     </string-array>
     <plurals name="seconds">
-        <item quantity="zero">%1$d секунд</item>
-        <item quantity="one">%1$d секунда</item>
-        <item quantity="two">%1$d секунды</item>
-        <item quantity="few">%1$d секунды</item>
-        <item quantity="many">%1$d секунд</item>
-        <item quantity="other">%1$d секунда</item>
+        <item quantity="zero">%1$d seconds</item>
+        <item quantity="one">%1$d second</item>
+        <item quantity="two">%1$d seconds</item>
+        <item quantity="few">%1$d seconds</item>
+        <item quantity="many">%1$d seconds</item>
+        <item quantity="other">%1$d seconds</item>
     </plurals>
     <plurals name="minutes">
-        <item quantity="zero">%1$d минут</item>
-        <item quantity="one">%1$d минута</item>
-        <item quantity="two">%1$d минуты</item>
-        <item quantity="few">%1$d минуты</item>
-        <item quantity="many">%1$d минут</item>
-        <item quantity="other">%1$d минута</item>
+        <item quantity="one">%1$d minute</item>
+        <item quantity="two">%1$d minutes</item>
+        <item quantity="few">%1$d minutes</item>
+        <item quantity="many">%1$d minutes</item>
+        <item quantity="other">%1$d minutes</item>
     </plurals>
+    <string name="group_title_text">Group Information</string>
+
+    <!-- Groups Screen -->
+    <string name="disconnected_title_text">Connection is lost</string>
+    <string name="disconnected_subtitle_text">Click the button to try again</string>
+    <string name="disconnected_button_text">RETRY</string>
+    <string name="groups_title_text">Choose a Group</string>
 
     <!-- Posts Screen -->
-    <string name="sort_progress_dialog_title">Идет получение постов</string>
-    <string name="please_wait">Пожалуйста, подождите&#8230;</string>
+    <string name="sort_progress_dialog_title">Receiving posts</string>
+    <string name="please_wait">Please, wait&#8230;</string>
     <string name="app_name" translatable="false">VkTop</string>
     <string-array name="sort_items">
-        <item>По лайкам</item>
-        <item>По репостам</item>
-        <item>По комментариям</item>
+        <item>By likes</item>
+        <item>By shares</item>
+        <item>By commentaries</item>
     </string-array>
+    <string name="empty_message">Unfortunately there is no posts for selected period of time. Try another one. </string>
 
 </resources>

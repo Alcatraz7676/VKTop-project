@@ -12,7 +12,7 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name=".main.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -20,17 +20,19 @@
             </intent-filter>
         </activity>
         <activity android:name=".LoginActivity"
-            android:theme="@style/LoginActivityTheme"/>
+                  android:theme="@style/LoginActivityTheme"/>
         <activity android:name=".groups.ui.GroupsActivity"
-            android:parentActivityName=".MainActivity"/>
+                  android:label="@string/groups_title_text"
+                  android:parentActivityName=".main.MainActivity"/>
         <activity android:name=".group.ui.GroupActivity"
+                  android:label="@string/group_title_text"
                   android:parentActivityName=".groups.ui.GroupsActivity"/>
         <activity android:name=".posts.ui.PostsActivity"
                   android:parentActivityName=".group.ui.GroupActivity"
                   android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name="com.vk.sdk.VKServiceActivity"
-            android:label="ServiceActivity"
-            android:theme="@style/VK.Transparent" />
+                  android:label="ServiceActivity"
+                  android:theme="@style/VK.Transparent" />
     </application>
 
 </manifest>

@@ -40,7 +40,7 @@
         android:ellipsize="end"
         android:maxLines="1"
         android:paddingRight="32dp"
-        android:textColor="@color/colorPrimaryDark"
+        android:textColor="@color/colorAccent"
         android:textSize="16sp"
         android:textStyle="bold"
         tools:text="BLUR"/>

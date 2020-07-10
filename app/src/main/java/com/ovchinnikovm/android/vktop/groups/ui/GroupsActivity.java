@@ -12,6 +12,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.ovchinnikovm.android.vktop.Henson;
@@ -31,6 +32,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class GroupsActivity extends AppCompatActivity implements GroupsView, OnItemClickListener {
 
@@ -38,6 +40,8 @@ public class GroupsActivity extends AppCompatActivity implements GroupsView, OnI
     RecyclerView recyclerView;
     @BindView(R.id.loading_indicator)
     ProgressBar loadingIndicator;
+    @BindView(R.id.disconnected_view)
+    RelativeLayout disconnectedView;
 
     @Inject
     GroupsAdapter adapter;
@@ -55,8 +59,15 @@ public class GroupsActivity extends AppCompatActivity implements GroupsView, OnI
         setupInjection();
         setupRecyclerView();
         presenter.onStart();
+        downloadIfConnected();
+    }
+
+    private void downloadIfConnected() {
         if (isOnline()) {
+            showLoadingIndicator();
             presenter.getGroups();
+        } else {
+            showDisconnectedView();
         }
     }
 
@@ -86,9 +97,26 @@ public class GroupsActivity extends AppCompatActivity implements GroupsView, OnI
 
     @Override
     public void setGroups(List<Group> groups) {
-        loadingIndicator.setVisibility(View.GONE);
         adapter.setItems(groups);
+        showGroups();
+    }
 
+    private void showDisconnectedView() {
+        loadingIndicator.setVisibility(View.GONE);
+        recyclerView.setVisibility(View.GONE);
+        disconnectedView.setVisibility(View.VISIBLE);
+    }
+
+    private void showGroups() {
+        loadingIndicator.setVisibility(View.GONE);
+        recyclerView.setVisibility(View.VISIBLE);
+        disconnectedView.setVisibility(View.GONE);
+    }
+
+    private void showLoadingIndicator() {
+        loadingIndicator.setVisibility(View.VISIBLE);
+        recyclerView.setVisibility(View.GONE);
+        disconnectedView.setVisibility(View.GONE);
     }
 
     @Override
@@ -106,6 +134,11 @@ public class GroupsActivity extends AppCompatActivity implements GroupsView, OnI
     public void onBackPressed() {
         super.onBackPressed();
         overridePendingTransition(0, R.anim.screen_splash_fade_out);
+    }
+
+    @OnClick(R.id.disconnected_button)
+    public void onViewClicked(View view) {
+        downloadIfConnected();
     }
 
     @Override

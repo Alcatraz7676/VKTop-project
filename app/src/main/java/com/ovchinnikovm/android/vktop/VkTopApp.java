@@ -13,6 +13,10 @@ import com.ovchinnikovm.android.vktop.groups.di.GroupsComponent;
 import com.ovchinnikovm.android.vktop.groups.di.GroupsModule;
 import com.ovchinnikovm.android.vktop.groups.ui.GroupsView;
 import com.ovchinnikovm.android.vktop.lib.di.LibsModule;
+import com.ovchinnikovm.android.vktop.main.adapters.OnItemClickListener;
+import com.ovchinnikovm.android.vktop.main.di.DaggerMainComponent;
+import com.ovchinnikovm.android.vktop.main.di.MainComponent;
+import com.ovchinnikovm.android.vktop.main.di.MainModule;
 import com.ovchinnikovm.android.vktop.posts.di.DaggerPostsComponent;
 import com.ovchinnikovm.android.vktop.posts.di.PostsComponent;
 import com.ovchinnikovm.android.vktop.posts.di.PostsModule;
@@ -22,6 +26,8 @@ import com.squareup.leakcanary.RefWatcher;
 import com.vk.sdk.VKAccessToken;
 import com.vk.sdk.VKAccessTokenTracker;
 import com.vk.sdk.VKSdk;
+
+import io.realm.Realm;
 
 public class VkTopApp extends MultiDexApplication {
 
@@ -51,6 +57,7 @@ public class VkTopApp extends MultiDexApplication {
     @Override
     public void onCreate() {
         super.onCreate();
+        Realm.init(this);
         if (LeakCanary.isInAnalyzerProcess(this)) {
             // This process is dedicated to LeakCanary for heap analysis.
             // You should not init your app in this process.
@@ -87,6 +94,14 @@ public class VkTopApp extends MultiDexApplication {
                 .builder()
                 .libsModule(new LibsModule(activity))
                 .postsModule(new PostsModule(view, clickListener))
+                .build();
+    }
+
+    public MainComponent getMainComponent(Activity activity, OnItemClickListener clickListener) {
+        return DaggerMainComponent
+                .builder()
+                .libsModule(new LibsModule(activity))
+                .mainModule(new MainModule(clickListener))
                 .build();
     }
 }

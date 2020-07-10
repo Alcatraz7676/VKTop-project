@@ -7,31 +7,33 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.GravityEnum;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.f2prateek.dart.Dart;
 import com.f2prateek.dart.InjectExtra;
-import com.ovchinnikovm.android.vktop.MainActivity;
 import com.ovchinnikovm.android.vktop.PreCachingLayoutManager;
 import com.ovchinnikovm.android.vktop.R;
 import com.ovchinnikovm.android.vktop.VkTopApp;
 import com.ovchinnikovm.android.vktop.entities.ExtendedPosts;
+import com.ovchinnikovm.android.vktop.entities.RealmSortedItem;
 import com.ovchinnikovm.android.vktop.lib.base.ImageLoader;
+import com.ovchinnikovm.android.vktop.main.MainActivity;
 import com.ovchinnikovm.android.vktop.posts.PostsPresenter;
 import com.ovchinnikovm.android.vktop.posts.adapters.OnItemClickListener;
 import com.ovchinnikovm.android.vktop.posts.adapters.PostsAdapter;
 import com.ovchinnikovm.android.vktop.posts.di.PostsComponent;
 import com.ovchinnikovm.android.vktop.posts.events.DialogEvent;
 import com.squareup.leakcanary.RefWatcher;
-import com.vk.sdk.VKAccessToken;
 
 import javax.inject.Inject;
 
@@ -61,6 +63,9 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
     @Nullable
     @InjectExtra
     Long sortEnd;
+    @Nullable
+    @InjectExtra
+    Integer itemId;
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -70,6 +75,12 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
     ImageView groupIconImageView;
     @BindView(R.id.spinner)
     Spinner spinner;
+    @BindView(R.id.loading_indicator)
+    ProgressBar loadingBar;
+    @BindView(R.id.empty_view)
+    RelativeLayout emptyView;
+    @BindView(R.id.group_name)
+    TextView groupNameTextView;
 
     @Inject
     ImageLoader imageLoader;
@@ -94,13 +105,18 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
         ButterKnife.bind(this);
         setupInjection();
         setupActionBar();
-        if (sortIntervalType == 0)
-            showDeterminateProgressDialog();
-        else
-            showIndeterminateProgressDialog();
         presenter.onCreate();
-        presenter.downloadPostsIds(groupId, postsCount, sortIntervalType, sortStart, sortEnd);
-        Log.i("mytag", VKAccessToken.currentToken().accessToken);
+        if (itemId == null) {
+            if (sortIntervalType == 0)
+                showDeterminateProgressDialog();
+            else
+                showIndeterminateProgressDialog();
+            RealmSortedItem realmItem = new RealmSortedItem("-" + groupId, postsCount, groupIconUrl, groupName);
+            presenter.downloadPostsIds(sortIntervalType, sortStart, sortEnd, realmItem);
+        } else {
+            presenter.setSortedItem(itemId);
+            presenter.getPosts(0);
+        }
     }
 
     private void setupActionBar() {
@@ -241,18 +257,27 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
 
     @Override
     public void onError(String error) {
-        Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, error, Toast.LENGTH_LONG).show();
     }
 
     @Override
     public void setPosts(ExtendedPosts extendedPosts) {
-        if (adapter == null) {
-            adapter = new PostsAdapter(extendedPosts, imageLoader, onItemClickListener, this);
-            setupRecyclerView();
-        } else {
-            int before = adapter.getItemCount();
-            adapter.setItems(extendedPosts);
-            adapter.notifyItemRangeInserted(before, adapter.getItemCount() - 1);
+        loadingBar.setVisibility(View.GONE);
+        if (extendedPosts != null) {
+            if (adapter == null) {
+                adapter = new PostsAdapter(extendedPosts, imageLoader, onItemClickListener, this);
+                setupRecyclerView();
+            } else {
+                int before = adapter.getItemCount();
+                adapter.setItems(extendedPosts);
+                adapter.notifyItemRangeInserted(before, adapter.getItemCount() - 1);
+            }
+        } else if(adapter == null) {
+            emptyView.setVisibility(View.VISIBLE);
+            recyclerview.setVisibility(View.GONE);
+            spinner.setVisibility(View.GONE);
+            groupNameTextView.setText(groupName);
+            groupNameTextView.setVisibility(View.VISIBLE);
         }
     }
 

@@ -1,5 +1,6 @@
 package com.ovchinnikovm.android.vktop.posts;
 
+import com.ovchinnikovm.android.vktop.entities.RealmSortedItem;
 import com.ovchinnikovm.android.vktop.posts.events.DialogEvent;
 import com.ovchinnikovm.android.vktop.posts.events.PostsEvent;
 import com.ovchinnikovm.android.vktop.posts.ui.PostsView;
@@ -31,14 +32,19 @@ public class PostsPresenterImpl implements PostsPresenter {
     }
 
     @Override
-    public void downloadPostsIds(Integer groupId, Integer postsCount, Integer sortIntervalType,
-                                 Long sortStart, Long sortEnd) {
-        interactor.execute(groupId, postsCount, sortIntervalType, sortStart, sortEnd);
+    public void downloadPostsIds(Integer sortIntervalType, Long sortStart, Long sortEnd,
+                                 RealmSortedItem realmSortedItem) {
+        interactor.sortPosts(sortIntervalType, sortStart, sortEnd, realmSortedItem);
     }
 
     @Override
     public void getPosts(int page) {
-        interactor.execute(page);
+        interactor.getPosts(page);
+    }
+
+    @Override
+    public void setSortedItem(Integer itemId) {
+        interactor.setSortedItem(itemId);
     }
 
     @Override

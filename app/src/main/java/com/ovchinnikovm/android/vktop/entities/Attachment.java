@@ -98,18 +98,18 @@ public class Attachment {
         this.link.url = url;
     }
 
-    public class Photo {
+    private class Photo {
         @SerializedName("photo_604")
         private String photo;
     }
 
-    public class Video {
+    private class Video {
         private String title;
         private String description;
         private Integer duration;
     }
 
-    public class Audio {
+    private class Audio {
         private String artist;
         private String title;
         private Integer duration;

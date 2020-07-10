@@ -1,9 +1,14 @@
 package com.ovchinnikovm.android.vktop.entities;
 
 
+import io.realm.RealmObject;
+
 // This class is used for likes/replies/comments
-public class SocialValue {
+public class SocialValue extends RealmObject {
     private Integer count;
+
+    public SocialValue() {
+    }
 
     public SocialValue(Integer count) {
         this.count = count;

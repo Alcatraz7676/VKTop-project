@@ -20,6 +20,7 @@ import com.ovchinnikovm.android.vktop.entities.PostSortItem;
 import com.ovchinnikovm.android.vktop.entities.PostsApiResponse;
 import com.ovchinnikovm.android.vktop.entities.PostsSdkResponse;
 import com.ovchinnikovm.android.vktop.entities.Profile;
+import com.ovchinnikovm.android.vktop.entities.RealmSortedItem;
 import com.ovchinnikovm.android.vktop.entities.SocialValue;
 import com.ovchinnikovm.android.vktop.posts.events.DialogEvent;
 import com.ovchinnikovm.android.vktop.posts.events.PostsEvent;
@@ -35,6 +36,7 @@ import org.greenrobot.eventbus.EventBus;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -45,6 +47,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
+import io.realm.Realm;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -52,14 +55,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class PostsRepositoryImpl implements PostsRepository {
     private static final String BASE_URL = "https://api.vk.com/method/";
     private EventBus eventBus;
-    private Gson gson;
+    private Gson gson = new GsonBuilder().create();
 
-    private String groupId;
-    private int postsCount;
-
-    private PostsApiResponse<PostSortItem> byLikes;
-    private PostsApiResponse<PostSortItem> byShares;
-    private PostsApiResponse<PostSortItem> byComments;
+    private RealmSortedItem realmSortedItem;
 
     private String sortType = "likes";
 
@@ -74,16 +72,13 @@ public class PostsRepositoryImpl implements PostsRepository {
     }
 
     @Override
-    public void getIds(Integer groupId, Integer postsCount, Integer sortIntervalType,
-                       Long sortStart, Long sortEnd) {
+    public void getIds(Integer sortIntervalType, Long sortStart, Long sortEnd,
+                       RealmSortedItem realmSortedItem) {
 
-        this.groupId = "-" + groupId.toString();
-        this.postsCount = postsCount;
+        this.realmSortedItem = realmSortedItem;
 
         PostsApiResponse<PostSortItem> posts = new PostsApiResponse<>();
         posts.response = new ArrayList<>();
-
-        gson = new GsonBuilder().create();
 
         c = System.currentTimeMillis();
 
@@ -92,16 +87,24 @@ public class PostsRepositoryImpl implements PostsRepository {
                 downloadIds(posts);
                 break;
             case 1:
+                setSortRange(System.currentTimeMillis() - 31536000000L, System.currentTimeMillis());
                 downloadIdsForLastPeriod(posts, 31536000);
                 break;
             case 2:
+                setSortRange(System.currentTimeMillis() - 2592000000L, System.currentTimeMillis());
                 downloadIdsForLastPeriod(posts, 2592000);
                 break;
             case 3:
+                setSortRange(System.currentTimeMillis() - 604800000L, System.currentTimeMillis());
                 downloadIdsForLastPeriod(posts, 604800);
                 break;
             case 4:
-                downloadIdsInRange(posts, sortStart, sortEnd);
+                setSortRange(System.currentTimeMillis() - 86400000L, System.currentTimeMillis());
+                downloadIdsForLastPeriod(posts, 86400);
+                break;
+            case 5:
+                setSortRange(sortStart / 1000, sortEnd / 1000);
+                downloadIdsInRange(posts, sortStart / 1000, sortEnd / 1000);
                 break;
             default:
                 downloadIds(posts);
@@ -109,90 +112,63 @@ public class PostsRepositoryImpl implements PostsRepository {
         }
     }
 
-    /*
-    private void downloadIdsOld(Posts posts) {
-        a = System.currentTimeMillis();
-        numberOfRequests = (postsCount / 100);
-        disposable = Observable
-                .intervalRange(0, numberOfRequests + 4, 0, 400, TimeUnit.MILLISECONDS)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        (Long aLong) -> {
-                            if ((offset / 100) <= numberOfRequests) {
-                                VKRequest vkRequest = new VKApiWall()
-                                        .get(VKParameters.from(VKApiConst.OWNER_ID, groupId,
-                                                VKApiConst.OFFSET, offset,
-                                                VKApiConst.COUNT, 100,
-                                                VKApiConst.FILTERS, "owner"));
-                                vkRequest.attempts = 0;
-                                Log.i("extendedPosts", "Offset: " + offset  + ". PostsCount: " + postsCount );
-                                offset += 100;
-                                vkRequest.executeWithListener(new VKRequest.VKRequestListener() {
-                                    @Override
-                                    public void onComplete(VKResponse response) {
-                                        super.onComplete(response);
-                                        long b = System.currentTimeMillis();
-                                        Log.i("extendedPosts", "Get last post in " + ((b - a) / 1000.0) + " seconds. Number " + requestNumber);
-                                        a = System.currentTimeMillis();
-                                        PostsApiResponse<Posts> postsResponse = gson
-                                                .fromJson(response.responseString, new TypeToken<PostsApiResponse<Posts>>(){}.getType());
-                                        posts.item.addAll(postsResponse.response.items);
-                                        eventBus.post(new DialogEvent(false));
-                                        requestNumber++;
-                                    }
-
-                                    @Override
-                                    public void onError(VKError error) {
-                                        super.onError(error);
-                                        numberOfRequests++;
-                                        Log.i("extendedPosts", "JUST GOT ERROR LMAO, offset = " +
-                                                vkRequest.getMethodParameters().get(VKApiConst.OFFSET).toString());
-                                        post(error.toString());
-                                    }
-                                });
-                            } else {
-                                Log.i("extendedPosts", "Offset: " + offset  + ". PostsCount: " + postsCount );
-                                offset += 100;
-                            }
-
-                        }, (Throwable e) -> {
-                            Log.i("extendedPosts", "JUST GOT ERROR IN THE DISPOSABLE LMAO");
-                            post(e.toString());
-
-                        }, () -> sortPosts(posts)
-                );
+    @Override
+    public void setSortedItem(Integer itemId) {
+        Realm realmInstance = Realm.getDefaultInstance();
+        realmSortedItem = realmInstance.where(RealmSortedItem.class)
+                .equalTo("sortId", itemId).findFirst();
     }
-    */
+
+    private void setSortRange(long from, long to) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(from);
+        String fromDateString = "" + calendar.get(Calendar.DAY_OF_MONTH) + "."
+                + (calendar.get(Calendar.MONTH) + 1) + "." + calendar.get(Calendar.YEAR);
+        calendar.setTimeInMillis(to);
+        String toDateString = "" + calendar.get(Calendar.DAY_OF_MONTH) + "."
+                + (calendar.get(Calendar.MONTH) + 1) + "." + calendar.get(Calendar.YEAR);
+        realmSortedItem.setSortRange(fromDateString + " - " + toDateString);
+    }
 
     private void sortPosts(PostsApiResponse<PostSortItem> posts) {
         clearRequest();
 
-        long a = System.currentTimeMillis();
+        if (posts.response.size() != 0) {
+            long a = System.currentTimeMillis();
 
-        byLikes = new PostsApiResponse<>();
-        byLikes.response = new ArrayList<>();
-        byLikes.response.addAll(posts.response);
-        Collections.sort(byLikes.response, (post1, post2) ->
-                post2.getLikes().compareTo(post1.getLikes()));
+            List<PostSortItem> byLikes = new ArrayList<>();
+            byLikes.addAll(posts.response);
+            Collections.sort(byLikes, (post1, post2) ->
+                    post2.getLikes().compareTo(post1.getLikes()));
+            realmSortedItem.addByLikes(byLikes);
 
-        byShares = new PostsApiResponse<>();
-        byShares.response = new ArrayList<>();
-        byShares.response.addAll(posts.response);
-        Collections.sort(byShares.response, (post1, post2) ->
-                post2.getReposts().compareTo(post1.getReposts()));
+            List<PostSortItem> byShares = new ArrayList<>();
+            byShares.addAll(posts.response);
+            Collections.sort(byShares, (post1, post2) ->
+                    post2.getReposts().compareTo(post1.getReposts()));
+            realmSortedItem.addByShares(byShares);
 
-        byComments = new PostsApiResponse<>();
-        byComments.response = new ArrayList<>();
-        byComments.response.addAll(posts.response);
-        Collections.sort(byComments.response, (post1, post2) ->
-                post2.getComments().compareTo(post1.getComments()));
+            List<PostSortItem> byComments = new ArrayList<>();
+            byComments.addAll(posts.response);
+            Collections.sort(byComments, (post1, post2) ->
+                    post2.getComments().compareTo(post1.getComments()));
+            realmSortedItem.addByComments(byComments);
 
-        long b = System.currentTimeMillis();
+            if (realmSortedItem.getSortRange() == null) {
+                setSortRange((posts.response.get(posts.response.size() - 1).getDate() * 1000L), System.currentTimeMillis());
+            }
 
-        Log.i("mytag", "Time of download and add response to array: " + ((b - c) / 1000.0)
-                + " seconds. And time of sort is " + ((b - a) / 1000.0) + " seconds." );
-        Log.i("mytag", "Size of the array: " + posts.response.size());
+            Realm realm = Realm.getDefaultInstance();
+            realm.beginTransaction();
+            realm.copyToRealm(realmSortedItem);
+            realm.commitTransaction();
+
+            long b = System.currentTimeMillis();
+
+            Log.i("mytag", "Time of download and add response to array: " + ((b - c) / 1000.0)
+                    + " seconds. And time of sort is " + ((b - a) / 1000.0) + " seconds.");
+            Log.i("mytag", "Size of the array: " + posts.response.size());
+        }
         eventBus.post(new DialogEvent(true));
     }
 
@@ -204,51 +180,51 @@ public class PostsRepositoryImpl implements PostsRepository {
     @Override
     public void getPosts(int page) {
 
-        PostsApiResponse<PostSortItem> posts;
+        List<PostSortItem> posts;
 
         switch (sortType) {
             case "likes":
-                posts = byLikes;
+                posts = realmSortedItem.getByLikes();
                 break;
             case "shares":
-                posts = byShares;
+                posts = realmSortedItem.getByShares();
                 break;
             case "comments":
-                posts = byComments;
+                posts = realmSortedItem.getByComments();
                 break;
             default:
-                posts = byLikes;
+                posts = realmSortedItem.getByLikes();
         }
 
         Log.i("mytag", String.valueOf(page));
-        Log.i("mytag", String.valueOf(posts.response.size()));
+        Log.i("mytag", String.valueOf(posts.size()));
 
         List<Integer> twentyIds = new ArrayList<>();
         int start = page*20;
         int end = (page*20)+20;
-        if (posts.response.size() > start) {
-            if (posts.response.size() >= end) {
+        if (posts.size() > start) {
+            if (posts.size() >= end) {
                 for (int i = start; i < end; i++) {
-                    twentyIds.add(posts.response.get(i).getId());
+                    twentyIds.add(posts.get(i).getId());
                 }
             } else {
-                for (int i = start; i < posts.response.size(); i++) {
-                    twentyIds.add(posts.response.get(i).getId());
+                for (int i = start; i < posts.size(); i++) {
+                    twentyIds.add(posts.get(i).getId());
                 }
             }
+            downloadPosts(twentyIds);
+        } else if(posts.size() == 0) {
+            post(null, null);
         }
-
-        downloadPosts(twentyIds);
-
     }
 
     private void downloadPosts(List<Integer> twentyIds) {
-        String postsParameters = "";
+        StringBuilder postsParameters = new StringBuilder();
         for(Integer id : twentyIds) {
-            postsParameters += groupId + "_" + id + ",";
+            postsParameters.append(realmSortedItem.getGroupId()).append("_").append(id).append(",");
         }
         VKRequest vkRequest = new VKApiWall()
-                .getById(VKParameters.from(VKApiConst.POSTS, postsParameters,
+                .getById(VKParameters.from(VKApiConst.POSTS, postsParameters.toString(),
                         VKApiConst.EXTENDED, 1));
         vkRequest.attempts = 0;
         vkRequest.executeWithListener(new VKRequest.VKRequestListener() {
@@ -398,9 +374,9 @@ public class PostsRepositoryImpl implements PostsRepository {
 
         a = System.currentTimeMillis();
         disposable = Observable
-                .intervalRange(0, (postsCount / 100) + 1, 400, 400, TimeUnit.MILLISECONDS)
+                .intervalRange(0, (realmSortedItem.getPostsCount() / 100) + 1, 400, 400, TimeUnit.MILLISECONDS)
                 .flatMap(offset -> requestInterface
-                        .getPosts(groupId, offset * 100, 100, "owner",
+                        .getPosts(realmSortedItem.getGroupId(), offset * 100,
                                 VKAccessToken.currentToken().accessToken)
                         .map(postsApiResponse -> postsApiResponse.response)
                         .retryWhen(new RetryWithDelay(3, 400))
@@ -417,17 +393,17 @@ public class PostsRepositoryImpl implements PostsRepository {
                         },  e -> {
                             Log.i("mytag", "JUST GOT ERROR WHILE LOAD IDS LMAO");
                             post(e.toString());
-                }, () -> {
+                        }, () -> {
                             Log.i("mytag", "IN THE COMPLETE CALLBACK");
                             sortPosts(posts);
-                }
+                        }
                 );
     }
 
     private void downloadIdsForLastPeriod(PostsApiResponse<PostSortItem> posts, int time) {
 
         GsonBuilder gsonBuilder = new GsonBuilder();
-        gsonBuilder.registerTypeAdapter(PostsApiResponse.class, new PostsApiResponseWithDateDeserializer());
+        gsonBuilder.registerTypeAdapter(PostsApiResponse.class, new PostsApiResponseDeserializer());
         Gson gson = gsonBuilder.create();
 
         RequestInterface requestInterface = new Retrofit.Builder()
@@ -437,12 +413,14 @@ public class PostsRepositoryImpl implements PostsRepository {
                 .build()
                 .create(RequestInterface.class);
 
-        long currentTimeInSeconds = System.currentTimeMillis() / 1000;
+        Log.i("mytag", VKAccessToken.currentToken().accessToken);
+
+        int currentTimeInSeconds = (int) (System.currentTimeMillis() / 1000);
         a = System.currentTimeMillis();
         disposable = Observable
-                .intervalRange(0, (postsCount / 100) + 1, 400, 400, TimeUnit.MILLISECONDS)
+                .intervalRange(0, (realmSortedItem.getPostsCount() / 100) + 1, 400, 400, TimeUnit.MILLISECONDS)
                 .flatMap(offset -> requestInterface
-                        .getPosts(groupId, offset * 100, 100, "owner",
+                        .getPosts(realmSortedItem.getGroupId(), offset * 100,
                                 VKAccessToken.currentToken().accessToken)
                         .map(postsApiResponse -> postsApiResponse.response)
                         .retryWhen(new RetryWithDelay(3, 400))
@@ -453,15 +431,44 @@ public class PostsRepositoryImpl implements PostsRepository {
                         items -> {
                             long b = System.currentTimeMillis();
                             Log.i("mytag", "IdsWithForLastPeriod: Get that post in " + ((b - a) / 1000.0)
-                                    + " seconds. First id = " + items.get(0).getId());
+                                    + " seconds.");
                             a = System.currentTimeMillis();
                             if (currentTimeInSeconds - items.get(items.size() - 1).getDate() > time) {
-                                for (PostSortItem item : items) {
-                                    if (currentTimeInSeconds - item.getDate() <= time) {
-                                        posts.response.add(item);
-                                    } else
-                                        break;
+                                PostSortItem item;
+                                // Проверка на случай закрепленного поста
+                                if (items.get(0).getDate() > items.get(1).getDate()) {
+                                    for (int i = 0; i < items.size(); i++) {
+                                        item = items.get(i);
+
+                                        Log.i("mytag", "Id: " + item.getId() + ".Range in time: "
+                                                + (currentTimeInSeconds - item.getDate()) + ". Time: " + time);
+
+                                        if (currentTimeInSeconds - item.getDate() <= time) {
+                                            posts.response.add(item);
+                                        } else
+                                            break;
+                                    }
+                                } else {
+                                    for (int i = 1; i < items.size(); i++) {
+                                        item = items.get(i);
+
+                                        Log.i("mytag", "Id: " + item.getId() + ".Range in time: "
+                                                + (currentTimeInSeconds - item.getDate()) + ". Time: " + time);
+
+                                        if (currentTimeInSeconds - item.getDate() <= time) {
+                                            posts.response.add(item);
+                                        } else
+                                            break;
+                                    }
+                                    if (currentTimeInSeconds - items.get(0).getDate() <= time) {
+                                        posts.response.add(items.get(0));
+                                    }
                                 }
+                            } else if (items.get(0).getDate() > items.get(1).getDate()) {
+                                if (currentTimeInSeconds - items.get(0).getDate() > time) {
+                                    items.remove(0);
+                                }
+                                posts.response.addAll(items);
                             } else
                                 posts.response.addAll(items);
                         },  e -> {
@@ -478,7 +485,7 @@ public class PostsRepositoryImpl implements PostsRepository {
                                     Long sortEnd) {
 
         GsonBuilder gsonBuilder = new GsonBuilder();
-        gsonBuilder.registerTypeAdapter(PostsApiResponse.class, new PostsApiResponseWithDateDeserializer());
+        gsonBuilder.registerTypeAdapter(PostsApiResponse.class, new PostsApiResponseDeserializer());
         Gson gson = gsonBuilder.create();
 
         RequestInterface requestInterface = new Retrofit.Builder()
@@ -490,9 +497,9 @@ public class PostsRepositoryImpl implements PostsRepository {
 
         a = System.currentTimeMillis();
         disposable = Observable
-                .intervalRange(0, (postsCount / 100) + 1, 400, 400, TimeUnit.MILLISECONDS)
+                .intervalRange(0, (realmSortedItem.getPostsCount() / 100) + 1, 400, 400, TimeUnit.MILLISECONDS)
                 .flatMap(offset -> requestInterface
-                        .getPosts(groupId, offset * 100, 100, "owner",
+                        .getPosts(realmSortedItem.getGroupId(), offset * 100,
                                 VKAccessToken.currentToken().accessToken)
                         .map(postsApiResponse -> postsApiResponse.response)
                         .retryWhen(new RetryWithDelay(3, 400))
@@ -508,19 +515,43 @@ public class PostsRepositoryImpl implements PostsRepository {
                             if (items.get(items.size() - 1).getDate() < sortStart) {
                                 if (items.get(0).getDate() > sortEnd) {
                                     for (PostSortItem item : items) {
+                                        Log.i("mytag", "Id: " + item.getId() + ". Sort start: "
+                                                + sortStart + ". Sort end: " + sortEnd + ". Post time: " + item.getDate());
                                         if (item.getDate() >= sortStart && item.getDate() <= sortEnd)
                                             posts.response.add(item);
                                     }
                                 } else {
-                                    for (PostSortItem item : items) {
-                                        if (item.getDate() >= sortStart)
-                                            posts.response.add(item);
-                                        else
-                                            break;
+                                    PostSortItem item;
+                                    // Проверка на случай закрепленного поста
+                                    if (items.get(0).getDate() > items.get(1).getDate()) {
+                                        for (int i = 0; i < items.size(); i++) {
+                                            item = items.get(i);
+                                            Log.i("mytag", "Id: " + item.getId() + ". Sort start: "
+                                                    + sortStart + ". Sort end: " + sortEnd + ". Post time: " + item.getDate());
+                                            if (item.getDate() >= sortStart)
+                                                posts.response.add(item);
+                                            else
+                                                break;
+                                        }
+                                    } else {
+                                        for (int i = 1; i < items.size(); i++) {
+                                            item = items.get(i);
+                                            Log.i("mytag", "Id: " + item.getId() + ". Sort start: "
+                                                    + sortStart + ". Sort end: " + sortEnd + ". Post time: " + item.getDate());
+                                            if (item.getDate() >= sortStart)
+                                                posts.response.add(item);
+                                            else
+                                                break;
+                                        }
+                                        if (items.get(0).getDate() >= sortStart) {
+                                            posts.response.add(items.get(0));
+                                        }
                                     }
                                 }
                             } else if (items.get(0).getDate() > sortEnd) {
                                 for (PostSortItem item : items) {
+                                    Log.i("mytag", "Id: " + item.getId() + ". Sort start: "
+                                            + sortStart + ". Sort end: " + sortEnd + ". Post time: " + item.getDate());
                                     if (item.getDate() <= sortEnd)
                                         posts.response.add(item);
                                 }
@@ -573,53 +604,22 @@ public class PostsRepositoryImpl implements PostsRepository {
         @Override
         public Observable<?> apply(final Observable<? extends Throwable> attempts) {
             return attempts
-                    .flatMap(new Function<Throwable, Observable<?>>() {
-                        @Override
-                        public Observable<?> apply(final Throwable throwable) {
-                            post("SKIP BUNCH OF POSTS num: " + retryCount);
-                            Log.i("mytag", "SKIP BUNCH OF POSTS num: " + retryCount);
-                            if (++retryCount < maxRetries) {
-                                // When this Observable calls onNext, the original
-                                // Observable will be retried (i.e. re-subscribed).
-                                return Observable.timer(retryDelayMillis,
-                                        TimeUnit.MILLISECONDS);
-                            }
-                            // Max retries hit. Just pass the error along.
-                            return Observable.error(throwable);
+                    .flatMap((Function<Throwable, Observable<?>>) throwable -> {
+                        post("SKIP BUNCH OF POSTS num: " + retryCount);
+                        Log.i("mytag", "SKIP BUNCH OF POSTS num: " + retryCount);
+                        if (++retryCount < maxRetries) {
+                            // When this Observable calls onNext, the original
+                            // Observable will be retried (i.e. re-subscribed).
+                            return Observable.timer(retryDelayMillis,
+                                    TimeUnit.MILLISECONDS);
                         }
+                        // Max retries hit. Just pass the error along.
+                        return Observable.error(throwable);
                     });
         }
     }
 
     private class PostsApiResponseDeserializer
-            implements JsonDeserializer<PostsApiResponse<PostSortItem>> {
-
-        @Override
-        public PostsApiResponse<PostSortItem> deserialize(JsonElement json, Type type,
-                                            JsonDeserializationContext context) throws JsonParseException {
-
-            Log.i("mytag", json.toString());
-
-            JsonArray jArray = json.getAsJsonObject().get("response").getAsJsonArray();
-
-            PostsApiResponse<PostSortItem> vkPostItem = new PostsApiResponse<>();
-            vkPostItem.response = new ArrayList<>();
-
-            for (int i=1; i < jArray.size(); i++) {
-                JsonObject jObject = (JsonObject) jArray.get(i);
-                //assuming you have the suitable constructor...
-                PostSortItem item = new PostSortItem(jObject.get("id").getAsInt(),
-                        new SocialValue(jObject.getAsJsonObject("likes").get("count").getAsInt()),
-                        new SocialValue(jObject.getAsJsonObject("reposts").get("count").getAsInt()),
-                        new SocialValue(jObject.getAsJsonObject("comments").get("count").getAsInt()));
-                vkPostItem.response.add(item);
-            }
-
-            return vkPostItem;
-        }
-    }
-
-    private class PostsApiResponseWithDateDeserializer
             implements JsonDeserializer<PostsApiResponse<PostSortItem>> {
 
         @Override
