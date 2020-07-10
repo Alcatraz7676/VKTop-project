@@ -400,8 +400,16 @@ public class PostsRepositoryImpl implements PostsRepository {
 
         a = System.currentTimeMillis();
 
+        int postsCount;
+        if (realmSortedItem.getPostsCount() < 100)
+            postsCount = 1;
+        else if (realmSortedItem.getPostsCount() % 100 == 0)
+            postsCount = realmSortedItem.getPostsCount() / 100;
+        else
+            postsCount = (realmSortedItem.getPostsCount() / 100) + 1;
+
         disposable = Observable
-                .intervalRange(0, (realmSortedItem.getPostsCount() / 100) + 1, 400, 400, TimeUnit.MILLISECONDS)
+                .intervalRange(0, postsCount, 400, 400, TimeUnit.MILLISECONDS)
                 .flatMap(offset -> requestInterface
                         .getPosts(realmSortedItem.getGroupId(), offset * 100,
                                 VKAccessToken.currentToken().accessToken)
@@ -445,8 +453,17 @@ public class PostsRepositoryImpl implements PostsRepository {
 
         int currentTimeInSeconds = (int) (System.currentTimeMillis() / 1000);
         a = System.currentTimeMillis();
+
+        int postsCount;
+        if (realmSortedItem.getPostsCount() < 100)
+            postsCount = 1;
+        else if (realmSortedItem.getPostsCount() % 100 == 0)
+            postsCount = realmSortedItem.getPostsCount() / 100;
+        else
+            postsCount = (realmSortedItem.getPostsCount() / 100) + 1;
+
         disposable = Observable
-                .intervalRange(0, (realmSortedItem.getPostsCount() / 100) + 1, 400, 400, TimeUnit.MILLISECONDS)
+                .intervalRange(0, postsCount, 400, 400, TimeUnit.MILLISECONDS)
                 .flatMap(offset -> requestInterface
                         .getPosts(realmSortedItem.getGroupId(), offset * 100,
                                 VKAccessToken.currentToken().accessToken)
@@ -524,8 +541,17 @@ public class PostsRepositoryImpl implements PostsRepository {
                 .create(RequestInterface.class);
 
         a = System.currentTimeMillis();
+
+        int postsCount;
+        if (realmSortedItem.getPostsCount() < 100)
+            postsCount = 1;
+        else if (realmSortedItem.getPostsCount() % 100 == 0)
+            postsCount = realmSortedItem.getPostsCount() / 100;
+        else
+            postsCount = (realmSortedItem.getPostsCount() / 100) + 1;
+
         disposable = Observable
-                .intervalRange(0, (realmSortedItem.getPostsCount() / 100) + 1, 400, 400, TimeUnit.MILLISECONDS)
+                .intervalRange(0, postsCount, 400, 400, TimeUnit.MILLISECONDS)
                 .flatMap(offset -> requestInterface
                         .getPosts(realmSortedItem.getGroupId(), offset * 100,
                                 VKAccessToken.currentToken().accessToken)
