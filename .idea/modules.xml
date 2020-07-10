@@ -2,8 +2,12 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/Desktop-VkTop.iml" filepath="$PROJECT_DIR$/Desktop-VkTop.iml" group="VkTop" />
       <module fileurl="file://$PROJECT_DIR$/MaterialDateRangePicker/MaterialDateRangePicker.iml" filepath="$PROJECT_DIR$/MaterialDateRangePicker/MaterialDateRangePicker.iml" />
       <module fileurl="file://$PROJECT_DIR$/VkTop.iml" filepath="$PROJECT_DIR$/VkTop.iml" />
+      <module fileurl="file://$PROJECT_DIR$/MaterialDateRangePicker/VkTop-MaterialDateRangePicker.iml" filepath="$PROJECT_DIR$/MaterialDateRangePicker/VkTop-MaterialDateRangePicker.iml" group="VkTop/MaterialDateRangePicker" />
+      <module fileurl="file://$PROJECT_DIR$/app/VkTop-app.iml" filepath="$PROJECT_DIR$/app/VkTop-app.iml" group="VkTop/app" />
+      <module fileurl="file://$PROJECT_DIR$/vksdk_library/VkTop-vksdk_library.iml" filepath="$PROJECT_DIR$/vksdk_library/VkTop-vksdk_library.iml" group="VkTop/vksdk_library" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/vksdk_library/vksdk_library.iml" filepath="$PROJECT_DIR$/vksdk_library/vksdk_library.iml" />
     </modules>
