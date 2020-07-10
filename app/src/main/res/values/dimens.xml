@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="photos_recyclerview_height">165dp</dimen>
+    <dimen name="recyclerview_first_elemennt_margin_top">16dp</dimen>
+    <dimen name="group_item_height">65dp</dimen>
 </resources>

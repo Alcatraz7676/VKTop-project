@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 public interface PostsView {
     void onError(String error);
-    void setPosts(ArrayList<ExtendedPost> items);
+    void setFirstPage(ArrayList<ExtendedPost> items, Integer numberOfSortedPosts);
+    void addPosts(ArrayList<ExtendedPost> items);
     void incrementDialogNumber(DialogEvent event);
 }

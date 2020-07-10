@@ -101,6 +101,14 @@
         <item quantity="many">%1$d просмотров</item>
         <item quantity="other">%1$d просмотр</item>
     </plurals>
+    <plurals name="posts">
+        <item quantity="zero">%1$d постов</item>
+        <item quantity="one">%1$d пост</item>
+        <item quantity="two">%1$d поста</item>
+        <item quantity="few">%1$d поста</item>
+        <item quantity="many">%1$d постов</item>
+        <item quantity="other">%1$d пост</item>
+    </plurals>
     
     <!-- Notification -->
     <string name="notification_title">Записи отсортированы</string>

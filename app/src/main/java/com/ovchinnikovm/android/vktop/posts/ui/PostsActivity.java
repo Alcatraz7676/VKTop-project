@@ -79,10 +79,15 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
     private final static String SORT_ITEMS_TYPE_KEY = "sort_type";
     private final static String CURRENT_PAGE_KEY = "current_page";
     public final static String RETURN_FROM_ACTIVITY_KEY = "return_from_activity";
+    public final static String NUMBER_OF_SORTED_POSTS_KEY = "number_of_sorted_posts";
 
+    // Количесвто постов во всей группе
     private int postsCount;
+    // Количество отсортированных постов
+    private int sortedPostsCount;
     private String groupName;
     private String groupIconUrl;
+    // Запоминаем id в view для того чтобы при повороте отображало тоже самое
     private int itemId;
 
     @BindView(R.id.toolbar)
@@ -165,7 +170,8 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
                 ArrayList<ExtendedPost> items = savedInstanceState.getParcelableArrayList(RV_ITEMS_KEY);
                 sortTypeForConstructor = (SortType) savedInstanceState.getSerializable(SORT_ITEMS_TYPE_KEY);
                 currentPage = savedInstanceState.getInt(CURRENT_PAGE_KEY, 0);
-                setPosts(items);
+                sortedPostsCount = savedInstanceState.getInt(NUMBER_OF_SORTED_POSTS_KEY, 0);
+                setFirstPage(items, sortedPostsCount);
                 SparseBooleanArray sbarray = savedInstanceState.getParcelable(TOGGLE_EXPANDABLE_TV_KEY);
                 adapter.setTogglePositions(sbarray);
             } else {
@@ -309,6 +315,7 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
             outState.putParcelable(TOGGLE_EXPANDABLE_TV_KEY, new SparseBooleanArrayParcelable(adapter.getTogglePositions()));
             outState.putSerializable(SORT_ITEMS_TYPE_KEY, sortTypeForConstructor);
             outState.putInt(CURRENT_PAGE_KEY, currentPage);
+            outState.putInt(NUMBER_OF_SORTED_POSTS_KEY, sortedPostsCount);
         }
         super.onSaveInstanceState(outState);
     }
@@ -443,18 +450,13 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
     }
 
     @Override
-    public void setPosts(ArrayList<ExtendedPost> items) {
+    public void setFirstPage(ArrayList<ExtendedPost> items, Integer sortedPostsCount) {
+        this.sortedPostsCount = sortedPostsCount;
         loadingBar.setVisibility(View.GONE);
         if (items != null && items.size() > 0) {
-            if (adapter == null) {
-                adapter = new PostsAdapter(items, imageLoader, onItemClickListener,
-                        this, sortTypeForConstructor);
-                setupRecyclerView();
-            } else {
-                int before = adapter.getItemCount();
-                adapter.addItems(items);
-                adapter.notifyItemRangeInserted(before, adapter.getItemCount() - 1);
-            }
+            adapter = new PostsAdapter(items, imageLoader, onItemClickListener,
+                    this, sortTypeForConstructor, sortedPostsCount);
+            setupRecyclerView();
         } else if(adapter == null) {
             emptyView.setVisibility(View.VISIBLE);
             recyclerview.setVisibility(View.GONE);
@@ -463,6 +465,15 @@ public class PostsActivity extends AppCompatActivity implements PostsView, OnIte
             groupNameTextView.setVisibility(View.VISIBLE);
         }
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+    }
+
+    @Override
+    public void addPosts(ArrayList<ExtendedPost> items) {
+        if (items != null && items.size() > 0) {
+            int before = adapter.getItemCount();
+            adapter.addItems(items);
+            adapter.notifyItemRangeInserted(before, adapter.getItemCount() - 1);
+        }
     }
 
     @Override

@@ -246,13 +246,18 @@ public class PostsRepositoryImpl implements PostsRepository {
                     twentyIds.add(posts.get(i).getId());
                 }
             }
-            downloadPosts(twentyIds);
+            // Если это первая страница, то мы также должны отослать в view количество постов для
+            // (TextView) number_of_sorted_posts
+            if (page != 0)
+                downloadPosts(twentyIds, null);
+            else
+                downloadPosts(twentyIds, posts.size());
         } else if(posts.size() == 0) {
             post(null, null);
         }
     }
 
-    private void downloadPosts(List<Integer> twentyIds) {
+    private void downloadPosts(List<Integer> twentyIds, Integer numberOfSortedPosts) {
         StringBuilder postsParameters = new StringBuilder();
         for(Integer id : twentyIds) {
             postsParameters.append(realmSortedItem.getGroupId()).append("_").append(id).append(",");
@@ -378,7 +383,10 @@ public class PostsRepositoryImpl implements PostsRepository {
                     }
                 }
 
-                post(extendedPosts);
+                if (numberOfSortedPosts == null)
+                    post(extendedPosts);
+                else
+                    post(extendedPosts, numberOfSortedPosts);
             }
 
             @Override
@@ -658,19 +666,25 @@ public class PostsRepositoryImpl implements PostsRepository {
     }
 
     private void post(ExtendedPosts posts) {
-        post(posts, null);
+        post(posts, null, null);
+    }
+
+    private void post(ExtendedPosts posts, Integer numberOfSortedPosts) {
+        post(posts, null, numberOfSortedPosts);
     }
 
     private void post(String error) {
-        post(null, error);
+        post(null, error, null);
     }
 
-    private void post(ExtendedPosts posts, String error) {
+    private void post(ExtendedPosts posts, String error, Integer numberOfSortedPosts) {
         PostsEvent event = new PostsEvent();
         if (posts == null)
             event.setError(error);
         else
             event.setPosts(posts.items);
+        if (numberOfSortedPosts != null)
+            event.setSortedPostsCount(numberOfSortedPosts);
         eventBus.post(event);
     }
 

@@ -103,6 +103,14 @@
         <item quantity="many">%1$d views</item>
         <item quantity="other">%1$d view</item>
     </plurals>
+    <plurals name="posts">
+        <item quantity="zero">%1$d posts</item>
+        <item quantity="one">%1$d post</item>
+        <item quantity="two">%1$d posts</item>
+        <item quantity="few">%1$d posts</item>
+        <item quantity="many">%1$d posts</item>
+        <item quantity="other">%1$d post</item>
+    </plurals>
 
     <!-- Notification -->
     <string name="notification_title">Posts are sorted</string>

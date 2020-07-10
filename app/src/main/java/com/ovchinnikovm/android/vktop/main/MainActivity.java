@@ -112,6 +112,8 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
                             editor.apply();
                         }).show();
             }
+            /* Рекламный блок на весь экран, который показывается с перерывом в 5 минут,
+               когда пользователь возвращается в активити. В данный момент решил отказаться от него.
             if (returnFromActivity) {
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putBoolean(RETURN_FROM_ACTIVITY_KEY, false);
@@ -123,6 +125,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
                     }
                 });
             }
+            */
         }
     }
 

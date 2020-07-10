@@ -36,8 +36,9 @@ public class GroupsModule {
 
     @Provides
     @Singleton
-    GroupsAdapter providesAdapter(List<Group> groups, ImageLoader imageLoader, OnItemClickListener clickListener) {
-        return new GroupsAdapter(groups, imageLoader, clickListener);
+    GroupsAdapter providesAdapter(List<Group> groups, ImageLoader imageLoader, OnItemClickListener clickListener,
+                                  Context context) {
+        return new GroupsAdapter(groups, imageLoader, clickListener, context);
     }
 
     @Provides

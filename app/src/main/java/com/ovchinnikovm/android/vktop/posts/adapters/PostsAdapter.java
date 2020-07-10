@@ -41,22 +41,33 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
     private SparseBooleanArray togglePositions;
     private Context context;
     private SortType sortType;
+    private Integer sortedPostsCount;
 
     public PostsAdapter(ArrayList<ExtendedPost> items, ImageLoader imageLoader,
-                        OnItemClickListener clickListener, Context context, SortType sortType) {
+                        OnItemClickListener clickListener, Context context, SortType sortType,
+                        Integer sortedPostsCount) {
         this.items = items;
         this.imageLoader = imageLoader;
         this.clickListener = clickListener;
         this.context = context;
         togglePositions = new SparseBooleanArray();
         this.sortType = sortType;
+        this.sortedPostsCount = sortedPostsCount;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        if (position == 0)
+            return 1;
+        else
+            return 0;
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new ViewHolder(LayoutInflater
                 .from(parent.getContext())
-                .inflate(R.layout.item_post, parent, false), parent.getContext());
+                .inflate(R.layout.item_post, parent, false), parent.getContext(), viewType);
     }
 
     @Override
@@ -66,6 +77,12 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
         // Set clicklistener
         holder.setOnClickListener(item, clickListener);
         holder.setPostUrl(item.getPostUrl());
+        if (holder.getItemViewType() == 1) {
+            holder.numberOfSortedPosts.setVisibility(View.VISIBLE);
+            holder.divider.setVisibility(View.VISIBLE);
+            holder.numberOfSortedPosts.setText(context.getResources()
+                    .getQuantityString(R.plurals.posts, sortedPostsCount, sortedPostsCount));
+        }
         // Position in the top
         holder.position.setText(String.valueOf(position + 1));
         // Date of the post
@@ -313,6 +330,9 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
         @BindView(R.id.view)
         View separator;
 
+        TextView numberOfSortedPosts;
+        View divider;
+
         private PhotosAdapter photosAdapter;
         private List<Photo> photosURL;
         private MediaAdapter mediaAdapter;
@@ -323,8 +343,12 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
         private MediaAdapter attMediaAdapter;
         private List<Attachment> attMediaAttachments;
 
-        public ViewHolder(View itemView, Context context) {
+        public ViewHolder(View itemView, Context context, int viewType) {
             super(itemView);
+            if (viewType == 1) {
+                numberOfSortedPosts = itemView.findViewById(R.id.number_of_sorted_posts);
+                divider = itemView.findViewById(R.id.divider);
+            }
             ButterKnife.bind(this, itemView);
             this.view = itemView;
 
@@ -393,4 +417,5 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
             view.setOnClickListener( l -> listener.onItemClick(extendedPost.getPostUrl()));
         }
     }
+
 }

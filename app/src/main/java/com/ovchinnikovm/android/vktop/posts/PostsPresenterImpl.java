@@ -70,7 +70,10 @@ public class PostsPresenterImpl implements PostsPresenter {
             if(errorMsg != null) {
                 view.onError(errorMsg);
             } else {
-                view.setPosts(event.getPosts());
+                if (event.getSortedPostsCount() != null)
+                    view.setFirstPage(event.getPosts(), event.getSortedPostsCount());
+                else
+                    view.addPosts(event.getPosts());
             }
         }
     }
